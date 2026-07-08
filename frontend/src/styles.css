@@ -1,0 +1,41 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial, sans-serif; background: #f5f7fa; color: #1f2933; }
+.shell { width: min(1180px, calc(100% - 32px)); margin: 24px auto; }
+.panel, section, .statusHeader { background: #fff; border: 1px solid #d9e2ec; border-radius: 8px; padding: 18px; margin-bottom: 16px; }
+h1, h2, h3 { margin: 0 0 12px; letter-spacing: 0; }
+textarea { width: 100%; min-height: 320px; font: 14px/1.5 Consolas, monospace; border: 1px solid #bcccdc; border-radius: 6px; padding: 12px; }
+label { display: grid; gap: 6px; font-weight: 700; }
+label input, label select, label textarea { font-weight: 400; }
+button, input, select { min-height: 36px; border: 1px solid #bcccdc; border-radius: 6px; padding: 0 10px; background: #fff; }
+button { background: #166534; color: #fff; border-color: #166534; }
+.actions, .toolbar, .progressMeta { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.panelHeader { display: flex; gap: 16px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
+.reviewGrid { display: grid; grid-template-columns: minmax(220px, 320px) 1fr; gap: 18px; align-items: start; }
+.reviewForm { display: grid; gap: 12px; }
+.reviewForm textarea { min-height: 120px; }
+.reviewDecision { border: 1px solid #d9e2ec; border-radius: 8px; padding: 14px; background: #f8fafc; }
+.statusHeader { display: flex; justify-content: space-between; align-items: center; border-left: 6px solid #9aa5b1; }
+.statusHeader.eligible { border-left-color: #2f9e44; }
+.statusHeader.not_eligible { border-left-color: #d64545; }
+.statusHeader.needs_review { border-left-color: #b7791f; }
+.progressTrack { height: 12px; display: flex; overflow: hidden; border-radius: 999px; background: #d9e2ec; }
+.progressTrack span { display: block; }
+.pass { background: #2f9e44; }
+.fail { background: #d64545; }
+.review { background: #b7791f; }
+.result { border: 1px solid #d9e2ec; border-radius: 8px; padding: 12px; margin-bottom: 10px; background: #fff; }
+.result summary { display: grid; grid-template-columns: 76px minmax(160px, 1fr) minmax(220px, 2fr); gap: 12px; cursor: pointer; }
+.result.pass { border-left: 4px solid #2f9e44; }
+.result.fail { border-left: 4px solid #d64545; }
+.result.inconclusive { border-left: 4px solid #b7791f; }
+dl { display: grid; grid-template-columns: 110px 1fr; gap: 6px 12px; }
+dt { font-weight: 700; }
+.muted, .evidence { color: #52606d; }
+.error { color: #b42318; white-space: pre-wrap; }
+.rules { width: 100%; border-collapse: collapse; background: #fff; }
+.rules th, .rules td { border: 1px solid #d9e2ec; padding: 10px; text-align: left; }
+@media (max-width: 720px) {
+  .result summary { grid-template-columns: 1fr; }
+  .statusHeader { align-items: flex-start; flex-direction: column; }
+  .reviewGrid { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,146 @@
+IPO Due Diligence Report: Acme Industries Pvt Ltd
+Status: Not Eligible
+Ruleset: 1.0.0
+Evaluated At: 2026-07-08T19:23:42+00:00
+Disclaimer: Screening output only; not legal, investment, or regulatory advice.
+
+Mandatory: 8 / 11 requirements satisfied
+Advisory: 5 / 5 requirements satisfied
+
+Mandatory Requirements
+----------------------
+- [FAIL] NTA_3CR: Net tangible assets must be at least ₹3 Crore in each of the three preceding full fiscal years.
+  Regulation: SEBI (ICDR) Regulations, 2018 Regulation 26(1) Clause (a)
+  Required: ≥ ₹3 Cr NTA in each of the 3 preceding full fiscal years
+  Actual: FY2022: ₹1.00 Cr; FY2023: ₹1.00 Cr; FY2024: ₹1.00 Cr
+  Gap: ₹2.00 Cr below ₹3 Cr threshold in FY2022
+  Explanation: Net tangible assets fell below the ₹3 Crore threshold in 3 of 3 fiscal year(s): FY2022, FY2023, FY2024. Actual values — FY2022: ₹1.00 Cr; FY2023: ₹1.00 Cr; FY2024: ₹1.00 Cr. Worst shortfall: ₹1.00 Cr in FY2022 (₹2.00 Cr below the ₹3 Cr minimum).
+  Evidence: Annual_Report_Test.pdf, page(s) 1
+- [FAIL] MONETARY_ASSETS_50PCT: Monetary assets must not exceed 50% of net tangible assets in each of the three preceding full fiscal years.
+  Regulation: SEBI (ICDR) Regulations, 2018 Regulation 26(1) Clause (a) Proviso
+  Required: Monetary assets ≤ 50% of NTA in each of the 3 preceding full fiscal years
+  Actual: FY2022: 1000.00% (₹10.00 Cr / ₹1.00 Cr); FY2023: 1000.00% (₹10.00 Cr / ₹1.00 Cr); FY2024: 1000.00% (₹10.00 Cr / ₹1.00 Cr)
+  Gap: Monetary assets were 1000.00% of NTA in FY2022 (limit: 50%)
+  Explanation: Monetary assets exceeded 50% of NTA in 3 of 3 fiscal year(s): FY2022, FY2023, FY2024. Year-by-year ratios — FY2022: 1000.00% (₹10.00 Cr / ₹1.00 Cr); FY2023: 1000.00% (₹10.00 Cr / ₹1.00 Cr); FY2024: 1000.00% (₹10.00 Cr / ₹1.00 Cr). Worst breach: 1000.00% in FY2022 (limit is 50%).
+  Evidence: Annual_Report_Test.pdf, page(s) 1
+- [FAIL] AVG_OPERATING_PROFIT_15CR: Average pre-tax operating profit must be at least ₹15 Crore, computed across the best 3 of the preceding 5 fiscal years.
+  Regulation: SEBI (ICDR) Regulations, 2018 Regulation 26(1) Clause (b)
+  Required: ≥ ₹15 Cr average operating profit across best 3 of preceding 5 fiscal years
+  Actual: ₹5.00 Cr average (best 3 of 5 FYs: FY2020, FY2021, FY2022)
+  Gap: ₹10.00 Cr below the ₹15 Cr threshold (current average: ₹5.00 Cr)
+  Explanation: Average pre-tax operating profit of ₹5.00 Cr across the best 3 fiscal years (FY2020, FY2021, FY2022) is below the ₹15 Crore threshold required by ICDR Reg. 26(1)(b). Shortfall: ₹10.00 Cr.
+  Evidence: Annual_Report_Test.pdf, page(s) 1
+- [PASS] NET_WORTH_1CR: Net worth must be at least ₹1 Crore in each of the three preceding full fiscal years.
+  Regulation: SEBI (ICDR) Regulations, 2018 Regulation 26(1) Clause (c)
+  Required: ≥ ₹1 Cr net worth in each of the 3 preceding full fiscal years
+  Actual: FY2022: ₹50.00 Cr; FY2023: ₹50.00 Cr; FY2024: ₹50.00 Cr
+  Explanation: Net worth met the ₹1 Crore threshold in all three preceding fiscal years: FY2022: ₹50.00 Cr; FY2023: ₹50.00 Cr; FY2024: ₹50.00 Cr.
+  Evidence: Annual_Report_Test.pdf, page(s) 1
+- [PASS] ISSUE_SIZE_5X: Total issue size must not exceed 5× the pre-issue net worth
+  Regulation: SEBI (ICDR) Regulations, 2018 Regulation 26(2)
+  Required: Issue size ≤ 5× pre-issue net worth
+  Actual: ₹100.00 Cr issue size vs ₹50.00 Cr pre-issue net worth (ratio: 2.00x)
+  Explanation: Issue size of ₹100.00 Cr is within the permitted 5× limit of ₹250.00 Cr (5 × ₹50.00 Cr). Ratio: 2.00x. Compliant with SEBI (ICDR) Regulations, 2018, Regulation 26(2).
+  Evidence: Annual_Report_Test.pdf, page(s) 1
+- [PASS] TRACK_RECORD_3Y: Company must have at least 3 full fiscal years of operating history
+  Regulation: SEBI (ICDR) Regulations, 2018 Regulation 26(1)
+  Required: ≥ 3 full years of operating history
+  Actual: 5 years of operation
+  Explanation: Company has 5 years of operation, which meets or exceeds the minimum of 3 full fiscal years required by SEBI (ICDR) Regulations, 2018, Regulation 26(1).
+- [PASS] PUBLIC_OFFER_MIN: Minimum public offer percentage: ≥ 25% for market cap ≤ ₹1,600 Cr; ≥ 10% for market cap > ₹1,600 Cr
+  Regulation: SEBI (ICDR) Regulations, 2018 Regulation 26(5)
+  Required: ≥ 25% if market cap ≤ ₹1600 Cr; ≥ 10% if market cap > ₹1600 Cr
+  Actual: ₹800.00 Cr market cap, 25.0% offered to public
+  Explanation: Public offer of 25.0% meets the minimum 25% required for a market cap of ₹800.00 Cr (market cap tier: ≤ ₹1,600 Cr). Compliant with SEBI (ICDR) Regulations, 2018, Regulation 26(5).
+  Evidence: Annual_Report_Test.pdf, page(s) 1
+- [PASS] PROMOTER_CONTRIBUTION_20: Promoter(s) must contribute at least 20% of post-issue paid-up capital.
+  Regulation: SEBI (ICDR) Regulations, 2018 Regulation 32
+  Required: ≥ 20% of post-issue paid-up capital
+  Actual: Promoter holds 75.00% post-issue
+  Explanation: Promoter post-issue holding of 75.00% meets the minimum 20.00% required by SEBI (ICDR) Regulations, 2018, Regulation 32.
+  Evidence: Annual_Report_Test.pdf, page(s) 1
+- [PASS] PROMOTER_LOCK_IN: Promoter contribution must be locked in for ≥ 18 months (standard issues) or ≥ 36 months (capex issues).
+  Regulation: SEBI (ICDR) Regulations, 2018 Regulation 36
+  Required: ≥ 18 months lock-in (standard issues); ≥ 36 months lock-in (capex issues)
+  Actual: 18 months lock-in (issue type: standard issue)
+  Explanation: Promoter lock-in period of 18 months meets the 18-month minimum required for a standard issue under SEBI (ICDR) Regulations, 2018, Regulation 36.
+  Evidence: Annual_Report_Test.pdf, page(s) 1
+- [PASS] MIN_POST_ISSUE_CAPITAL: Post-issue paid-up capital must be at least ₹10 Crores
+  Regulation: NSE/BSE Listing Requirements Minimum Capital Requirement
+  Required: Post-issue paid-up capital ≥ ₹10 Cr
+  Actual: ₹15.00 Cr post-issue paid-up capital
+  Explanation: Post-issue paid-up capital of ₹15.00 Cr meets the minimum ₹10 Cr required by NSE/BSE listing requirements.
+  Evidence: Annual_Report_Test.pdf, page(s) 1
+- [PASS] MIN_MARKET_CAP: Expected market capitalisation must be at least ₹25 Crores
+  Regulation: NSE/BSE Listing Requirements Minimum Market Capitalisation Requirement
+  Required: Expected market capitalisation ≥ ₹25 Cr
+  Actual: ₹800.00 Cr expected market capitalisation
+  Explanation: Expected market capitalisation of ₹800.00 Cr meets the minimum ₹25 Cr required by NSE/BSE listing requirements.
+  Evidence: Annual_Report_Test.pdf, page(s) 1
+
+Advisory Checks
+---------------
+- [PASS] BOARD_INDEPENDENCE: Board must have ≥ 1/3 independent directors (non-exec chair) or ≥ 1/2 independent directors (exec or promoter chair)
+  Regulation: Companies Act, 2013 / SEBI (LODR) Regulations, 2015 Section 149 / Regulation 17
+  Required: ≥ 1/3 independent directors if non-executive chair; ≥ 1/2 if executive or promoter chair
+  Actual: 3 of 6 directors are independent (chair: non-executive)
+  Explanation: Board has 3 independent director(s) of 6 total. Chairperson is non-executive (non-promoter). Requirement: at least one-third (≥ 1/3) must be independent. Requirement satisfied.
+  Evidence: Annual_Report_Test.pdf, page(s) 1
+- [PASS] AUDIT_COMMITTEE: Audit Committee: ≥ 3 directors, ≥ 2/3 independent, chairperson must be independent
+  Regulation: SEBI (LODR) Regulations, 2015 Regulation 18
+  Required: ≥ 3 audit committee members, ≥ 2/3 independent, chair must be independent
+  Actual: 4 members, 3 independent, chair independent: True
+  Explanation: Audit Committee meets all LODR Reg. 18 requirements: 4 members (≥ 3), 3/4 independent (≥ 2/3), chair is independent.
+  Evidence: Annual_Report_Test.pdf, page(s) 1
+- [PASS] RPT_DISCLOSURE: All related party transactions must be disclosed and certified as arm's length by the audit committee
+  Regulation: SEBI (LODR) Regulations, 2015 Regulation 23
+  Required: All related party transactions disclosed and certified at arm's length; RPT volume should not exceed 20% of latest year revenue
+  Actual: ₹2.00 Cr total RPT value across 1 transaction(s), arm's length certified: True
+  Explanation: All related party transactions (₹2.00 Cr across 1 transaction(s)) are certified at arm's length per LODR Reg. 23.
+  Evidence: Annual_Report_Test.pdf, page(s) 1
+- [PASS] AUDITOR_QUALIFICATION: Statutory auditor reports must be free of qualifications, modified opinions, and adverse remarks
+  Regulation: Companies Act, 2013 Section 143
+  Required: No audit qualifications, no modified opinions, and no adverse remarks in financial statements
+  Actual: Auditor: Deloitte Haskins & Sells LLP; Qualifications: No; Modified opinion: No
+  Explanation: Statutory auditor 'Deloitte Haskins & Sells LLP' has issued an unmodified opinion with no qualifications or emphasis of matter paragraphs. Audit report is clean per Companies Act s.143 requirements.
+  Evidence: Annual_Report_Test.pdf, page(s) 1
+- [PASS] LITIGATION_RISK: Material pending litigation must be disclosed with quantified exposure; criminal cases are flagged as high-severity risk
+  Regulation: SEBI (ICDR) Regulations, 2018 Schedule VI
+  Required: No criminal cases; total litigation exposure ≤ 20% of net worth; all pending cases disclosed with quantified exposure
+  Actual: 0 pending case(s), total exposure: ₹0.00 Cr, criminal cases: No
+  Explanation: No pending litigation cases. Clean litigation history.
+  Evidence: Annual_Report_Test.pdf, page(s) 1
+
+Gap Analysis
+------------
+- NTA_3CR: ₹2.00 Cr below ₹3 Cr threshold in FY2022
+  Current: FY2022: ₹1.00 Cr; FY2023: ₹1.00 Cr; FY2024: ₹1.00 Cr
+  Required: ≥ ₹3 Cr NTA in each of the 3 preceding full fiscal years
+  Earliest Eligibility: Undetermined
+  Remediation:
+    - Increase net tangible assets to ≥ ₹3 Crore in each of the three preceding FYs.
+    - Infuse equity capital or retain profits to build tangible asset base.
+    - Dispose of intangible-heavy assets or liabilities that reduce NTA.
+    - Ensure all balance sheet items are correctly classified per Ind AS.
+- MONETARY_ASSETS_50PCT: Monetary assets were 1000.00% of NTA in FY2022 (limit: 50%)
+  Current: FY2022: 1000.00% (₹10.00 Cr / ₹1.00 Cr); FY2023: 1000.00% (₹10.00 Cr / ₹1.00 Cr); FY2024: 1000.00% (₹10.00 Cr / ₹1.00 Cr)
+  Required: Monetary assets ≤ 50% of NTA in each of the 3 preceding full fiscal years
+  Earliest Eligibility: Undetermined
+  Remediation:
+    - Deploy excess cash into productive tangible assets (plant, equipment, inventory).
+    - Reduce cash and FD holdings relative to total NTA.
+    - Invest in capital expenditure that adds tangible value to the business.
+    - Review asset classification to ensure monetary assets are correctly identified.
+- AVG_OPERATING_PROFIT_15CR: ₹10.00 Cr below the ₹15 Cr threshold (current average: ₹5.00 Cr)
+  Current: ₹5.00 Cr average (best 3 of 5 FYs: FY2020, FY2021, FY2022)
+  Required: ≥ ₹15 Cr average operating profit across best 3 of preceding 5 fiscal years
+  Earliest Eligibility: Undetermined
+  Remediation:
+    - Grow revenue by expanding customer base, increasing pricing, or entering new markets.
+    - Improve operating margins through cost optimisation and operational efficiency.
+    - Target operating profit of ≥ ₹15 Crore in each of the next 3 fiscal years.
+    - Reduce fixed costs and overheads that compress operating profit margins.
+
+Observations
+------------
+- No additional observations.

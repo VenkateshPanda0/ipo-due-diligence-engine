@@ -1,0 +1,37 @@
+{% set rows = results if results is defined else report.mandatory_results %}
+<table>
+  <thead>
+    <tr>
+      <th>Verdict</th>
+      <th>Rule</th>
+      <th>Regulation</th>
+      <th>Required</th>
+      <th>Actual</th>
+      <th>Evidence</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for result in rows %}
+    <tr>
+      <td>{{ result.verdict|format_verdict }}</td>
+      <td><strong>{{ result.rule_id }}</strong><br>{{ result.description }}</td>
+      <td>{{ result.regulation_reference }}</td>
+      <td>{{ result.required_value }}</td>
+      <td>{{ result.actual_value or "Unavailable" }}{% if result.gap %}<br><strong>Gap:</strong> {{ result.gap }}{% endif %}</td>
+      <td class="evidence">
+        {% if result.source_citation %}
+          {{ result.source_citation.document_name }},
+          page(s) {{ result.source_citation.page_numbers|join(", ") }}<br>
+          {{ result.source_citation.extraction_method.value }} /
+          {{ result.source_citation.confidence.value }}
+        {% else %}
+          No citation available
+        {% endif %}
+      </td>
+    </tr>
+    <tr>
+      <td colspan="6">{{ result.explanation }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IPO Due Diligence Report - {{ report.company_name }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; color: #1f2933; margin: 32px; line-height: 1.5; }
+    header { border-bottom: 2px solid #d9e2ec; margin-bottom: 24px; padding-bottom: 16px; }
+    h1, h2 { margin: 0 0 12px; }
+    h2 { border-bottom: 1px solid #d9e2ec; padding-bottom: 6px; }
+    .status { display: inline-block; padding: 4px 10px; border-radius: 4px; font-weight: 700; }
+    .eligible { background: #d9f7df; color: #1f7a35; }
+    .not_eligible { background: #ffe3e3; color: #b42318; }
+    .needs_review { background: #fff3cd; color: #8a5a00; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 24px; }
+    th, td { border: 1px solid #d9e2ec; padding: 8px; text-align: left; vertical-align: top; }
+    th { background: #f0f4f8; }
+    .progress { margin: 8px 0 18px; }
+    .evidence { color: #52606d; font-size: 0.92rem; }
+    .gap, .observations { margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>{{ report.company_name }}</h1>
+    <p>
+      <span class="status {{ report.status.value }}">{{ report.status|format_status }}</span>
+      &nbsp; Ruleset {{ report.ruleset_version.version }}
+      &nbsp; Evaluated {{ report.evaluated_at|format_date }}
+    </p>
+    <p class="evidence">
+      Screening output only. Not legal, investment, or regulatory advice. Validate
+      all regulatory interpretations and extracted values before relying on this report.
+    </p>
+  </header>
+
+  <section class="progress">
+    <h2>Progress</h2>
+    <p>Mandatory: {{ report.mandatory_progress.passed }} / {{ report.mandatory_progress.total_rules }} requirements satisfied ({{ report.mandatory_progress.pass_percentage }}%).</p>
+    <p>Advisory: {{ report.advisory_progress.passed }} / {{ report.advisory_progress.total_rules }} checks passed ({{ report.advisory_progress.pass_percentage }}%).</p>
+  </section>
+
+  <section>
+    <h2>Mandatory Requirements</h2>
+    {% include "results_table.html.j2" with context %}
+  </section>
+
+  {% set results = report.advisory_results %}
+  <section>
+    <h2>Advisory Checks</h2>
+    {% include "results_table.html.j2" %}
+  </section>
+
+  <section class="gap">
+    <h2>Gap Analysis</h2>
+    {% if report.gap_analysis %}
+      {% for item in report.gap_analysis %}
+        <h3>{{ item.rule_id }}</h3>
+        <p><strong>Gap:</strong> {{ item.gap_size }}</p>
+        <p><strong>Current:</strong> {{ item.current_value }}; <strong>Required:</strong> {{ item.required_value }}</p>
+        <p><strong>Earliest eligibility:</strong> {{ item.earliest_eligible_fy }}</p>
+        <ul>{% for step in item.remediation_steps %}<li>{{ step }}</li>{% endfor %}</ul>
+      {% endfor %}
+    {% else %}
+      <p>No failed mandatory requirements.</p>
+    {% endif %}
+  </section>
+
+  <section class="observations">
+    <h2>Observations</h2>
+    {% if report.observations %}
+      <ul>{% for observation in report.observations %}<li>{{ observation }}</li>{% endfor %}</ul>
+    {% else %}
+      <p>No additional observations.</p>
+    {% endif %}
+  </section>
+</body>
+</html>

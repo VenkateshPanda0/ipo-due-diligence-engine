@@ -1300,6 +1300,18 @@ interface IPOScreeningAPI {
 
 ---
 
+### 14.5 Human Review Workflow
+
+The frontend and API include a human-review workflow. Screening responses and JSON reports mark the output as machine assessment only with `machine_assessment_only`, `human_review_required`, and `decision_authority` fields. The report page exposes a `HumanReviewPanel` that opens a review record and records the authorised reviewer's final decision, rationale, and conditions.
+
+API endpoints:
+
+- `POST /reviews/reports/{report_id}` opens or returns the review record for a generated report.
+- `GET /reviews/{review_id}` returns the current review state.
+- `POST /reviews/{review_id}/decision` records the final human decision.
+
+This keeps the deterministic engine responsible for evidence preparation and rule evaluation while preserving human authority for client-facing decisions.
+
 ## 15. Testing Architecture
 
 ### 15.1 Testing Pyramid

@@ -1,0 +1,799 @@
+{
+  "report_id": "788c47f8-ef54-42b4-82e5-3f7881531067",
+  "company_name": "Acme Industries Pvt Ltd",
+  "status": "not_eligible",
+  "mandatory_progress": {
+    "total_rules": 11,
+    "passed": 8,
+    "failed": 3,
+    "inconclusive": 0,
+    "pass_percentage": "72.73",
+    "failed_rule_ids": [
+      "NTA_3CR",
+      "MONETARY_ASSETS_50PCT",
+      "AVG_OPERATING_PROFIT_15CR"
+    ]
+  },
+  "advisory_progress": {
+    "total_rules": 5,
+    "passed": 5,
+    "failed": 0,
+    "inconclusive": 0,
+    "pass_percentage": "100.00",
+    "failed_rule_ids": []
+  },
+  "mandatory_results": [
+    {
+      "rule_id": "NTA_3CR",
+      "verdict": "fail",
+      "category": "mandatory",
+      "regulation_reference": "SEBI (ICDR) Regulations, 2018 Regulation 26(1) Clause (a)",
+      "description": "Net tangible assets must be at least ₹3 Crore in each of the three preceding full fiscal years.",
+      "required_value": "≥ ₹3 Cr NTA in each of the 3 preceding full fiscal years",
+      "actual_value": "FY2022: ₹1.00 Cr; FY2023: ₹1.00 Cr; FY2024: ₹1.00 Cr",
+      "gap": "₹2.00 Cr below ₹3 Cr threshold in FY2022",
+      "source_citation": {
+        "document_name": "Annual_Report_Test.pdf",
+        "page_numbers": [
+          1
+        ],
+        "table_reference": null,
+        "extracted_values": [
+          {
+            "value": "1",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": "1",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": "1",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          }
+        ],
+        "extraction_method": "manual",
+        "confidence": "high",
+        "raw_snippets": null
+      },
+      "explanation": "Net tangible assets fell below the ₹3 Crore threshold in 3 of 3 fiscal year(s): FY2022, FY2023, FY2024. Actual values — FY2022: ₹1.00 Cr; FY2023: ₹1.00 Cr; FY2024: ₹1.00 Cr. Worst shortfall: ₹1.00 Cr in FY2022 (₹2.00 Cr below the ₹3 Cr minimum).",
+      "evaluated_at": "2026-07-08T19:23:42.258579Z"
+    },
+    {
+      "rule_id": "MONETARY_ASSETS_50PCT",
+      "verdict": "fail",
+      "category": "mandatory",
+      "regulation_reference": "SEBI (ICDR) Regulations, 2018 Regulation 26(1) Clause (a) Proviso",
+      "description": "Monetary assets must not exceed 50% of net tangible assets in each of the three preceding full fiscal years.",
+      "required_value": "Monetary assets ≤ 50% of NTA in each of the 3 preceding full fiscal years",
+      "actual_value": "FY2022: 1000.00% (₹10.00 Cr / ₹1.00 Cr); FY2023: 1000.00% (₹10.00 Cr / ₹1.00 Cr); FY2024: 1000.00% (₹10.00 Cr / ₹1.00 Cr)",
+      "gap": "Monetary assets were 1000.00% of NTA in FY2022 (limit: 50%)",
+      "source_citation": {
+        "document_name": "Annual_Report_Test.pdf",
+        "page_numbers": [
+          1
+        ],
+        "table_reference": null,
+        "extracted_values": [
+          {
+            "value": "1",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": "1",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": "1",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": "10",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": "10",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": "10",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          }
+        ],
+        "extraction_method": "manual",
+        "confidence": "high",
+        "raw_snippets": null
+      },
+      "explanation": "Monetary assets exceeded 50% of NTA in 3 of 3 fiscal year(s): FY2022, FY2023, FY2024. Year-by-year ratios — FY2022: 1000.00% (₹10.00 Cr / ₹1.00 Cr); FY2023: 1000.00% (₹10.00 Cr / ₹1.00 Cr); FY2024: 1000.00% (₹10.00 Cr / ₹1.00 Cr). Worst breach: 1000.00% in FY2022 (limit is 50%).",
+      "evaluated_at": "2026-07-08T19:23:42.258579Z"
+    },
+    {
+      "rule_id": "AVG_OPERATING_PROFIT_15CR",
+      "verdict": "fail",
+      "category": "mandatory",
+      "regulation_reference": "SEBI (ICDR) Regulations, 2018 Regulation 26(1) Clause (b)",
+      "description": "Average pre-tax operating profit must be at least ₹15 Crore, computed across the best 3 of the preceding 5 fiscal years.",
+      "required_value": "≥ ₹15 Cr average operating profit across best 3 of preceding 5 fiscal years",
+      "actual_value": "₹5.00 Cr average (best 3 of 5 FYs: FY2020, FY2021, FY2022)",
+      "gap": "₹10.00 Cr below the ₹15 Cr threshold (current average: ₹5.00 Cr)",
+      "source_citation": {
+        "document_name": "Annual_Report_Test.pdf",
+        "page_numbers": [
+          1
+        ],
+        "table_reference": null,
+        "extracted_values": [
+          {
+            "value": "5",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": "5",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": "5",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": "5",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": "5",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          }
+        ],
+        "extraction_method": "manual",
+        "confidence": "high",
+        "raw_snippets": null
+      },
+      "explanation": "Average pre-tax operating profit of ₹5.00 Cr across the best 3 fiscal years (FY2020, FY2021, FY2022) is below the ₹15 Crore threshold required by ICDR Reg. 26(1)(b). Shortfall: ₹10.00 Cr.",
+      "evaluated_at": "2026-07-08T19:23:42.258579Z"
+    },
+    {
+      "rule_id": "NET_WORTH_1CR",
+      "verdict": "pass",
+      "category": "mandatory",
+      "regulation_reference": "SEBI (ICDR) Regulations, 2018 Regulation 26(1) Clause (c)",
+      "description": "Net worth must be at least ₹1 Crore in each of the three preceding full fiscal years.",
+      "required_value": "≥ ₹1 Cr net worth in each of the 3 preceding full fiscal years",
+      "actual_value": "FY2022: ₹50.00 Cr; FY2023: ₹50.00 Cr; FY2024: ₹50.00 Cr",
+      "gap": null,
+      "source_citation": {
+        "document_name": "Annual_Report_Test.pdf",
+        "page_numbers": [
+          1
+        ],
+        "table_reference": null,
+        "extracted_values": [
+          {
+            "value": "50",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": "50",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": "50",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          }
+        ],
+        "extraction_method": "manual",
+        "confidence": "high",
+        "raw_snippets": null
+      },
+      "explanation": "Net worth met the ₹1 Crore threshold in all three preceding fiscal years: FY2022: ₹50.00 Cr; FY2023: ₹50.00 Cr; FY2024: ₹50.00 Cr.",
+      "evaluated_at": "2026-07-08T19:23:42.258579Z"
+    },
+    {
+      "rule_id": "ISSUE_SIZE_5X",
+      "verdict": "pass",
+      "category": "mandatory",
+      "regulation_reference": "SEBI (ICDR) Regulations, 2018 Regulation 26(2)",
+      "description": "Total issue size must not exceed 5× the pre-issue net worth",
+      "required_value": "Issue size ≤ 5× pre-issue net worth",
+      "actual_value": "₹100.00 Cr issue size vs ₹50.00 Cr pre-issue net worth (ratio: 2.00x)",
+      "gap": null,
+      "source_citation": {
+        "document_name": "Annual_Report_Test.pdf",
+        "page_numbers": [
+          1
+        ],
+        "table_reference": null,
+        "extracted_values": [
+          {
+            "value": "100",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": "50",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          }
+        ],
+        "extraction_method": "manual",
+        "confidence": "high",
+        "raw_snippets": null
+      },
+      "explanation": "Issue size of ₹100.00 Cr is within the permitted 5× limit of ₹250.00 Cr (5 × ₹50.00 Cr). Ratio: 2.00x. Compliant with SEBI (ICDR) Regulations, 2018, Regulation 26(2).",
+      "evaluated_at": "2026-07-08T19:23:42.258579Z"
+    },
+    {
+      "rule_id": "TRACK_RECORD_3Y",
+      "verdict": "pass",
+      "category": "mandatory",
+      "regulation_reference": "SEBI (ICDR) Regulations, 2018 Regulation 26(1)",
+      "description": "Company must have at least 3 full fiscal years of operating history",
+      "required_value": "≥ 3 full years of operating history",
+      "actual_value": "5 years of operation",
+      "gap": null,
+      "source_citation": null,
+      "explanation": "Company has 5 years of operation, which meets or exceeds the minimum of 3 full fiscal years required by SEBI (ICDR) Regulations, 2018, Regulation 26(1).",
+      "evaluated_at": "2026-07-08T19:23:42.258579Z"
+    },
+    {
+      "rule_id": "PUBLIC_OFFER_MIN",
+      "verdict": "pass",
+      "category": "mandatory",
+      "regulation_reference": "SEBI (ICDR) Regulations, 2018 Regulation 26(5)",
+      "description": "Minimum public offer percentage: ≥ 25% for market cap ≤ ₹1,600 Cr; ≥ 10% for market cap > ₹1,600 Cr",
+      "required_value": "≥ 25% if market cap ≤ ₹1600 Cr; ≥ 10% if market cap > ₹1600 Cr",
+      "actual_value": "₹800.00 Cr market cap, 25.0% offered to public",
+      "gap": null,
+      "source_citation": {
+        "document_name": "Annual_Report_Test.pdf",
+        "page_numbers": [
+          1
+        ],
+        "table_reference": null,
+        "extracted_values": [
+          {
+            "value": "25",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": "800",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          }
+        ],
+        "extraction_method": "manual",
+        "confidence": "high",
+        "raw_snippets": null
+      },
+      "explanation": "Public offer of 25.0% meets the minimum 25% required for a market cap of ₹800.00 Cr (market cap tier: ≤ ₹1,600 Cr). Compliant with SEBI (ICDR) Regulations, 2018, Regulation 26(5).",
+      "evaluated_at": "2026-07-08T19:23:42.258579Z"
+    },
+    {
+      "rule_id": "PROMOTER_CONTRIBUTION_20",
+      "verdict": "pass",
+      "category": "mandatory",
+      "regulation_reference": "SEBI (ICDR) Regulations, 2018 Regulation 32",
+      "description": "Promoter(s) must contribute at least 20% of post-issue paid-up capital.",
+      "required_value": "≥ 20% of post-issue paid-up capital",
+      "actual_value": "Promoter holds 75.00% post-issue",
+      "gap": null,
+      "source_citation": {
+        "document_name": "Annual_Report_Test.pdf",
+        "page_numbers": [
+          1
+        ],
+        "table_reference": null,
+        "extracted_values": [
+          {
+            "value": "75",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          }
+        ],
+        "extraction_method": "manual",
+        "confidence": "high",
+        "raw_snippets": null
+      },
+      "explanation": "Promoter post-issue holding of 75.00% meets the minimum 20.00% required by SEBI (ICDR) Regulations, 2018, Regulation 32.",
+      "evaluated_at": "2026-07-08T19:23:42.258579Z"
+    },
+    {
+      "rule_id": "PROMOTER_LOCK_IN",
+      "verdict": "pass",
+      "category": "mandatory",
+      "regulation_reference": "SEBI (ICDR) Regulations, 2018 Regulation 36",
+      "description": "Promoter contribution must be locked in for ≥ 18 months (standard issues) or ≥ 36 months (capex issues).",
+      "required_value": "≥ 18 months lock-in (standard issues); ≥ 36 months lock-in (capex issues)",
+      "actual_value": "18 months lock-in (issue type: standard issue)",
+      "gap": null,
+      "source_citation": {
+        "document_name": "Annual_Report_Test.pdf",
+        "page_numbers": [
+          1
+        ],
+        "table_reference": null,
+        "extracted_values": [
+          {
+            "value": 18,
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          }
+        ],
+        "extraction_method": "manual",
+        "confidence": "high",
+        "raw_snippets": null
+      },
+      "explanation": "Promoter lock-in period of 18 months meets the 18-month minimum required for a standard issue under SEBI (ICDR) Regulations, 2018, Regulation 36.",
+      "evaluated_at": "2026-07-08T19:23:42.258579Z"
+    },
+    {
+      "rule_id": "MIN_POST_ISSUE_CAPITAL",
+      "verdict": "pass",
+      "category": "mandatory",
+      "regulation_reference": "NSE/BSE Listing Requirements Minimum Capital Requirement",
+      "description": "Post-issue paid-up capital must be at least ₹10 Crores",
+      "required_value": "Post-issue paid-up capital ≥ ₹10 Cr",
+      "actual_value": "₹15.00 Cr post-issue paid-up capital",
+      "gap": null,
+      "source_citation": {
+        "document_name": "Annual_Report_Test.pdf",
+        "page_numbers": [
+          1
+        ],
+        "table_reference": null,
+        "extracted_values": [
+          {
+            "value": "15",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          }
+        ],
+        "extraction_method": "manual",
+        "confidence": "high",
+        "raw_snippets": null
+      },
+      "explanation": "Post-issue paid-up capital of ₹15.00 Cr meets the minimum ₹10 Cr required by NSE/BSE listing requirements.",
+      "evaluated_at": "2026-07-08T19:23:42.258579Z"
+    },
+    {
+      "rule_id": "MIN_MARKET_CAP",
+      "verdict": "pass",
+      "category": "mandatory",
+      "regulation_reference": "NSE/BSE Listing Requirements Minimum Market Capitalisation Requirement",
+      "description": "Expected market capitalisation must be at least ₹25 Crores",
+      "required_value": "Expected market capitalisation ≥ ₹25 Cr",
+      "actual_value": "₹800.00 Cr expected market capitalisation",
+      "gap": null,
+      "source_citation": {
+        "document_name": "Annual_Report_Test.pdf",
+        "page_numbers": [
+          1
+        ],
+        "table_reference": null,
+        "extracted_values": [
+          {
+            "value": "800",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          }
+        ],
+        "extraction_method": "manual",
+        "confidence": "high",
+        "raw_snippets": null
+      },
+      "explanation": "Expected market capitalisation of ₹800.00 Cr meets the minimum ₹25 Cr required by NSE/BSE listing requirements.",
+      "evaluated_at": "2026-07-08T19:23:42.258579Z"
+    }
+  ],
+  "advisory_results": [
+    {
+      "rule_id": "BOARD_INDEPENDENCE",
+      "verdict": "pass",
+      "category": "advisory",
+      "regulation_reference": "Companies Act, 2013 / SEBI (LODR) Regulations, 2015 Section 149 / Regulation 17",
+      "description": "Board must have ≥ 1/3 independent directors (non-exec chair) or ≥ 1/2 independent directors (exec or promoter chair)",
+      "required_value": "≥ 1/3 independent directors if non-executive chair; ≥ 1/2 if executive or promoter chair",
+      "actual_value": "3 of 6 directors are independent (chair: non-executive)",
+      "gap": null,
+      "source_citation": {
+        "document_name": "Annual_Report_Test.pdf",
+        "page_numbers": [
+          1
+        ],
+        "table_reference": null,
+        "extracted_values": [
+          {
+            "value": 6,
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": 3,
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": false,
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": false,
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          }
+        ],
+        "extraction_method": "manual",
+        "confidence": "high",
+        "raw_snippets": null
+      },
+      "explanation": "Board has 3 independent director(s) of 6 total. Chairperson is non-executive (non-promoter). Requirement: at least one-third (≥ 1/3) must be independent. Requirement satisfied.",
+      "evaluated_at": "2026-07-08T19:23:42.258579Z"
+    },
+    {
+      "rule_id": "AUDIT_COMMITTEE",
+      "verdict": "pass",
+      "category": "advisory",
+      "regulation_reference": "SEBI (LODR) Regulations, 2015 Regulation 18",
+      "description": "Audit Committee: ≥ 3 directors, ≥ 2/3 independent, chairperson must be independent",
+      "required_value": "≥ 3 audit committee members, ≥ 2/3 independent, chair must be independent",
+      "actual_value": "4 members, 3 independent, chair independent: True",
+      "gap": null,
+      "source_citation": {
+        "document_name": "Annual_Report_Test.pdf",
+        "page_numbers": [
+          1
+        ],
+        "table_reference": null,
+        "extracted_values": [
+          {
+            "value": 4,
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": 3,
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": true,
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          }
+        ],
+        "extraction_method": "manual",
+        "confidence": "high",
+        "raw_snippets": null
+      },
+      "explanation": "Audit Committee meets all LODR Reg. 18 requirements: 4 members (≥ 3), 3/4 independent (≥ 2/3), chair is independent.",
+      "evaluated_at": "2026-07-08T19:23:42.258579Z"
+    },
+    {
+      "rule_id": "RPT_DISCLOSURE",
+      "verdict": "pass",
+      "category": "advisory",
+      "regulation_reference": "SEBI (LODR) Regulations, 2015 Regulation 23",
+      "description": "All related party transactions must be disclosed and certified as arm's length by the audit committee",
+      "required_value": "All related party transactions disclosed and certified at arm's length; RPT volume should not exceed 20% of latest year revenue",
+      "actual_value": "₹2.00 Cr total RPT value across 1 transaction(s), arm's length certified: True",
+      "gap": null,
+      "source_citation": {
+        "document_name": "Annual_Report_Test.pdf",
+        "page_numbers": [
+          1
+        ],
+        "table_reference": null,
+        "extracted_values": [
+          {
+            "value": true,
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": "2",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          }
+        ],
+        "extraction_method": "manual",
+        "confidence": "high",
+        "raw_snippets": null
+      },
+      "explanation": "All related party transactions (₹2.00 Cr across 1 transaction(s)) are certified at arm's length per LODR Reg. 23.",
+      "evaluated_at": "2026-07-08T19:23:42.258579Z"
+    },
+    {
+      "rule_id": "AUDITOR_QUALIFICATION",
+      "verdict": "pass",
+      "category": "advisory",
+      "regulation_reference": "Companies Act, 2013 Section 143",
+      "description": "Statutory auditor reports must be free of qualifications, modified opinions, and adverse remarks",
+      "required_value": "No audit qualifications, no modified opinions, and no adverse remarks in financial statements",
+      "actual_value": "Auditor: Deloitte Haskins & Sells LLP; Qualifications: No; Modified opinion: No",
+      "gap": null,
+      "source_citation": {
+        "document_name": "Annual_Report_Test.pdf",
+        "page_numbers": [
+          1
+        ],
+        "table_reference": null,
+        "extracted_values": [
+          {
+            "value": false,
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": false,
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          }
+        ],
+        "extraction_method": "manual",
+        "confidence": "high",
+        "raw_snippets": null
+      },
+      "explanation": "Statutory auditor 'Deloitte Haskins & Sells LLP' has issued an unmodified opinion with no qualifications or emphasis of matter paragraphs. Audit report is clean per Companies Act s.143 requirements.",
+      "evaluated_at": "2026-07-08T19:23:42.258579Z"
+    },
+    {
+      "rule_id": "LITIGATION_RISK",
+      "verdict": "pass",
+      "category": "advisory",
+      "regulation_reference": "SEBI (ICDR) Regulations, 2018 Schedule VI",
+      "description": "Material pending litigation must be disclosed with quantified exposure; criminal cases are flagged as high-severity risk",
+      "required_value": "No criminal cases; total litigation exposure ≤ 20% of net worth; all pending cases disclosed with quantified exposure",
+      "actual_value": "0 pending case(s), total exposure: ₹0.00 Cr, criminal cases: No",
+      "gap": null,
+      "source_citation": {
+        "document_name": "Annual_Report_Test.pdf",
+        "page_numbers": [
+          1
+        ],
+        "table_reference": null,
+        "extracted_values": [
+          {
+            "value": false,
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          },
+          {
+            "value": "0",
+            "source_document": "Annual_Report_Test.pdf",
+            "page_number": 1,
+            "extraction_method": "manual",
+            "confidence": "high",
+            "confirmed_by_human": false,
+            "raw_text": null
+          }
+        ],
+        "extraction_method": "manual",
+        "confidence": "high",
+        "raw_snippets": null
+      },
+      "explanation": "No pending litigation cases. Clean litigation history.",
+      "evaluated_at": "2026-07-08T19:23:42.258579Z"
+    }
+  ],
+  "gap_analysis": [
+    {
+      "rule_id": "NTA_3CR",
+      "gap_size": "₹2.00 Cr below ₹3 Cr threshold in FY2022",
+      "earliest_eligible_fy": "Undetermined",
+      "remediation_steps": [
+        "Increase net tangible assets to ≥ ₹3 Crore in each of the three preceding FYs.",
+        "Infuse equity capital or retain profits to build tangible asset base.",
+        "Dispose of intangible-heavy assets or liabilities that reduce NTA.",
+        "Ensure all balance sheet items are correctly classified per Ind AS."
+      ],
+      "current_value": "FY2022: ₹1.00 Cr; FY2023: ₹1.00 Cr; FY2024: ₹1.00 Cr",
+      "required_value": "≥ ₹3 Cr NTA in each of the 3 preceding full fiscal years"
+    },
+    {
+      "rule_id": "MONETARY_ASSETS_50PCT",
+      "gap_size": "Monetary assets were 1000.00% of NTA in FY2022 (limit: 50%)",
+      "earliest_eligible_fy": "Undetermined",
+      "remediation_steps": [
+        "Deploy excess cash into productive tangible assets (plant, equipment, inventory).",
+        "Reduce cash and FD holdings relative to total NTA.",
+        "Invest in capital expenditure that adds tangible value to the business.",
+        "Review asset classification to ensure monetary assets are correctly identified."
+      ],
+      "current_value": "FY2022: 1000.00% (₹10.00 Cr / ₹1.00 Cr); FY2023: 1000.00% (₹10.00 Cr / ₹1.00 Cr); FY2024: 1000.00% (₹10.00 Cr / ₹1.00 Cr)",
+      "required_value": "Monetary assets ≤ 50% of NTA in each of the 3 preceding full fiscal years"
+    },
+    {
+      "rule_id": "AVG_OPERATING_PROFIT_15CR",
+      "gap_size": "₹10.00 Cr below the ₹15 Cr threshold (current average: ₹5.00 Cr)",
+      "earliest_eligible_fy": "Undetermined",
+      "remediation_steps": [
+        "Grow revenue by expanding customer base, increasing pricing, or entering new markets.",
+        "Improve operating margins through cost optimisation and operational efficiency.",
+        "Target operating profit of ≥ ₹15 Crore in each of the next 3 fiscal years.",
+        "Reduce fixed costs and overheads that compress operating profit margins."
+      ],
+      "current_value": "₹5.00 Cr average (best 3 of 5 FYs: FY2020, FY2021, FY2022)",
+      "required_value": "≥ ₹15 Cr average operating profit across best 3 of preceding 5 fiscal years"
+    }
+  ],
+  "observations": [],
+  "ruleset_version": {
+    "version": "1.0.0",
+    "effective_date": "2026-01-01",
+    "description": "Implemented subset of SEBI (ICDR) Regulations, 2018, NSE/BSE listing requirements, LODR 2015, and Companies Act 2013; requires legal validation before production use",
+    "regulations": [
+      "SEBI (ICDR) Regulations, 2018",
+      "SEBI (LODR) Regulations, 2015",
+      "Companies Act, 2013",
+      "NSE Listing Requirements",
+      "BSE Listing Requirements"
+    ]
+  },
+  "evaluated_at": "2026-07-08T19:23:42.258579Z"
+}

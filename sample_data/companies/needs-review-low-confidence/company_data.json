@@ -1,0 +1,563 @@
+{
+  "auditor": {
+    "auditor_name": "Deloitte Haskins & Sells LLP",
+    "has_modified_opinion": {
+      "confidence": "high",
+      "confirmed_by_human": false,
+      "extraction_method": "manual",
+      "page_number": 1,
+      "raw_text": null,
+      "source_document": "Annual_Report_Test.pdf",
+      "value": false
+    },
+    "has_qualifications": {
+      "confidence": "high",
+      "confirmed_by_human": false,
+      "extraction_method": "manual",
+      "page_number": 1,
+      "raw_text": null,
+      "source_document": "Annual_Report_Test.pdf",
+      "value": false
+    },
+    "years_as_auditor": {
+      "confidence": "high",
+      "confirmed_by_human": false,
+      "extraction_method": "manual",
+      "page_number": 1,
+      "raw_text": null,
+      "source_document": "Annual_Report_Test.pdf",
+      "value": 3
+    }
+  },
+  "financials": {
+    "fiscal_years": [
+      {
+        "ebitda": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "22"
+        },
+        "monetary_assets": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "10"
+        },
+        "net_tangible_assets": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "45"
+        },
+        "net_worth": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "50"
+        },
+        "operating_profit": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "20"
+        },
+        "paid_up_capital": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "10"
+        },
+        "pat": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "14"
+        },
+        "reserves_and_surplus": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "40"
+        },
+        "revenue": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "100"
+        },
+        "total_assets": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "120"
+        },
+        "total_liabilities": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "70"
+        },
+        "year_label": "FY2022"
+      },
+      {
+        "ebitda": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "22"
+        },
+        "monetary_assets": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "10"
+        },
+        "net_tangible_assets": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "45"
+        },
+        "net_worth": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "50"
+        },
+        "operating_profit": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "20"
+        },
+        "paid_up_capital": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "10"
+        },
+        "pat": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "14"
+        },
+        "reserves_and_surplus": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "40"
+        },
+        "revenue": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "100"
+        },
+        "total_assets": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "120"
+        },
+        "total_liabilities": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "70"
+        },
+        "year_label": "FY2023"
+      },
+      {
+        "ebitda": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "22"
+        },
+        "monetary_assets": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "10"
+        },
+        "net_tangible_assets": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "45"
+        },
+        "net_worth": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "50"
+        },
+        "operating_profit": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "20"
+        },
+        "paid_up_capital": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "10"
+        },
+        "pat": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "14"
+        },
+        "reserves_and_surplus": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "40"
+        },
+        "revenue": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "100"
+        },
+        "total_assets": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "120"
+        },
+        "total_liabilities": {
+          "confidence": "low",
+          "confirmed_by_human": false,
+          "extraction_method": "ocr",
+          "page_number": 1,
+          "raw_text": null,
+          "source_document": "Annual_Report_Test.pdf",
+          "value": "70"
+        },
+        "year_label": "FY2024"
+      }
+    ],
+    "years_of_operation": 5
+  },
+  "governance": {
+    "audit_committee": {
+      "chair_is_independent": {
+        "confidence": "high",
+        "confirmed_by_human": false,
+        "extraction_method": "manual",
+        "page_number": 1,
+        "raw_text": null,
+        "source_document": "Annual_Report_Test.pdf",
+        "value": true
+      },
+      "independent_members": {
+        "confidence": "high",
+        "confirmed_by_human": false,
+        "extraction_method": "manual",
+        "page_number": 1,
+        "raw_text": null,
+        "source_document": "Annual_Report_Test.pdf",
+        "value": 3
+      },
+      "total_members": {
+        "confidence": "high",
+        "confirmed_by_human": false,
+        "extraction_method": "manual",
+        "page_number": 1,
+        "raw_text": null,
+        "source_document": "Annual_Report_Test.pdf",
+        "value": 4
+      }
+    },
+    "independent_directors": {
+      "confidence": "high",
+      "confirmed_by_human": false,
+      "extraction_method": "manual",
+      "page_number": 1,
+      "raw_text": null,
+      "source_document": "Annual_Report_Test.pdf",
+      "value": 3
+    },
+    "is_chair_executive": {
+      "confidence": "high",
+      "confirmed_by_human": false,
+      "extraction_method": "manual",
+      "page_number": 1,
+      "raw_text": null,
+      "source_document": "Annual_Report_Test.pdf",
+      "value": false
+    },
+    "is_chair_promoter": {
+      "confidence": "high",
+      "confirmed_by_human": false,
+      "extraction_method": "manual",
+      "page_number": 1,
+      "raw_text": null,
+      "source_document": "Annual_Report_Test.pdf",
+      "value": false
+    },
+    "total_directors": {
+      "confidence": "high",
+      "confirmed_by_human": false,
+      "extraction_method": "manual",
+      "page_number": 1,
+      "raw_text": null,
+      "source_document": "Annual_Report_Test.pdf",
+      "value": 6
+    }
+  },
+  "identification": {
+    "cin": "L17110MH2000PLC019786",
+    "company_name": "Acme Industries Pvt Ltd",
+    "incorporation_date": "2000-04-01",
+    "industry": "Manufacturing",
+    "registered_office": "Mumbai, Maharashtra"
+  },
+  "issue_details": {
+    "expected_market_cap": {
+      "confidence": "high",
+      "confirmed_by_human": false,
+      "extraction_method": "manual",
+      "page_number": 1,
+      "raw_text": null,
+      "source_document": "Annual_Report_Test.pdf",
+      "value": "800"
+    },
+    "issue_size": {
+      "confidence": "high",
+      "confirmed_by_human": false,
+      "extraction_method": "manual",
+      "page_number": 1,
+      "raw_text": null,
+      "source_document": "Annual_Report_Test.pdf",
+      "value": "100"
+    },
+    "issue_type": "fresh",
+    "post_issue_paid_up_capital": {
+      "confidence": "high",
+      "confirmed_by_human": false,
+      "extraction_method": "manual",
+      "page_number": 1,
+      "raw_text": null,
+      "source_document": "Annual_Report_Test.pdf",
+      "value": "15"
+    },
+    "pre_issue_net_worth": {
+      "confidence": "high",
+      "confirmed_by_human": false,
+      "extraction_method": "manual",
+      "page_number": 1,
+      "raw_text": null,
+      "source_document": "Annual_Report_Test.pdf",
+      "value": "50"
+    },
+    "public_offer_percentage": {
+      "confidence": "high",
+      "confirmed_by_human": false,
+      "extraction_method": "manual",
+      "page_number": 1,
+      "raw_text": null,
+      "source_document": "Annual_Report_Test.pdf",
+      "value": "25"
+    }
+  },
+  "litigation": {
+    "has_criminal_cases": {
+      "confidence": "high",
+      "confirmed_by_human": false,
+      "extraction_method": "manual",
+      "page_number": 1,
+      "raw_text": null,
+      "source_document": "Annual_Report_Test.pdf",
+      "value": false
+    },
+    "pending_cases": [],
+    "total_exposure": {
+      "confidence": "high",
+      "confirmed_by_human": false,
+      "extraction_method": "manual",
+      "page_number": 1,
+      "raw_text": null,
+      "source_document": "Annual_Report_Test.pdf",
+      "value": "0"
+    }
+  },
+  "promoter": {
+    "entities": [
+      {
+        "holding": "75",
+        "name": "Test Promoter",
+        "pan": null
+      }
+    ],
+    "holding_percentage": {
+      "confidence": "high",
+      "confirmed_by_human": false,
+      "extraction_method": "manual",
+      "page_number": 1,
+      "raw_text": null,
+      "source_document": "Annual_Report_Test.pdf",
+      "value": "75"
+    },
+    "is_capex_issue": false,
+    "lock_in_months": {
+      "confidence": "high",
+      "confirmed_by_human": false,
+      "extraction_method": "manual",
+      "page_number": 1,
+      "raw_text": null,
+      "source_document": "Annual_Report_Test.pdf",
+      "value": 18
+    },
+    "post_issue_holding": {
+      "confidence": "high",
+      "confirmed_by_human": false,
+      "extraction_method": "manual",
+      "page_number": 1,
+      "raw_text": null,
+      "source_document": "Annual_Report_Test.pdf",
+      "value": "75"
+    }
+  },
+  "rpt": {
+    "arm_length_certified": {
+      "confidence": "high",
+      "confirmed_by_human": false,
+      "extraction_method": "manual",
+      "page_number": 1,
+      "raw_text": null,
+      "source_document": "Annual_Report_Test.pdf",
+      "value": true
+    },
+    "total_rpt_value": {
+      "confidence": "high",
+      "confirmed_by_human": false,
+      "extraction_method": "manual",
+      "page_number": 1,
+      "raw_text": null,
+      "source_document": "Annual_Report_Test.pdf",
+      "value": "2"
+    },
+    "transactions": [
+      {
+        "party_name": "Acme Holdings",
+        "relationship": "subsidiary",
+        "transaction_type": "loan",
+        "value": "2"
+      }
+    ]
+  },
+  "ruleset_version": {
+    "description": "Implemented subset of SEBI (ICDR) Regulations, 2018, NSE/BSE listing requirements, LODR 2015, and Companies Act 2013; requires legal validation before production use",
+    "effective_date": "2026-01-01",
+    "regulations": [
+      "SEBI (ICDR) Regulations, 2018",
+      "SEBI (LODR) Regulations, 2015",
+      "Companies Act, 2013",
+      "NSE Listing Requirements",
+      "BSE Listing Requirements"
+    ],
+    "version": "1.0.0"
+  }
+}

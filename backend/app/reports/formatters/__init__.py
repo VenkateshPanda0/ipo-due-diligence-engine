@@ -1,0 +1,1 @@
+"""IPOReport formatter implementations."""

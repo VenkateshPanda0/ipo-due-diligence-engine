@@ -119,3 +119,7 @@ temp/
 /data/
 /backend/data/
 /benchmark/documents/
+
+# Frontend test artefacts
+frontend/test-results/
+frontend/playwright-report/

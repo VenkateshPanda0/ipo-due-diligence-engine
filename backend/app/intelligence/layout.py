@@ -121,26 +121,3 @@ def split_cells(words: list[Word], space: float, factor: float = 2.2) -> list[Ce
         else:
             cells[-1].words.append(cur)
     return cells
-
-
-def detect_columns(lines: list[Line], page_width: float) -> int:
-    """Rough count of text columns (1 or 2) from a vertical whitespace gutter."""
-    if page_width <= 0 or len(lines) < 10:
-        return 1
-    bins = 60
-    occupancy = [0] * bins
-    for line in lines:
-        for w in line.words:
-            a = max(0, min(bins - 1, int(w.x0 / page_width * bins)))
-            b = max(0, min(bins - 1, int(w.x1 / page_width * bins)))
-            for i in range(a, b + 1):
-                occupancy[i] += 1
-    middle = occupancy[int(bins * 0.35) : int(bins * 0.65)]
-    if (
-        middle
-        and min(middle) <= max(occupancy) * 0.02
-        and sum(occupancy[: bins // 3])
-        and sum(occupancy[2 * bins // 3 :])
-    ):
-        return 2
-    return 1

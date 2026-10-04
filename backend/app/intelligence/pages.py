@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import io
 import logging
+import re
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -27,7 +28,7 @@ from dataclasses import dataclass, field
 import pdfplumber
 
 from app.intelligence.layout import Line, Word, build_lines
-from app.intelligence.ocr import ocr_available, ocr_page
+from app.intelligence.ocr import ocr_available, ocr_image, render_pdfium_page
 from app.intelligence.periods import parse_period
 
 logger = logging.getLogger(__name__)
@@ -98,9 +99,18 @@ def _classify(char_count: int, image_cov: float, upright: float, garbled: float)
     return "native"
 
 
+_DIGITS_RE = re.compile(r"\d\d")
+
+
 def looks_tabular(lines: list[Line]) -> bool:
-    """True if any line has at least two cells that parse as reporting periods."""
-    return any(sum(1 for c in line.cells if parse_period(c.text)) >= 2 for line in lines)
+    """True if any line has at least two cells that parse as reporting periods.
+
+    Cells without two consecutive digits cannot contain a year, so they are not parsed.
+    """
+    return any(
+        sum(1 for c in line.cells if _DIGITS_RE.search(c.text) and parse_period(c.text)) >= 2
+        for line in lines
+    )
 
 
 @dataclass
@@ -124,52 +134,58 @@ def _pdfium_words(page: object, height: float) -> tuple[list[Word], int, float]:
 
     textpage = page.get_textpage()  # type: ignore[attr-defined]
     try:
-        n = textpage.count_chars()
+        tp = textpage.raw  # raw handle: avoids per-call wrapper conversion in the hot loop
+        n = pdfium_c.FPDFText_CountChars(tp)
+        is_generated = pdfium_c.FPDFText_IsGenerated
+        get_unicode = pdfium_c.FPDFText_GetUnicode
+        get_angle = pdfium_c.FPDFText_GetCharAngle
+        get_box = pdfium_c.FPDFText_GetLooseCharBox
         rect = pdfium_c.FS_RECTF()
+        rect_ref = ctypes.byref(rect)
         words: list[Word] = []
-        cur: list[tuple[str, float, float, float, float]] = []
+        chars: list[str] = []
+        # bounds of the word being built, and the previous character's box
+        x0 = x1 = top = bottom = 0.0
+        prev_x1 = prev_top = prev_bottom = 0.0
         upright = 0
         counted = 0
 
         def flush() -> None:
-            if cur:
-                words.append(
-                    Word(
-                        "".join(c[0] for c in cur),
-                        min(c[1] for c in cur),
-                        max(c[2] for c in cur),
-                        min(c[3] for c in cur),
-                        max(c[4] for c in cur),
-                    )
-                )
-                cur.clear()
+            if chars:
+                words.append(Word("".join(chars), x0, x1, top, bottom))
+                chars.clear()
 
         for k in range(n):
-            if pdfium_c.FPDFText_IsGenerated(textpage, k):
+            if is_generated(tp, k):
                 flush()
                 continue
-            code = pdfium_c.FPDFText_GetUnicode(textpage, k)
+            code = get_unicode(tp, k)
             ch = chr(code) if code else ""
             if not ch or ch.isspace():
                 flush()
                 continue
             counted += 1
-            angle = pdfium_c.FPDFText_GetCharAngle(textpage, k)
-            is_upright = angle < 0.17 or angle > 6.11  # radians, ~10 degrees
-            upright += is_upright
-            if not is_upright:
+            angle = get_angle(tp, k)
+            if not (angle < 0.17 or angle > 6.11):  # radians, ~10 degrees from upright
                 flush()
                 continue
+            upright += 1
             # Loose boxes use font ascent/descent, so punctuation shares the line's height.
-            pdfium_c.FPDFText_GetLooseCharBox(textpage, k, ctypes.byref(rect))
-            box = (ch, rect.left, rect.right, height - rect.top, height - rect.bottom)
-            if cur:
-                prev = cur[-1]
-                gap = box[1] - prev[2]
-                char_h = max(prev[4] - prev[3], 1.0)
-                if gap > char_h * 0.33 or abs(box[3] - prev[3]) > char_h * 0.6 or gap < -char_h:
+            get_box(tp, k, rect_ref)
+            left, right = rect.left, rect.right
+            c_top, c_bottom = height - rect.top, height - rect.bottom
+            if chars:
+                gap = left - prev_x1
+                char_h = max(prev_bottom - prev_top, 1.0)
+                if gap > char_h * 0.33 or abs(c_top - prev_top) > char_h * 0.6 or gap < -char_h:
                     flush()
-            cur.append(box)
+            if chars:
+                x0, x1 = min(x0, left), max(x1, right)
+                top, bottom = min(top, c_top), max(bottom, c_bottom)
+            else:
+                x0, x1, top, bottom = left, right, c_top, c_bottom
+            chars.append(ch)
+            prev_x1, prev_top, prev_bottom = right, c_top, c_bottom
         flush()
         return words, counted, (upright / counted) if counted else 1.0
     finally:
@@ -202,6 +218,7 @@ def extract_pages(
     import pypdfium2 as pdfium
 
     pages: list[PageData] = []
+    ocr_used = 0
     can_ocr = config.ocr_enabled and ocr_available()
     doc = pdfium.PdfDocument(content)
     plumber: pdfplumber.pdf.PDF | None = None
@@ -253,7 +270,6 @@ def extract_pages(
             elif kind == "blank":
                 data.method = "none"
             else:
-                ocr_used = sum(1 for p in pages if p.method == "ocr")
                 if not can_ocr:
                     data.method = "none"
                     data.readable = False
@@ -267,7 +283,13 @@ def extract_pages(
                     data.warnings.append("OCR page budget exhausted")
                 else:
                     try:
-                        res = ocr_page(content, idx, data.width, data.height, config.ocr_dpi)
+                        ocr_used += 1
+                        page = doc[idx]  # render from the open document (no re-parse)
+                        try:
+                            image = render_pdfium_page(page, config.ocr_dpi)
+                        finally:
+                            page.close()
+                        res = ocr_image(image, data.width, data.height)
                         data.words, data.rotation, data.ocr_mean_conf = (
                             res.words,
                             res.rotation,

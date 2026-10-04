@@ -146,7 +146,8 @@ def extract_narrative(pages: list[PageData]) -> NarrativeResult:
                     )
                 )
             m = re.search(
-                r"locked[- ]in for a period of (eighteen|18|thirty[- ]six|36|three years?) months?",
+                r"locked[- ]in for a period of "
+                r"(?:(eighteen|18|thirty[- ]six|36) months?|(three|3) years?)",
                 low,
             )
             if m and "promoter.lock_in_months" not in seen and "promoter" in low:

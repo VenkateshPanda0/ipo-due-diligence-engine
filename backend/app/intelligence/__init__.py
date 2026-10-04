@@ -7,4 +7,4 @@ The pipeline extracts facts only. It never evaluates regulatory rules and never
 fabricates a value to satisfy the schema.
 """
 
-PIPELINE_VERSION = "2.0.0"
+PIPELINE_VERSION = "2.0.1"

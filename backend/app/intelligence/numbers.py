@@ -17,8 +17,6 @@ import re
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 
-CANONICAL_UNIT = "INR_CRORE"
-
 # multiplier converting 1 unit of X into ₹ crore
 UNIT_TO_CRORE: dict[str, Decimal] = {
     "INR": Decimal("0.0000001"),
@@ -55,8 +53,6 @@ _INDIAN_RE = re.compile(r"^\d{1,2}(?:,\d{2})*,\d{3}$")
 _INTL_RE = re.compile(r"^\d{1,3}(?:,\d{3})+$")
 _PLAIN_RE = re.compile(r"^\d+$")
 _FOOTNOTE_RE = re.compile(r"(?:\(\d{1,2}\)|\*{1,3}|#{1,2}|\^|[¹²³⁴⁵⁶⁷⁸⁹⁰]+)$")
-
-NUMBER_TOKEN_RE = re.compile(r"\(?[-−–]?\s*(?:₹|Rs\.?|INR)?\s*\d[\d,]*(?:\.\d+)?\s*%?\)?-?")
 
 
 @dataclass(frozen=True)
@@ -190,13 +186,3 @@ def to_crore(value: Decimal, unit: str) -> Decimal:
     except KeyError as exc:
         raise ValueError(f"Unknown unit '{unit}'.") from exc
     return value * factor
-
-
-def find_number_tokens(text: str) -> list[tuple[str, int, int]]:
-    """Return (token, start, end) for number-like tokens in a line of text."""
-    out: list[tuple[str, int, int]] = []
-    for m in NUMBER_TOKEN_RE.finditer(text):
-        tok = m.group(0).strip()
-        if any(ch.isdigit() for ch in tok):
-            out.append((tok, m.start(), m.end()))
-    return out

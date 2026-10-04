@@ -21,12 +21,12 @@ from typing import Any
 from app.intelligence import PIPELINE_VERSION
 from app.intelligence.candidates import Candidate, FieldDecision, decide, generate, validate
 from app.intelligence.narrative import extract_narrative
-from app.intelligence.ocr import deskew_supported, ocr_available, tesseract_version
+from app.intelligence.ocr import ocr_available, tesseract_version
 from app.intelligence.pages import PageData, PageExtractionConfig, extract_pages
 from app.intelligence.tables import extract_tables
 from app.models.enums import ConfidenceLevel, ExtractionMethod, FieldStatus, StatementBasis
 from app.models.extracted_value import ExtractedValue
-from app.models.field_paths import FISCAL_YEAR_FIELDS, fiscal_year_path, set_value
+from app.models.field_paths import FISCAL_YEAR_FIELDS, fiscal_year_path, set_value_in_place
 
 logger = logging.getLogger(__name__)
 ProgressFn = Callable[[str, int], None]
@@ -92,7 +92,7 @@ def environment_info() -> dict[str, Any]:
         "pytesseract": v("pytesseract"),
         "tesseract": tesseract_version(),
         "ocr_available": ocr_available(),
-        "deskew_available": deskew_supported(),
+        "deskew": "projection-profile",
     }
 
 
@@ -193,7 +193,7 @@ def run_pipeline(
         ):
             ev = _ev_from_candidate(d, filename, document_id)
             selected_json = ev.model_dump(mode="json")
-            payload = set_value(payload, path, selected_json, period_end=d.selected.period_end)
+            set_value_in_place(payload, path, selected_json, period_end=d.selected.period_end)
             periods_with_values[d.selected.period_label] = (
                 d.selected.period_end,
                 d.selected.months,
@@ -248,7 +248,7 @@ def run_pipeline(
             notes=[f"Narrative pattern '{fact.pattern}'; confirm against the source sentence."],
         )
         selected_json = ev.model_dump(mode="json")
-        payload = set_value(payload, fact.field_path, selected_json)
+        set_value_in_place(payload, fact.field_path, selected_json)
         outcomes.append(
             FieldOutcome(
                 fact.field_path,

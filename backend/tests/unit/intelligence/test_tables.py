@@ -348,3 +348,20 @@ def test_prose_sentence_with_dates_is_not_a_header() -> None:
         ]
     ]
     assert len(find_period_columns(page(header).lines[0], None)) == 2
+
+
+def test_narrative_lock_in_in_years_and_months() -> None:
+    from app.intelligence.narrative import extract_narrative
+
+    def lock_in(sentence: str) -> object:
+        p = page([[(w, 40.0 + 30 * i) for i, w in enumerate(sentence.split())]])
+        p.text = "\n".join(line.text for line in p.lines)
+        facts = [
+            f for f in extract_narrative([p]).facts if f.field_path == "promoter.lock_in_months"
+        ]
+        return facts[0].value if facts else None
+
+    assert (
+        lock_in("The promoter contribution shall be locked-in for a period of three years.") == 36
+    )
+    assert lock_in("The promoter contribution shall be locked-in for a period of 18 months.") == 18

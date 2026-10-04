@@ -301,13 +301,11 @@ def validate(decisions: dict[str, FieldDecision]) -> list[str]:
             v = val(fields, f)
             if ta is not None and v is not None and v > ta * Decimal("1.001"):
                 downgrade(fields[f], f"{f} exceeds total assets in {period}")
-        mon, nta = val(fields, "monetary_assets"), val(fields, "net_tangible_assets")
+        # Monetary assets may legitimately exceed NTA (NTA is net of liabilities; DRHPs
+        # print ratios above 100%), so only a negative balance is implausible.
+        mon = val(fields, "monetary_assets")
         if mon is not None and mon < 0:
             downgrade(fields["monetary_assets"], "negative monetary assets")
-        if mon is not None and nta is not None and nta > 0 and mon > nta * 5:
-            downgrade(
-                fields["monetary_assets"], "monetary assets implausibly large relative to NTA"
-            )
         nw, cap, res = (
             val(fields, "net_worth"),
             val(fields, "paid_up_capital"),

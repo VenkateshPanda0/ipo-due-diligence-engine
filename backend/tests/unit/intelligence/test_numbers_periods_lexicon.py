@@ -171,7 +171,17 @@ def test_parse_period(text: str, label: str, months: int) -> None:
 
 
 @pytest.mark.parametrize(
-    "text", ["Particulars", "Note 12", "2024", "2023-25", "Six months ended", ""]
+    "text",
+    [
+        "Particulars",
+        "Note 12",
+        "2024",
+        "2023-25",
+        "Six months ended",
+        "",
+        "2026 March, 2025",  # no day: "26" must not be taken from "2026"
+        "Summary 31, 2025",  # "mar" inside a word is not a month
+    ],
 )
 def test_not_a_period(text: str) -> None:
     assert parse_period(text) is None

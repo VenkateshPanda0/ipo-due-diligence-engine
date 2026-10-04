@@ -26,12 +26,12 @@ _MONTH_RE = "|".join(sorted((re.escape(m) for m in _MONTHS), key=len, reverse=Tr
 _NUM_WORDS = {"three": 3, "six": 6, "nine": 9, "twelve": 12, "3": 3, "6": 6, "9": 9, "12": 12}
 
 _DATE_PATTERNS = (
-    re.compile(rf"(?P<mon>{_MONTH_RE})\.?\s+(?P<day>\d{{1,2}}),?\s+(?P<year>\d{{4}})", re.I),
+    re.compile(rf"\b(?P<mon>{_MONTH_RE})\.?\s+(?P<day>\d{{1,2}}),?\s+(?P<year>\d{{4}})", re.I),
     re.compile(
-        rf"(?P<day>\d{{1,2}})(?:st|nd|rd|th)?[\s\-]+(?P<mon>{_MONTH_RE})\.?,?[\s\-]+(?P<year>\d{{2,4}})",
+        rf"(?<!\d)(?P<day>\d{{1,2}})(?:st|nd|rd|th)?[\s\-]+(?P<mon>{_MONTH_RE})\.?,?[\s\-]+(?P<year>\d{{2,4}})",
         re.I,
     ),
-    re.compile(r"(?P<day>\d{1,2})[./-](?P<mnum>\d{1,2})[./-](?P<year>\d{4})"),
+    re.compile(r"(?<!\d)(?P<day>\d{1,2})[./-](?P<mnum>\d{1,2})[./-](?P<year>\d{4})"),
 )
 _FY_RANGE_RE = re.compile(
     r"(?:fy|fiscal|financial\s+year)?\s*'?(?P<y1>\d{4})\s*[-–/]\s*(?P<y2>\d{2,4})\b", re.I
@@ -97,8 +97,6 @@ def parse_period(text: str) -> Period | None:
     m = _FY_RANGE_RE.search(t)
     if m:
         y1, y2 = int(m.group("y1")), _year(m.group("y2"))
-        if y2 < 100:
-            y2 += 2000
         if y2 == y1 + 1:
             return Period(f"FY{y2}", date(y2, 3, 31), 12)
         return None

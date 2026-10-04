@@ -12,7 +12,6 @@ reports the limitation instead of treating the page as empty.
 
 from __future__ import annotations
 
-import io
 import logging
 import re
 import shutil
@@ -51,26 +50,26 @@ def ocr_available() -> bool:
     return tesseract_version() is not None
 
 
-def deskew_supported() -> bool:
-    """Deskew uses numpy/Pillow projection profiles (always available)."""
-    return True
+def render_pdfium_page(page: object, dpi: int) -> Image.Image:
+    """Render an open pypdfium2 page to a grayscale PIL image."""
+    bitmap = page.render(scale=dpi / 72)  # type: ignore[attr-defined]
+    image: Image.Image = bitmap.to_pil().convert("L")
+    return image
 
 
 def render_page(pdf_bytes: bytes, page_index: int, dpi: int) -> Image.Image:
-    """Render one page to a grayscale PIL image."""
+    """Render one page of a PDF (given as bytes) to a grayscale PIL image."""
     import pypdfium2 as pdfium
 
     doc = pdfium.PdfDocument(pdf_bytes)
     try:
         page = doc[page_index]
         try:
-            bitmap = page.render(scale=dpi / 72)
-            image: Image.Image = bitmap.to_pil().convert("L")
+            return render_pdfium_page(page, dpi)
         finally:
             page.close()
     finally:
         doc.close()
-    return image
 
 
 def _detect_rotation(image: Image.Image) -> int:
@@ -120,13 +119,10 @@ def _deskew(image: Image.Image) -> tuple[Image.Image, float | None]:
     return image.rotate(-angle, expand=True, fillcolor=255), float(angle)
 
 
-def ocr_page(
-    pdf_bytes: bytes, page_index: int, page_width: float, page_height: float, dpi: int
-) -> OCRPage:
-    """OCR one page and return words in PDF-point coordinates."""
+def ocr_image(image: Image.Image, page_width: float, page_height: float) -> OCRPage:
+    """OCR a rendered page image and return words in PDF-point coordinates."""
     import pytesseract
 
-    image = render_page(pdf_bytes, page_index, dpi)
     rotation = _detect_rotation(image)
     if rotation:
         image = image.rotate(-rotation, expand=True, fillcolor=255)
@@ -150,9 +146,3 @@ def ocr_page(
         confs.append(conf)
     mean = sum(confs) / len(confs) if confs else None
     return OCRPage(words, rotation, mean, deskew_angle)
-
-
-def image_bytes_png(image: Image.Image) -> bytes:
-    buf = io.BytesIO()
-    image.save(buf, format="PNG", optimize=True)
-    return buf.getvalue()

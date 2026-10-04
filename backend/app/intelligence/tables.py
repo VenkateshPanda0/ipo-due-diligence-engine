@@ -115,14 +115,32 @@ class FinancialTable:
         return [c.period.label for c in self.columns]
 
 
+_DIGITS_RE = re.compile(r"\d\d")
+
+
+def _has_digits(word: Word) -> bool:
+    """Every period ends with a year, so the word that completes one contains 2+ digits."""
+    return _DIGITS_RE.search(word.text) is not None
+
+
 def _cell_periods(cell: Cell) -> list[PeriodColumn]:
-    """Split a cell into one or more period columns (handles merged header cells)."""
+    """Split a cell into one or more period columns (handles merged header cells).
+
+    For each start word, the shortest window (≤7 words) that parses as a period is
+    taken. Because every period pattern ends with a year, only windows ending on a
+    word containing digits can be the shortest match, so other windows are skipped
+    (an exact optimisation: results are identical, with far fewer parse attempts).
+    """
     words = cell.words
+    n = len(words)
+    digit = [_has_digits(w) for w in words]
     out: list[PeriodColumn] = []
     i = 0
-    while i < len(words):
+    while i < n:
         found = None
-        for j in range(i + 1, min(i + 7, len(words)) + 1):
+        for j in range(i + 1, min(i + 7, n) + 1):
+            if not digit[j - 1]:
+                continue
             period = parse_period(" ".join(w.text for w in words[i:j]))
             if period is not None:
                 found = (j, period)
@@ -159,6 +177,8 @@ def find_period_columns(line: Line, previous: Line | list[Line] | None) -> list[
     ``previous`` is the line (or up to two lines) immediately above, used for
     multi-line headers such as "Fiscal" / "Description" above a row of bare years.
     """
+    if sum(1 for w in line.words if _has_digits(w)) < 2:
+        return []  # two periods (or two bare years) need two words carrying a year
     above_lines = [previous] if isinstance(previous, Line) else list(previous or [])
     cols: list[PeriodColumn] = []
     for cell in line.cells:

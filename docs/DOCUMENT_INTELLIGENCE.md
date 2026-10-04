@@ -1,6 +1,6 @@
 # Document intelligence pipeline
 
-Code: `backend/app/intelligence/` (pipeline version `2.0.0`). Fully local and
+Code: `backend/app/intelligence/` (pipeline version `2.0.1`). Fully local and
 deterministic: there are **no LLM or cloud calls**. Optional OCR uses the locally
 installed Tesseract binary. Document content is never sent to a third party.
 
@@ -120,6 +120,6 @@ Decision rules:
 ## Accuracy
 
 See [BENCHMARK.md](BENCHMARK.md) for the method and
-[BENCHMARK_RESULTS.md](BENCHMARK_RESULTS.md) for the latest measured results on 8 public
+[BENCHMARK_RESULTS.md](BENCHMARK_RESULTS.md) for the latest measured results on 13 public
 SEBI DRHPs. The answer keys are **not human-verified**, so treat the numbers as
 indicative.

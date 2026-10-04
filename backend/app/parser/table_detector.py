@@ -57,10 +57,7 @@ class TableDetector:
     def _normalise_rows(raw_table: list[list[Any]]) -> list[list[str]]:
         rows: list[list[str]] = []
         for raw_row in raw_table:
-            row = [
-                " ".join(str(cell or "").replace("\n", " ").split())
-                for cell in raw_row
-            ]
+            row = [" ".join(str(cell or "").replace("\n", " ").split()) for cell in raw_row]
             if any(cell for cell in row):
                 rows.append(row)
         return rows

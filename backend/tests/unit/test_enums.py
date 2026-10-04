@@ -52,7 +52,9 @@ class TestVerdict:
         assert Verdict.INCONCLUSIVE.value == "inconclusive"
 
     def test_exhaustive_coverage(self) -> None:
-        assert len(Verdict) == 3
+        assert len(Verdict) == 5
+        assert Verdict.REQUIRES_HUMAN_REVIEW.value == "requires_human_review"
+        assert Verdict.NOT_APPLICABLE.value == "not_applicable"
 
     def test_string_subclass(self) -> None:
         assert isinstance(Verdict.PASS, str)
@@ -109,7 +111,7 @@ class TestExtractionMethod:
         assert ExtractionMethod.AI_EXTRACTED.value == "ai_extracted"
 
     def test_exhaustive_coverage(self) -> None:
-        assert len(ExtractionMethod) == 4
+        assert len(ExtractionMethod) == 7
 
     def test_string_subclass(self) -> None:
         assert isinstance(ExtractionMethod.MANUAL, str)

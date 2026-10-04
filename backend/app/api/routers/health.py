@@ -24,7 +24,7 @@ def health(registry: RuleRegistry = Depends(get_rule_registry)) -> HealthRespons
     return HealthResponse(
         status="ok",
         version=API_VERSION,
-        ruleset_version="1.0.0",
+        ruleset_version=registry.version,
         rules_count=len(registry),
         uptime_seconds=Decimal(str(round(uptime.total_seconds(), 3))),
     )

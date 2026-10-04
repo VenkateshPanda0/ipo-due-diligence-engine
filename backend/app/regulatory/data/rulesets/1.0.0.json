@@ -1,0 +1,89 @@
+{
+  "version": "1.0.0",
+  "status": "superseded",
+  "effective_from": "2026-01-01",
+  "activated_on": "2026-07-09",
+  "effective_to": "2026-10-04",
+  "description": "Original 16-rule subset. Superseded: used ICDR 2009 citations and tests (see docs/audit/BASELINE.md D1-D7). Reports generated under 1.0.0 remain stored with their original results; the 1.0.0 rule code is not retained as executable.",
+  "supported_routes": [
+    "mainboard_reg6_1"
+  ],
+  "unsupported_routes": [
+    "mainboard_reg6_2",
+    "sme_chapter_ix"
+  ],
+  "legal_review": {
+    "confirmed": false,
+    "reviewed_rule_ids": [],
+    "reference": null
+  },
+  "change_summary": [
+    "Initial release."
+  ],
+  "rules": [
+    {
+      "rule_id": "NTA_3CR",
+      "superseded_by": "NTA_3CR"
+    },
+    {
+      "rule_id": "MONETARY_ASSETS_50PCT",
+      "superseded_by": "MONETARY_ASSETS_50PCT"
+    },
+    {
+      "rule_id": "AVG_OPERATING_PROFIT_15CR",
+      "superseded_by": "AVG_OPERATING_PROFIT_15CR"
+    },
+    {
+      "rule_id": "NET_WORTH_1CR",
+      "superseded_by": "NET_WORTH_1CR"
+    },
+    {
+      "rule_id": "ISSUE_SIZE_5X",
+      "superseded_by": null
+    },
+    {
+      "rule_id": "TRACK_RECORD_3Y",
+      "superseded_by": "TRACK_RECORD_3Y"
+    },
+    {
+      "rule_id": "PUBLIC_OFFER_MIN",
+      "superseded_by": "PUBLIC_OFFER_MIN"
+    },
+    {
+      "rule_id": "PROMOTER_CONTRIBUTION_20",
+      "superseded_by": "PROMOTER_CONTRIBUTION_20"
+    },
+    {
+      "rule_id": "PROMOTER_LOCK_IN",
+      "superseded_by": "PROMOTER_LOCK_IN"
+    },
+    {
+      "rule_id": "MIN_POST_ISSUE_CAPITAL",
+      "superseded_by": "MIN_POST_ISSUE_CAPITAL"
+    },
+    {
+      "rule_id": "MIN_MARKET_CAP",
+      "superseded_by": "MIN_MARKET_CAP"
+    },
+    {
+      "rule_id": "BOARD_INDEPENDENCE",
+      "superseded_by": "BOARD_INDEPENDENCE"
+    },
+    {
+      "rule_id": "AUDIT_COMMITTEE",
+      "superseded_by": "AUDIT_COMMITTEE"
+    },
+    {
+      "rule_id": "RPT_DISCLOSURE",
+      "superseded_by": "RPT_DISCLOSURE"
+    },
+    {
+      "rule_id": "AUDITOR_QUALIFICATION",
+      "superseded_by": "AUDITOR_QUALIFICATION"
+    },
+    {
+      "rule_id": "LITIGATION_RISK",
+      "superseded_by": "LITIGATION_RISK"
+    }
+  ]
+}

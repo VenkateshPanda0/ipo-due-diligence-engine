@@ -91,7 +91,7 @@ class TestFinancialHistory:
             _make_fiscal_year("FY2022"),
             _make_fiscal_year("FY2022"),  # duplicate
         ]
-        with pytest.raises(ValidationError, match="chronological"):
+        with pytest.raises(ValidationError, match="unique"):
             FinancialHistory(fiscal_years=years, years_of_operation=2)
 
     def test_single_year_allowed(self) -> None:

@@ -25,5 +25,5 @@ def test_json_formatter_preserves_rule_results() -> None:
     payload = json.loads(JSONReportFormatter().format(report))
 
     assert payload["status"] == "not_eligible"
-    assert len(payload["mandatory_results"]) == 11
+    assert len(payload["mandatory_results"]) == 13
     assert payload["gap_analysis"]

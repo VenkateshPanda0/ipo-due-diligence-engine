@@ -37,6 +37,7 @@ from app.models.company_data import (
     AuditorData,
     CompanyData,
     CompanyIdentification,
+    EligibilityDeclarations,
     FinancialHistory,
     FiscalYear,
     GovernanceData,
@@ -47,7 +48,7 @@ from app.models.company_data import (
     RelatedPartyData,
     RPTTransaction,
 )
-from app.models.enums import ConfidenceLevel, ExtractionMethod
+from app.models.enums import ConfidenceLevel, ExtractionMethod, ListingRoute
 from app.models.extracted_value import ExtractedValue
 from app.models.ruleset_version import DEFAULT_RULESET_VERSION
 
@@ -55,9 +56,7 @@ from app.models.ruleset_version import DEFAULT_RULESET_VERSION
 def _ev(value: Any, confidence: ConfidenceLevel = ConfidenceLevel.HIGH) -> ExtractedValue[Any]:
     """Build an ExtractedValue wrapping the given value for test scenarios."""
     extraction_method = (
-        ExtractionMethod.OCR
-        if confidence == ConfidenceLevel.LOW
-        else ExtractionMethod.MANUAL
+        ExtractionMethod.OCR if confidence == ConfidenceLevel.LOW else ExtractionMethod.MANUAL
     )
     return ExtractedValue(
         value=value,
@@ -100,6 +99,18 @@ def _make_fiscal_year(
     )
 
 
+def clean_declarations() -> EligibilityDeclarations:
+    """Declarations evidencing that no Reg 5 disqualification applies and no name change."""
+    return EligibilityDeclarations(
+        debarred_by_sebi=_ev(False),
+        promoter_or_director_of_debarred_company=_ev(False),
+        wilful_defaulter_or_fraudulent_borrower=_ev(False),
+        fugitive_economic_offender=_ev(False),
+        outstanding_convertibles_not_exempt=_ev(False),
+        name_changed_within_last_year=_ev(False),
+    )
+
+
 class CompanyDataFactory:
     """Factory for creating test CompanyData instances.
 
@@ -107,9 +118,9 @@ class CompanyDataFactory:
       - 5 fiscal years (FY2020–FY2024)
       - NTA ≥ ₹3 Cr each year
       - Monetary assets ≤ 50% of NTA each year
-      - Average operating profit ≥ ₹15 Cr (best 3 of 5)
+      - Average operating profit ≥ ₹15 Cr over the preceding 3 years
       - Net worth ≥ ₹1 Cr each year
-      - Issue size ≤ 5× net worth
+      - Issue size ₹100 Cr (≥ ₹10 Cr exchange minimum)
       - Track record = 5 years
       - Public offer = 25% for ₹800 Cr market cap (≤ ₹1600 Cr bucket)
       - Promoter post-issue holding = 75%, lock-in = 18 months
@@ -166,6 +177,13 @@ class CompanyDataFactory:
         expected_market_cap: Decimal = Decimal("800"),
         public_offer_percentage: Decimal = Decimal("25"),
         issue_type: str = "fresh",
+        listing_route: ListingRoute = ListingRoute.MAINBOARD_REG6_1,
+        is_book_built: bool | None = None,
+        qib_net_offer_allocation: Decimal | None = None,
+        refund_undertaking: bool | None = None,
+        excess_monetary_assets_committed: bool | None = None,
+        # Reg 5 / Reg 6(1)(d) declarations (default: no disqualification)
+        declarations: EligibilityDeclarations | None = None,
         # LitigationData overrides
         has_criminal_cases: bool = False,
         total_litigation_exposure: Decimal = Decimal("0"),
@@ -284,6 +302,13 @@ class CompanyDataFactory:
             expected_market_cap=_ev(expected_market_cap),
             public_offer_percentage=_ev(public_offer_percentage),
             issue_type=issue_type,
+            listing_route=listing_route,
+            is_book_built=is_book_built,
+            qib_net_offer_allocation=(
+                _ev(qib_net_offer_allocation) if qib_net_offer_allocation is not None else None
+            ),
+            refund_undertaking=refund_undertaking,
+            excess_monetary_assets_committed=excess_monetary_assets_committed,
         )
 
         litigation = LitigationData(
@@ -323,6 +348,7 @@ class CompanyDataFactory:
             rpt=rpt,
             issue_details=issue_details,
             auditor=auditor,
+            declarations=declarations if declarations is not None else clean_declarations(),
             ruleset_version=DEFAULT_RULESET_VERSION,
         )
 

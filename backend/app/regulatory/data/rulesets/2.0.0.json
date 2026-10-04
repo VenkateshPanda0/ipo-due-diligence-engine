@@ -1,0 +1,701 @@
+{
+  "version": "2.0.0",
+  "status": "active",
+  "effective_from": "2026-10-04",
+  "activated_on": "2026-10-04",
+  "description": "Main-board IPO screening subset re-based on the SEBI ICDR 2018 consolidated text (last amended 21-03-2026), LODR 2015 (last amended 14-07-2026) and SCRR Rule 19(2)(b) as substituted on 13-03-2026. Not legally reviewed.",
+  "supported_routes": [
+    "mainboard_reg6_1",
+    "mainboard_reg6_2"
+  ],
+  "unsupported_routes": [
+    "sme_chapter_ix"
+  ],
+  "legal_review": {
+    "confirmed": false,
+    "reviewed_rule_ids": [],
+    "reference": null
+  },
+  "change_summary": [
+    "Citations corrected from ICDR 2009 numbering (Reg 26/32/36) to ICDR 2018 (Reg 6/14/16).",
+    "AVG_OPERATING_PROFIT_15CR: preceding three years with profit in each (was best 3 of 5).",
+    "ISSUE_SIZE_5X removed (not in ICDR 2018); EXCHANGE_MIN_ISSUE_SIZE added.",
+    "PUBLIC_OFFER_MIN re-based on the six-tier SCRR 19(2)(b) (2026).",
+    "Added ICDR_REG5_INELIGIBLE_ENTITIES, ICDR_REG6_1D_NAME_CHANGE, ICDR_REG6_2_QIB_ROUTE.",
+    "MONETARY_ASSETS_50PCT: both provisos modelled.",
+    "PROMOTER_CONTRIBUTION_20: Reg 14(1) provisos modelled.",
+    "TRACK_RECORD_3Y reclassified as advisory exchange criterion.",
+    "New outcomes NOT_APPLICABLE and REQUIRES_HUMAN_REVIEW."
+  ],
+  "rules": [
+    {
+      "rule_version": "2.0.0",
+      "effective_to": null,
+      "limitations": [
+        "Debarment that has expired before DRHP filing is excluded by the Explanation to Reg 5(1); the engine relies on the declaration reflecting this.",
+        "Reg 5(2) exemptions (ESOPs, fully exercised SARs, and convertibles required to convert before RHP filing) must be applied when preparing the declaration."
+      ],
+      "review_notes": [],
+      "parameters": {},
+      "rule_id": "ICDR_REG5_INELIGIBLE_ENTITIES",
+      "name": "Entities not eligible to make an IPO",
+      "category": "mandatory",
+      "legal_category": "statutory_eligibility",
+      "routes": [
+        "mainboard_reg6_1",
+        "mainboard_reg6_2"
+      ],
+      "source_ids": [
+        "SEBI_ICDR_2018_CONSOL_2026_03_21"
+      ],
+      "instrument": "SEBI (ICDR) Regulations, 2018",
+      "provision": "Regulation 5(1)(a)-(d) and 5(2)",
+      "source_url": "https://www.sebi.gov.in/legal/regulations/mar-2026/securities-and-exchange-board-of-india-issue-of-capital-and-disclosure-requirements-regulations-2018-last-amended-on-march-21-2026-_100581.html",
+      "effective_from": "2018-11-10",
+      "applicability": "All main-board IPO issuers.",
+      "required_inputs": [
+        "declarations.debarred_by_sebi",
+        "declarations.promoter_or_director_of_debarred_company",
+        "declarations.wilful_defaulter_or_fraudulent_borrower",
+        "declarations.fugitive_economic_offender",
+        "declarations.outstanding_convertibles_not_exempt"
+      ],
+      "decision_procedure": "FAIL if any disqualifying condition is evidenced as true. INCONCLUSIVE if any condition is unevidenced. PASS only when all five are evidenced as false.",
+      "evidence_requirements": "Offer-document disclosures / declarations on debarment, wilful-defaulter / fraudulent-borrower status, fugitive economic offenders, and outstanding convertible securities.",
+      "verification_status": "primary_text_checked"
+    },
+    {
+      "rule_version": "2.0.0",
+      "effective_to": null,
+      "limitations": [
+        "Requires restated and consolidated figures; the engine cannot verify the basis of manually entered values."
+      ],
+      "review_notes": [],
+      "parameters": {
+        "min_nta_crore": "3",
+        "years": "3"
+      },
+      "rule_id": "NTA_3CR",
+      "name": "Net tangible assets of at least ₹3 crore",
+      "category": "mandatory",
+      "legal_category": "statutory_eligibility",
+      "routes": [
+        "mainboard_reg6_1"
+      ],
+      "source_ids": [
+        "SEBI_ICDR_2018_CONSOL_2026_03_21"
+      ],
+      "instrument": "SEBI (ICDR) Regulations, 2018",
+      "provision": "Regulation 6(1)(a); definition in Regulation 2(1)(gg)",
+      "source_url": "https://www.sebi.gov.in/legal/regulations/mar-2026/securities-and-exchange-board-of-india-issue-of-capital-and-disclosure-requirements-regulations-2018-last-amended-on-march-21-2026-_100581.html",
+      "effective_from": "2018-11-10",
+      "applicability": "Reg 6(1) route only. NOT_APPLICABLE when the issuer proceeds under Reg 6(2).",
+      "required_inputs": [
+        "financials.fiscal_years[-3:].net_tangible_assets"
+      ],
+      "decision_procedure": "Take the three most recent full (12-month) years. PASS if NTA >= 3 in each; FAIL if any year < 3.",
+      "evidence_requirements": "Restated consolidated statement of assets and liabilities for each of the preceding three full years.",
+      "verification_status": "primary_text_checked"
+    },
+    {
+      "rule_version": "2.0.0",
+      "effective_to": null,
+      "limitations": [
+        "'Monetary assets' is not defined in Reg 2; the engine relies on the issuer's classification."
+      ],
+      "review_notes": [],
+      "parameters": {
+        "max_monetary_pct": "50",
+        "years": "3"
+      },
+      "rule_id": "MONETARY_ASSETS_50PCT",
+      "name": "Monetary assets not more than 50% of net tangible assets",
+      "category": "mandatory",
+      "legal_category": "statutory_eligibility",
+      "routes": [
+        "mainboard_reg6_1"
+      ],
+      "source_ids": [
+        "SEBI_ICDR_2018_CONSOL_2026_03_21"
+      ],
+      "instrument": "SEBI (ICDR) Regulations, 2018",
+      "provision": "Regulation 6(1)(a) and its two provisos",
+      "source_url": "https://www.sebi.gov.in/legal/regulations/mar-2026/securities-and-exchange-board-of-india-issue-of-capital-and-disclosure-requirements-regulations-2018-last-amended-on-march-21-2026-_100581.html",
+      "effective_from": "2018-11-10",
+      "applicability": "Reg 6(1) route. NOT_APPLICABLE when the IPO is made entirely through an offer for sale (second proviso).",
+      "required_inputs": [
+        "financials.fiscal_years[-3:].monetary_assets",
+        "financials.fiscal_years[-3:].net_tangible_assets",
+        "issue_details.issue_type",
+        "issue_details.excess_monetary_assets_committed"
+      ],
+      "decision_procedure": "For each of the three preceding full years compute monetary_assets / NTA x 100. PASS if <= 50 in every year. If any year exceeds 50: PASS if the issuer has utilised or firmly committed to utilise the excess (first proviso), INCONCLUSIVE if that fact is unknown, else FAIL. Zero or negative NTA yields FAIL of the ratio (NTA rule governs).",
+      "evidence_requirements": "Restated consolidated balance sheets; disclosure of utilisation / firm commitments for excess monetary assets.",
+      "verification_status": "primary_text_checked"
+    },
+    {
+      "rule_version": "2.0.0",
+      "effective_to": null,
+      "limitations": [
+        "'Operating profit' is not defined in Reg 2; profit before tax, EBIT or EBITDA must not be substituted without professional judgement.",
+        "Changed in 2.0.0: v1 used the best 3 of 5 years (ICDR 2009 test)."
+      ],
+      "review_notes": [],
+      "parameters": {
+        "min_avg_operating_profit_crore": "15",
+        "years": "3"
+      },
+      "rule_id": "AVG_OPERATING_PROFIT_15CR",
+      "name": "Average operating profit of at least ₹15 crore with profit in each year",
+      "category": "mandatory",
+      "legal_category": "statutory_eligibility",
+      "routes": [
+        "mainboard_reg6_1"
+      ],
+      "source_ids": [
+        "SEBI_ICDR_2018_CONSOL_2026_03_21"
+      ],
+      "instrument": "SEBI (ICDR) Regulations, 2018",
+      "provision": "Regulation 6(1)(b)",
+      "source_url": "https://www.sebi.gov.in/legal/regulations/mar-2026/securities-and-exchange-board-of-india-issue-of-capital-and-disclosure-requirements-regulations-2018-last-amended-on-march-21-2026-_100581.html",
+      "effective_from": "2018-11-10",
+      "applicability": "Reg 6(1) route only.",
+      "required_inputs": [
+        "financials.fiscal_years[-3:].operating_profit"
+      ],
+      "decision_procedure": "Take the three most recent 12-month years. FAIL if any year's operating profit <= 0 or the arithmetic mean < 15. PASS otherwise. Mean is computed exactly in Decimal; no rounding before comparison.",
+      "evidence_requirements": "Restated consolidated statement of profit and loss for the preceding three years.",
+      "verification_status": "primary_text_checked"
+    },
+    {
+      "rule_version": "2.0.0",
+      "effective_to": null,
+      "limitations": [],
+      "review_notes": [],
+      "parameters": {
+        "min_net_worth_crore": "1",
+        "years": "3"
+      },
+      "rule_id": "NET_WORTH_1CR",
+      "name": "Net worth of at least ₹1 crore",
+      "category": "mandatory",
+      "legal_category": "statutory_eligibility",
+      "routes": [
+        "mainboard_reg6_1"
+      ],
+      "source_ids": [
+        "SEBI_ICDR_2018_CONSOL_2026_03_21"
+      ],
+      "instrument": "SEBI (ICDR) Regulations, 2018",
+      "provision": "Regulation 6(1)(c); definition in Regulation 2(1)(hh)",
+      "source_url": "https://www.sebi.gov.in/legal/regulations/mar-2026/securities-and-exchange-board-of-india-issue-of-capital-and-disclosure-requirements-regulations-2018-last-amended-on-march-21-2026-_100581.html",
+      "effective_from": "2018-11-10",
+      "applicability": "Reg 6(1) route only.",
+      "required_inputs": [
+        "financials.fiscal_years[-3:].net_worth"
+      ],
+      "decision_procedure": "PASS if net worth >= 1 in each of the three preceding full years; FAIL otherwise.",
+      "evidence_requirements": "Restated consolidated net worth computed per Reg 2(1)(hh) (excludes revaluation reserves, write-back of depreciation and amalgamation reserves).",
+      "verification_status": "primary_text_checked"
+    },
+    {
+      "rule_version": "2.0.0",
+      "effective_to": null,
+      "limitations": [],
+      "review_notes": [],
+      "parameters": {
+        "min_revenue_pct": "50"
+      },
+      "rule_id": "ICDR_REG6_1D_NAME_CHANGE",
+      "name": "Revenue from new-name activity after a recent name change",
+      "category": "mandatory",
+      "legal_category": "statutory_eligibility",
+      "routes": [
+        "mainboard_reg6_1"
+      ],
+      "source_ids": [
+        "SEBI_ICDR_2018_CONSOL_2026_03_21"
+      ],
+      "instrument": "SEBI (ICDR) Regulations, 2018",
+      "provision": "Regulation 6(1)(d)",
+      "source_url": "https://www.sebi.gov.in/legal/regulations/mar-2026/securities-and-exchange-board-of-india-issue-of-capital-and-disclosure-requirements-regulations-2018-last-amended-on-march-21-2026-_100581.html",
+      "effective_from": "2018-11-10",
+      "applicability": "Reg 6(1) route and only if the issuer changed its name within the last one year; otherwise NOT_APPLICABLE.",
+      "required_inputs": [
+        "declarations.name_changed_within_last_year",
+        "declarations.revenue_pct_from_new_name_activity"
+      ],
+      "decision_procedure": "If no name change: NOT_APPLICABLE. If changed: PASS if >= 50% of restated consolidated revenue for the preceding full year came from the activity indicated by the new name, else FAIL.",
+      "evidence_requirements": "Disclosure of name change and revenue break-up.",
+      "verification_status": "primary_text_checked"
+    },
+    {
+      "rule_version": "2.0.0",
+      "effective_to": null,
+      "limitations": [],
+      "review_notes": [],
+      "parameters": {
+        "min_qib_allocation_pct": "75"
+      },
+      "rule_id": "ICDR_REG6_2_QIB_ROUTE",
+      "name": "Alternative eligibility route: book building with ≥75% of net offer to QIBs",
+      "category": "mandatory",
+      "legal_category": "statutory_eligibility",
+      "routes": [
+        "mainboard_reg6_2"
+      ],
+      "source_ids": [
+        "SEBI_ICDR_2018_CONSOL_2026_03_21"
+      ],
+      "instrument": "SEBI (ICDR) Regulations, 2018",
+      "provision": "Regulation 6(2)",
+      "source_url": "https://www.sebi.gov.in/legal/regulations/mar-2026/securities-and-exchange-board-of-india-issue-of-capital-and-disclosure-requirements-regulations-2018-last-amended-on-march-21-2026-_100581.html",
+      "effective_from": "2018-11-10",
+      "applicability": "Only when the case declares the Reg 6(2) route. NOT_APPLICABLE for Reg 6(1).",
+      "required_inputs": [
+        "issue_details.is_book_built",
+        "issue_details.qib_net_offer_allocation",
+        "issue_details.refund_undertaking"
+      ],
+      "decision_procedure": "PASS if the issue is book built AND the issuer undertakes to allot >= 75% of the net offer to QIBs AND undertakes to refund if it fails to do so. FAIL if any is evidenced false / below threshold. INCONCLUSIVE if unevidenced.",
+      "evidence_requirements": "Offer structure section of the offer document.",
+      "verification_status": "primary_text_checked"
+    },
+    {
+      "rule_version": "2.0.0",
+      "effective_to": null,
+      "limitations": [
+        "Reg 14(2) form-of-contribution and Reg 15 eligibility-of-securities conditions are not evaluated."
+      ],
+      "review_notes": [],
+      "parameters": {
+        "min_contribution_pct": "20",
+        "max_non_promoter_shortfall_pct": "10"
+      },
+      "rule_id": "PROMOTER_CONTRIBUTION_20",
+      "name": "Minimum promoters' contribution of 20% of post-issue capital",
+      "category": "mandatory",
+      "legal_category": "statutory_issue_condition",
+      "routes": [
+        "mainboard_reg6_1",
+        "mainboard_reg6_2"
+      ],
+      "source_ids": [
+        "SEBI_ICDR_2018_CONSOL_2026_03_21"
+      ],
+      "instrument": "SEBI (ICDR) Regulations, 2018",
+      "provision": "Regulation 14(1) and provisos",
+      "source_url": "https://www.sebi.gov.in/legal/regulations/mar-2026/securities-and-exchange-board-of-india-issue-of-capital-and-disclosure-requirements-regulations-2018-last-amended-on-march-21-2026-_100581.html",
+      "effective_from": "2018-11-10",
+      "applicability": "NOT_APPLICABLE if the issuer has no identifiable promoter (second proviso).",
+      "required_inputs": [
+        "promoter.post_issue_holding",
+        "promoter.eligible_non_promoter_contribution",
+        "promoter.has_identifiable_promoter"
+      ],
+      "decision_procedure": "PASS if post-issue promoter holding >= 20%. Otherwise PASS if holding + min(eligible non-promoter contribution, 10) >= 20 (first proviso). FAIL otherwise. Computed on post-issue expanded capital per Explanation (I).",
+      "evidence_requirements": "Capital structure and promoters' contribution sections of the offer document.",
+      "verification_status": "primary_text_checked"
+    },
+    {
+      "rule_version": "2.0.0",
+      "effective_to": null,
+      "limitations": [
+        "Lock-in of promoter holding in excess of the minimum contribution (Reg 16(1)(b): 6 months / 1 year) is not evaluated."
+      ],
+      "review_notes": [],
+      "parameters": {
+        "standard_months": "18",
+        "capex_months": "36"
+      },
+      "rule_id": "PROMOTER_LOCK_IN",
+      "name": "Lock-in of minimum promoters' contribution",
+      "category": "mandatory",
+      "legal_category": "statutory_issue_condition",
+      "routes": [
+        "mainboard_reg6_1",
+        "mainboard_reg6_2"
+      ],
+      "source_ids": [
+        "SEBI_ICDR_2018_CONSOL_2026_03_21"
+      ],
+      "instrument": "SEBI (ICDR) Regulations, 2018",
+      "provision": "Regulation 16(1)(a) and proviso (as amended w.e.f. 13-08-2021)",
+      "source_url": "https://www.sebi.gov.in/legal/regulations/mar-2026/securities-and-exchange-board-of-india-issue-of-capital-and-disclosure-requirements-regulations-2018-last-amended-on-march-21-2026-_100581.html",
+      "effective_from": "2021-08-13",
+      "applicability": "NOT_APPLICABLE if the issuer has no identifiable promoter.",
+      "required_inputs": [
+        "promoter.lock_in_months",
+        "promoter.is_capex_issue"
+      ],
+      "decision_procedure": "Required lock-in is 36 months if the majority of issue proceeds (excluding OFS) is for capital expenditure, else 18 months. PASS if committed lock-in >= required. If the capex status is unknown: PASS if committed >= 36, else INCONCLUSIVE.",
+      "evidence_requirements": "Lock-in disclosures and objects of the issue.",
+      "verification_status": "primary_text_checked"
+    },
+    {
+      "rule_version": "2.0.0",
+      "effective_to": null,
+      "limitations": [
+        "Primary gazette text not retrieved; tier content corroborated by two secondary sources only.",
+        "Tier 6 contains both a 1% and a 2.5% condition in secondary summaries; the stricter 2.5% is applied and flagged for review.",
+        "Post-listing minimum public shareholding timelines are not evaluated.",
+        "Changed in 2.0.0: v1 used a two-tier 25% / 10% split at Rs 1,600 crore."
+      ],
+      "review_notes": [],
+      "parameters": {
+        "tier1_max_crore": "1600",
+        "tier1_min_pct": "25",
+        "tier2_max_crore": "4000",
+        "tier2_min_value_crore": "400",
+        "tier3_max_crore": "50000",
+        "tier3_min_pct": "10",
+        "tier4_max_crore": "100000",
+        "tier4_min_value_crore": "1000",
+        "tier4_min_pct": "8",
+        "tier5_max_crore": "500000",
+        "tier5_min_value_crore": "6250",
+        "tier5_min_pct": "2.75",
+        "tier6_min_value_crore": "15000",
+        "tier6_min_pct": "1",
+        "tier6_floor_pct": "2.5"
+      },
+      "rule_id": "PUBLIC_OFFER_MIN",
+      "name": "Minimum public offer (SCRR Rule 19(2)(b), 2026 tiers)",
+      "category": "mandatory",
+      "legal_category": "statutory_issue_condition",
+      "routes": [
+        "mainboard_reg6_1",
+        "mainboard_reg6_2"
+      ],
+      "source_ids": [
+        "SCRR_1957_R19_2B_GSR184E_2026",
+        "SECONDARY_AZB_SCRR_2026",
+        "SECONDARY_MONDAQ_SCRR_2026"
+      ],
+      "instrument": "Securities Contracts (Regulation) Rules, 1957",
+      "provision": "Rule 19(2)(b) as substituted by G.S.R. 184(E), 13-03-2026",
+      "source_url": null,
+      "effective_from": "2026-03-13",
+      "applicability": "All main-board IPOs. Post-issue capital is measured at the offer price.",
+      "required_inputs": [
+        "issue_details.expected_market_cap",
+        "issue_details.public_offer_percentage"
+      ],
+      "decision_procedure": "Select tier by post-issue capital at offer price M (upper bounds inclusive). Offer value V = M x p / 100. Tier1: p >= 25. Tier2: V >= 400. Tier3: p >= 10. Tier4: V >= 1,000 and p >= 8. Tier5: V >= 6,250 and p >= 2.75. Tier6: V >= 15,000 and p >= 1 and p >= 2.5. Tiers 4-6 always carry a human-review flag.",
+      "evidence_requirements": "Post-issue capital at offer price and offer size from the offer document.",
+      "verification_status": "secondary_sources_only"
+    },
+    {
+      "rule_version": "2.0.0",
+      "effective_to": null,
+      "limitations": [
+        "Exchange page not retrievable; threshold unverified.",
+        "Issuers with post-issue paid-up capital up to Rs 10 crore are eligible for the SME route under ICDR Reg 229(1)."
+      ],
+      "review_notes": [],
+      "parameters": {
+        "min_post_issue_paid_up_crore": "10"
+      },
+      "rule_id": "MIN_POST_ISSUE_CAPITAL",
+      "name": "Minimum post-issue paid-up capital of ₹10 crore (exchange criterion)",
+      "category": "mandatory",
+      "legal_category": "exchange_listing_criterion",
+      "routes": [
+        "mainboard_reg6_1",
+        "mainboard_reg6_2"
+      ],
+      "source_ids": [
+        "BSE_MAINBOARD_IPO_CRITERIA",
+        "NSE_MAINBOARD_ELIGIBILITY",
+        "SEBI_ICDR_2018_CONSOL_2026_03_21"
+      ],
+      "instrument": "Stock exchange main-board listing criteria",
+      "provision": "BSE / NSE main-board eligibility criteria (see also ICDR Reg 229 for the SME route)",
+      "source_url": "https://www.bseindia.com/Static/about/Ipo_Fpo.aspx",
+      "effective_from": null,
+      "applicability": "All main-board IPOs.",
+      "required_inputs": [
+        "issue_details.post_issue_paid_up_capital"
+      ],
+      "decision_procedure": "PASS if post-issue paid-up capital >= 10; FAIL otherwise.",
+      "evidence_requirements": "Capital structure (post-issue paid-up capital at face value).",
+      "verification_status": "unverified"
+    },
+    {
+      "rule_version": "2.0.0",
+      "effective_to": null,
+      "limitations": [
+        "Exchange page not retrievable; threshold unverified."
+      ],
+      "review_notes": [],
+      "parameters": {
+        "min_market_cap_crore": "25"
+      },
+      "rule_id": "MIN_MARKET_CAP",
+      "name": "Minimum market capitalisation of ₹25 crore (exchange criterion)",
+      "category": "mandatory",
+      "legal_category": "exchange_listing_criterion",
+      "routes": [
+        "mainboard_reg6_1",
+        "mainboard_reg6_2"
+      ],
+      "source_ids": [
+        "BSE_MAINBOARD_IPO_CRITERIA"
+      ],
+      "instrument": "Stock exchange main-board listing criteria",
+      "provision": "BSE main-board eligibility criteria",
+      "source_url": "https://www.bseindia.com/Static/about/Ipo_Fpo.aspx",
+      "effective_from": null,
+      "applicability": "All main-board IPOs.",
+      "required_inputs": [
+        "issue_details.expected_market_cap"
+      ],
+      "decision_procedure": "PASS if post-issue shares x issue price >= 25 crore; FAIL otherwise.",
+      "evidence_requirements": "Post-issue capital at offer price.",
+      "verification_status": "unverified"
+    },
+    {
+      "rule_version": "2.0.0",
+      "effective_to": null,
+      "limitations": [
+        "Exchange page not retrievable; threshold unverified.",
+        "Replaces v1 rule ISSUE_SIZE_5X (issue size <= 5x pre-issue net worth), which is an ICDR 2009 condition not found in ICDR 2018."
+      ],
+      "review_notes": [],
+      "parameters": {
+        "min_issue_size_crore": "10"
+      },
+      "rule_id": "EXCHANGE_MIN_ISSUE_SIZE",
+      "name": "Minimum issue size of ₹10 crore (exchange criterion)",
+      "category": "mandatory",
+      "legal_category": "exchange_listing_criterion",
+      "routes": [
+        "mainboard_reg6_1",
+        "mainboard_reg6_2"
+      ],
+      "source_ids": [
+        "BSE_MAINBOARD_IPO_CRITERIA"
+      ],
+      "instrument": "Stock exchange main-board listing criteria",
+      "provision": "BSE main-board eligibility criteria",
+      "source_url": "https://www.bseindia.com/Static/about/Ipo_Fpo.aspx",
+      "effective_from": null,
+      "applicability": "All main-board IPOs.",
+      "required_inputs": [
+        "issue_details.issue_size"
+      ],
+      "decision_procedure": "PASS if issue size >= 10 crore; FAIL otherwise.",
+      "evidence_requirements": "Offer size.",
+      "verification_status": "unverified"
+    },
+    {
+      "rule_version": "2.0.0",
+      "effective_to": null,
+      "limitations": [
+        "Exchange criteria not retrievable; reclassified from mandatory to advisory in 2.0.0. ICDR Reg 6(1) already requires three full years of financial history."
+      ],
+      "review_notes": [],
+      "parameters": {
+        "min_years": "3"
+      },
+      "rule_id": "TRACK_RECORD_3Y",
+      "name": "Three-year operating track record (exchange criterion)",
+      "category": "advisory",
+      "legal_category": "exchange_listing_criterion",
+      "routes": [
+        "mainboard_reg6_1",
+        "mainboard_reg6_2"
+      ],
+      "source_ids": [
+        "NSE_MAINBOARD_ELIGIBILITY"
+      ],
+      "instrument": "Stock exchange main-board listing criteria",
+      "provision": "NSE main-board eligibility criteria (unverified)",
+      "source_url": null,
+      "effective_from": null,
+      "applicability": "All main-board IPOs.",
+      "required_inputs": [
+        "financials.years_of_operation"
+      ],
+      "decision_procedure": "PASS if years of operation >= 3; FAIL otherwise.",
+      "evidence_requirements": "Corporate history.",
+      "verification_status": "unverified"
+    },
+    {
+      "rule_version": "2.0.0",
+      "effective_to": null,
+      "limitations": [
+        "'Related to any promoter' is approximated by the is_chair_promoter flag.",
+        "Reg 17(1)(a) (woman director, 50% non-executive) is not evaluated."
+      ],
+      "review_notes": [],
+      "parameters": {
+        "min_fraction_non_exec_chair": "1/3",
+        "min_fraction_other": "1/2"
+      },
+      "rule_id": "BOARD_INDEPENDENCE",
+      "name": "Board independence (LODR Reg 17(1)(b))",
+      "category": "advisory",
+      "legal_category": "post_listing_obligation",
+      "routes": [
+        "mainboard_reg6_1",
+        "mainboard_reg6_2"
+      ],
+      "source_ids": [
+        "SEBI_LODR_2015_CONSOL_2026_07_14"
+      ],
+      "instrument": "SEBI (LODR) Regulations, 2015",
+      "provision": "Regulation 17(1)(b)",
+      "source_url": "https://www.sebi.gov.in/legal/regulations/jul-2026/securities-and-exchange-board-of-india-listing-obligations-and-disclosure-requirements-regulations-2015-last-amended-on-july-14-2026-_102974.html",
+      "effective_from": "2015-12-01",
+      "applicability": "Obligation of a listed entity; screened as a listing-readiness indicator.",
+      "required_inputs": [
+        "governance.total_directors",
+        "governance.independent_directors",
+        "governance.is_chair_executive",
+        "governance.is_chair_promoter"
+      ],
+      "decision_procedure": "If the chairperson is a non-executive director who is not a promoter (or related to one): independent directors >= 1/3 of the board. Otherwise >= 1/2. Fractions compared exactly.",
+      "evidence_requirements": "Board of directors section.",
+      "verification_status": "primary_text_checked"
+    },
+    {
+      "rule_version": "2.0.0",
+      "effective_to": null,
+      "limitations": [
+        "Financial literacy / expertise (Reg 18(1)(c)) is not evaluated."
+      ],
+      "review_notes": [],
+      "parameters": {
+        "min_members": "3",
+        "min_independent_fraction": "2/3"
+      },
+      "rule_id": "AUDIT_COMMITTEE",
+      "name": "Audit committee composition (LODR Reg 18(1))",
+      "category": "advisory",
+      "legal_category": "post_listing_obligation",
+      "routes": [
+        "mainboard_reg6_1",
+        "mainboard_reg6_2"
+      ],
+      "source_ids": [
+        "SEBI_LODR_2015_CONSOL_2026_07_14"
+      ],
+      "instrument": "SEBI (LODR) Regulations, 2015",
+      "provision": "Regulation 18(1)(a), (b), (d)",
+      "source_url": "https://www.sebi.gov.in/legal/regulations/jul-2026/securities-and-exchange-board-of-india-listing-obligations-and-disclosure-requirements-regulations-2015-last-amended-on-july-14-2026-_102974.html",
+      "effective_from": "2015-12-01",
+      "applicability": "Obligation of a listed entity; screened as a listing-readiness indicator.",
+      "required_inputs": [
+        "governance.audit_committee.total_members",
+        "governance.audit_committee.independent_members",
+        "governance.audit_committee.chair_is_independent"
+      ],
+      "decision_procedure": "PASS if members >= 3, independent members >= 2/3 of members, and the chair is independent.",
+      "evidence_requirements": "Committees of the board section.",
+      "verification_status": "primary_text_checked"
+    },
+    {
+      "rule_version": "2.0.0",
+      "effective_to": null,
+      "limitations": [
+        "The 20% ratio is an engineering heuristic, not the LODR materiality threshold."
+      ],
+      "review_notes": [],
+      "parameters": {
+        "max_rpt_revenue_ratio": "0.20"
+      },
+      "rule_id": "RPT_DISCLOSURE",
+      "name": "Related party transaction concentration (diligence heuristic)",
+      "category": "advisory",
+      "legal_category": "diligence_indicator",
+      "routes": [
+        "mainboard_reg6_1",
+        "mainboard_reg6_2"
+      ],
+      "source_ids": [
+        "ENGINEERING_HEURISTIC",
+        "SEBI_LODR_2015_CONSOL_2026_07_14"
+      ],
+      "instrument": "Engineering heuristic (context: LODR Reg 23)",
+      "provision": "Heuristic — no regulatory threshold",
+      "source_url": null,
+      "effective_from": null,
+      "applicability": "All cases.",
+      "required_inputs": [
+        "rpt.total_rpt_value",
+        "rpt.arm_length_certified",
+        "financials.fiscal_years[-1].revenue"
+      ],
+      "decision_procedure": "FAIL if RPTs are not certified as arm's length. PASS otherwise; a total RPT value above 20% of latest-year revenue is reported as a review note, not a failure.",
+      "evidence_requirements": "Related party transactions note.",
+      "verification_status": "unverified"
+    },
+    {
+      "rule_version": "2.0.0",
+      "effective_to": null,
+      "limitations": [],
+      "review_notes": [],
+      "parameters": {},
+      "rule_id": "AUDITOR_QUALIFICATION",
+      "name": "Auditor qualifications or modified opinion (diligence indicator)",
+      "category": "advisory",
+      "legal_category": "diligence_indicator",
+      "routes": [
+        "mainboard_reg6_1",
+        "mainboard_reg6_2"
+      ],
+      "source_ids": [
+        "ENGINEERING_HEURISTIC"
+      ],
+      "instrument": "Engineering heuristic (context: Companies Act, 2013 s.143)",
+      "provision": "Heuristic",
+      "source_url": null,
+      "effective_from": null,
+      "applicability": "All cases.",
+      "required_inputs": [
+        "auditor.has_qualifications",
+        "auditor.has_modified_opinion"
+      ],
+      "decision_procedure": "Flag (FAIL) if the auditor's report contains qualifications or a modified opinion.",
+      "evidence_requirements": "Auditor's examination report on restated financial information.",
+      "verification_status": "unverified"
+    },
+    {
+      "rule_version": "2.0.0",
+      "effective_to": null,
+      "limitations": [
+        "Materiality under ICDR is determined by the issuer's board-approved policy; the 20% ratio is a heuristic."
+      ],
+      "review_notes": [],
+      "parameters": {
+        "max_exposure_net_worth_ratio": "0.20"
+      },
+      "rule_id": "LITIGATION_RISK",
+      "name": "Litigation exposure (diligence heuristic)",
+      "category": "advisory",
+      "legal_category": "diligence_indicator",
+      "routes": [
+        "mainboard_reg6_1",
+        "mainboard_reg6_2"
+      ],
+      "source_ids": [
+        "ENGINEERING_HEURISTIC",
+        "SEBI_ICDR_2018_CONSOL_2026_03_21"
+      ],
+      "instrument": "Engineering heuristic (context: ICDR Schedule VI disclosure)",
+      "provision": "Heuristic — no regulatory threshold",
+      "source_url": null,
+      "effective_from": null,
+      "applicability": "All cases.",
+      "required_inputs": [
+        "litigation.total_exposure",
+        "litigation.has_criminal_cases",
+        "financials.fiscal_years[-1].net_worth"
+      ],
+      "decision_procedure": "Flag (FAIL) if criminal cases are pending, or if total exposure exceeds 20% of latest net worth.",
+      "evidence_requirements": "Outstanding litigation section.",
+      "verification_status": "unverified"
+    }
+  ]
+}

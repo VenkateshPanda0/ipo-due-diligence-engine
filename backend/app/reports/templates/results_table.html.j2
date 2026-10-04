@@ -1,37 +1,23 @@
-{% set rows = results if results is defined else report.mandatory_results %}
 <table>
   <thead>
-    <tr>
-      <th>Verdict</th>
-      <th>Rule</th>
-      <th>Regulation</th>
-      <th>Required</th>
-      <th>Actual</th>
-      <th>Evidence</th>
-    </tr>
+    <tr><th>Rule</th><th>Result</th><th>Provision / basis</th><th>Required</th><th>Observed</th><th>Explanation &amp; calculation</th></tr>
   </thead>
   <tbody>
-  {% for result in rows %}
+    {% for result in results %}
     <tr>
-      <td>{{ result.verdict|format_verdict }}</td>
-      <td><strong>{{ result.rule_id }}</strong><br>{{ result.description }}</td>
-      <td>{{ result.regulation_reference }}</td>
+      <td><strong>{{ result.rule_name or result.description }}</strong><br><code>{{ result.rule_id }}</code>{% if result.rule_version %} v{{ result.rule_version }}{% endif %}
+        {% if result.legal_category %}<br><span class="muted">{{ result.legal_category.value|replace("_", " ") }}</span>{% endif %}</td>
+      <td>{{ result.verdict|format_verdict }}{% if result.requires_human_review %}<br><span class="muted">review flagged</span>{% endif %}</td>
+      <td>{{ result.regulation_reference }}{% if result.verification_status %}<br><span class="muted">source: {{ result.verification_status.value|replace("_", " ") }}</span>{% endif %}
+        {% if result.source_url %}<br><a href="{{ result.source_url }}" rel="noopener noreferrer">source</a>{% endif %}</td>
       <td>{{ result.required_value }}</td>
-      <td>{{ result.actual_value or "Unavailable" }}{% if result.gap %}<br><strong>Gap:</strong> {{ result.gap }}{% endif %}</td>
-      <td class="evidence">
-        {% if result.source_citation %}
-          {{ result.source_citation.document_name }},
-          page(s) {{ result.source_citation.page_numbers|join(", ") }}<br>
-          {{ result.source_citation.extraction_method.value }} /
-          {{ result.source_citation.confidence.value }}
-        {% else %}
-          No citation available
-        {% endif %}
+      <td>{{ result.actual_value or "N/A" }}{% if result.gap %}<br><span class="muted">Gap: {{ result.gap }}</span>{% endif %}</td>
+      <td>{{ result.explanation }}
+        {% if result.calculation %}<ul class="muted">{% for c in result.calculation %}<li>{{ c }}</li>{% endfor %}</ul>{% endif %}
+        {% if result.missing_inputs %}<p class="muted">Missing: {{ result.missing_inputs|join(", ") }}</p>{% endif %}
+        {% if result.review_reasons %}<p class="muted">Review: {{ result.review_reasons|join("; ") }}</p>{% endif %}
       </td>
     </tr>
-    <tr>
-      <td colspan="6">{{ result.explanation }}</td>
-    </tr>
-  {% endfor %}
+    {% endfor %}
   </tbody>
 </table>

@@ -19,10 +19,14 @@ class TestDeterministicPipeline:
         report = DecisionEngine(RuleRegistry()).evaluate(CompanyDataFactory.create())
 
         assert report.status == IPOStatus.ELIGIBLE
-        assert report.mandatory_progress.passed == 11
-        assert report.mandatory_progress.failed == 0
+        progress = report.mandatory_progress
+        assert progress.passed == progress.total_rules - progress.not_applicable
+        assert progress.failed == 0
         assert report.gap_analysis == []
-        assert all(result.verdict == Verdict.PASS for result in report.mandatory_results)
+        assert all(
+            result.verdict in (Verdict.PASS, Verdict.NOT_APPLICABLE)
+            for result in report.mandatory_results
+        )
 
     def test_not_eligible_company_produces_failed_mandatory_gaps(self) -> None:
         report = DecisionEngine(RuleRegistry()).evaluate(
@@ -32,8 +36,9 @@ class TestDeterministicPipeline:
         assert report.status == IPOStatus.NOT_ELIGIBLE
         assert report.mandatory_progress.failed > 0
         assert report.gap_analysis
-        assert {gap.rule_id for gap in report.gap_analysis}.issubset(
-            set(report.mandatory_progress.failed_rule_ids)
+        # Every failed mandatory rule has a gap item (undetermined rules may too).
+        assert set(report.mandatory_progress.failed_rule_ids).issubset(
+            {gap.rule_id for gap in report.gap_analysis}
         )
 
     def test_low_confidence_company_produces_needs_review_report(self) -> None:
@@ -42,8 +47,9 @@ class TestDeterministicPipeline:
         )
 
         assert report.status == IPOStatus.NEEDS_REVIEW
-        assert report.mandatory_progress.inconclusive > 0
+        # Present-but-low-confidence evidence requires human review (not "missing").
+        assert report.mandatory_progress.requires_review > 0
         assert any(
-            result.verdict == Verdict.INCONCLUSIVE for result in report.mandatory_results
+            result.verdict == Verdict.REQUIRES_HUMAN_REVIEW for result in report.mandatory_results
         )
         assert all(result.verdict != Verdict.FAIL for result in report.mandatory_results)

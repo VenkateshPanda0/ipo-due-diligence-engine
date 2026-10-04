@@ -40,13 +40,15 @@ def register_exception_handlers(app: FastAPI) -> None:
             status_code = status.HTTP_404_NOT_FOUND
         return JSONResponse(
             status_code=status_code,
-            content=jsonable_encoder({
-                "error": {
-                    "code": exc.error_code,
-                    "message": exc.message,
-                    "details": getattr(exc, "__dict__", {}),
+            content=jsonable_encoder(
+                {
+                    "error": {
+                        "code": exc.error_code,
+                        "message": exc.message,
+                        "details": getattr(exc, "__dict__", {}),
+                    }
                 }
-            }),
+            ),
         )
 
     @app.exception_handler(ValidationError)

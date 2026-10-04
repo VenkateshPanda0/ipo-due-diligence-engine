@@ -20,6 +20,7 @@ from app.models.company_data import (
     AuditorData,
     CompanyData,
     CompanyIdentification,
+    EligibilityDeclarations,
     FinancialHistory,
     FiscalYear,
     GovernanceData,
@@ -34,10 +35,17 @@ from app.models.company_data import (
 from app.models.enums import (
     ConfidenceLevel,
     ExtractionMethod,
+    FieldStatus,
     IPOStatus,
+    LegalCategory,
+    ListingRoute,
     RuleCategory,
+    ScreeningOutcome,
+    StatementBasis,
     Verdict,
+    VerificationStatus,
 )
+from app.models.evidence import EvidenceRef
 from app.models.exceptions import (
     DomainError,
     ExtractionError,
@@ -60,6 +68,14 @@ from app.models.source_citation import SourceCitation
 
 __all__ = [
     # Enumerations
+    "FieldStatus",
+    "LegalCategory",
+    "ListingRoute",
+    "ScreeningOutcome",
+    "StatementBasis",
+    "VerificationStatus",
+    "EligibilityDeclarations",
+    "EvidenceRef",
     "IPOStatus",
     "Verdict",
     "RuleCategory",

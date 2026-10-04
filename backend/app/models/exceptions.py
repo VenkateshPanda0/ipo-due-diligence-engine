@@ -61,12 +61,8 @@ class InsufficientDataError(DomainError):
     def __init__(self, rule_id: str, missing_fields: list[str]) -> None:
         self.rule_id = rule_id
         self.fields = missing_fields
-        suggestion = (
-            "Upload complete annual reports or provide data via /screen/json"
-        )
-        super().__init__(
-            f"Rule '{rule_id}' requires: {missing_fields}. {suggestion}"
-        )
+        suggestion = "Upload complete annual reports or provide data via /screen/json"
+        super().__init__(f"Rule '{rule_id}' requires: {missing_fields}. {suggestion}")
 
 
 class RuleEvaluationError(DomainError):

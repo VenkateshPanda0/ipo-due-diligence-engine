@@ -3,77 +3,109 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>IPO Due Diligence Report - {{ report.company_name }}</title>
+  <title>IPO Screening Report - {{ report.company_name }}</title>
   <style>
-    body { font-family: Arial, sans-serif; color: #1f2933; margin: 32px; line-height: 1.5; }
-    header { border-bottom: 2px solid #d9e2ec; margin-bottom: 24px; padding-bottom: 16px; }
-    h1, h2 { margin: 0 0 12px; }
-    h2 { border-bottom: 1px solid #d9e2ec; padding-bottom: 6px; }
-    .status { display: inline-block; padding: 4px 10px; border-radius: 4px; font-weight: 700; }
-    .eligible { background: #d9f7df; color: #1f7a35; }
-    .not_eligible { background: #ffe3e3; color: #b42318; }
-    .needs_review { background: #fff3cd; color: #8a5a00; }
-    table { border-collapse: collapse; width: 100%; margin-bottom: 24px; }
-    th, td { border: 1px solid #d9e2ec; padding: 8px; text-align: left; vertical-align: top; }
-    th { background: #f0f4f8; }
-    .progress { margin: 8px 0 18px; }
-    .evidence { color: #52606d; font-size: 0.92rem; }
-    .gap, .observations { margin-bottom: 24px; }
+    :root { --ink:#1f2933; --muted:#52606d; --line:#d9e2ec; --bg:#ffffff; --panel:#f5f7fa; }
+    body { font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif; color: var(--ink); background: var(--bg); margin: 32px auto; max-width: 1100px; padding: 0 16px; line-height: 1.5; }
+    header { border-bottom: 2px solid var(--line); margin-bottom: 24px; padding-bottom: 16px; }
+    h1, h2, h3 { margin: 0 0 12px; } h2 { border-bottom: 1px solid var(--line); padding-bottom: 6px; margin-top: 28px; }
+    .status { display: inline-block; padding: 4px 10px; border-radius: 4px; font-weight: 700; background: var(--panel); }
+    .no_failure_identified, .eligible { background: #d9f7df; color: #1f6f35; }
+    .screening_failure, .not_eligible { background: #ffe3e3; color: #a3261b; }
+    .awaiting_human_review, .insufficient_evidence, .needs_review { background: #fff3cd; color: #7a5200; }
+    .unsupported_scope { background: #e4e7eb; color: #3e4c59; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 16px; font-size: 0.93rem; }
+    th, td { border: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+    th { background: var(--panel); }
+    dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; }
+    dt { color: var(--muted); }
+    .muted { color: var(--muted); font-size: 0.9rem; }
+    .notice { background: #fff8e1; border: 1px solid #f0d58c; padding: 10px 12px; border-radius: 4px; }
+    @media print { body { margin: 0; } }
   </style>
 </head>
 <body>
   <header>
     <h1>{{ report.company_name }}</h1>
     <p>
-      <span class="status {{ report.status.value }}">{{ report.status|format_status }}</span>
-      &nbsp; Ruleset {{ report.ruleset_version.version }}
-      &nbsp; Evaluated {{ report.evaluated_at|format_date }}
+      <span class="status {{ report.outcome.value if report.outcome else report.status.value }}">{{ report.outcome|format_outcome }}</span>
     </p>
-    <p class="evidence">
-      Screening output only. Not legal, investment, or regulatory advice. Validate
-      all regulatory interpretations and extracted values before relying on this report.
-    </p>
+    <p class="notice">Decision-support screening output. Not a legal opinion, not investment advice and
+      not a determination of IPO eligibility. See Limitations.</p>
   </header>
 
-  <section class="progress">
-    <h2>Progress</h2>
-    <p>Mandatory: {{ report.mandatory_progress.passed }} / {{ report.mandatory_progress.total_rules }} requirements satisfied ({{ report.mandatory_progress.pass_percentage }}%).</p>
-    <p>Advisory: {{ report.advisory_progress.passed }} / {{ report.advisory_progress.total_rules }} checks passed ({{ report.advisory_progress.pass_percentage }}%).</p>
+  <section>
+    <h2>A. Case summary</h2>
+    <dl>
+      <dt>Report ID</dt><dd>{{ report.report_id }}</dd>
+      {% if report.case_id %}<dt>Case ID</dt><dd>{{ report.case_id }}</dd>{% endif %}
+      <dt>Screened at</dt><dd>{{ report.evaluated_at|format_date }}</dd>
+      <dt>Listing route</dt><dd>{{ report.listing_route.value if report.listing_route else "mainboard_reg6_1 (legacy)" }}</dd>
+      <dt>Ruleset</dt><dd>{{ report.ruleset_version.version }} — {{ report.ruleset_version.description }}</dd>
+      <dt>Engine version</dt><dd>{{ report.engine_version or "1.x" }}</dd>
+      <dt>Legacy status</dt><dd>{{ report.status|format_status }}</dd>
+      <dt>Input fingerprint</dt><dd><code>{{ report.input_sha256 or "n/a" }}</code></dd>
+      {% if report.document_ids %}<dt>Documents</dt><dd>{% for d in report.document_ids %}<code>{{ d }}</code><br>{% endfor %}</dd>{% endif %}
+      <dt>Regulatory validation</dt><dd>{{ "Confirmed" if report.regulatory_validation_confirmed else "Not confirmed by a securities-law professional" }}</dd>
+    </dl>
+    <p>Mandatory: {{ report.mandatory_progress.passed }} pass, {{ report.mandatory_progress.failed }} fail,
+      {{ report.mandatory_progress.inconclusive }} insufficient evidence, {{ report.mandatory_progress.requires_review }} human review,
+      {{ report.mandatory_progress.not_applicable }} not applicable.</p>
   </section>
 
+  {% set results = report.mandatory_results %}
   <section>
-    <h2>Mandatory Requirements</h2>
+    <h2>B. Mandatory rule assessment</h2>
     {% include "results_table.html.j2" with context %}
   </section>
 
   {% set results = report.advisory_results %}
   <section>
-    <h2>Advisory Checks</h2>
-    {% include "results_table.html.j2" %}
+    <h2>B2. Advisory findings (never affect the outcome)</h2>
+    {% include "results_table.html.j2" with context %}
   </section>
 
-  <section class="gap">
-    <h2>Gap Analysis</h2>
+  <section>
+    <h2>C. Evidence register</h2>
+    <table>
+      <thead><tr><th>Rule</th><th>Field</th><th>Value</th><th>Kind</th><th>Source</th><th>Original</th><th>Method / confidence</th></tr></thead>
+      <tbody>
+      {% for r in report.mandatory_results + report.advisory_results %}{% for e in r.evidence %}
+        <tr>
+          <td>{{ r.rule_id }}</td><td>{{ e.field_path }}</td>
+          <td>{{ e.value }} {{ e.unit or "" }}</td><td>{{ e.kind }}{% if not e.reliable %} (unreliable){% endif %}</td>
+          <td>{{ e.source_document or "" }}{% if e.page_number %}, p. {{ e.page_number }}{% endif %}{% if e.period_label %}<br><span class="muted">{{ e.period_label }}</span>{% endif %}</td>
+          <td>{{ e.original_text or "" }} {{ e.original_unit or "" }}{% if e.raw_text %}<br><span class="muted">{{ e.raw_text }}</span>{% endif %}</td>
+          <td>{{ e.extraction_method.value if e.extraction_method else "" }} {{ e.confidence.value if e.confidence else "" }}</td>
+        </tr>
+      {% endfor %}{% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Gap planner</h2>
     {% if report.gap_analysis %}
       {% for item in report.gap_analysis %}
-        <h3>{{ item.rule_id }}</h3>
-        <p><strong>Gap:</strong> {{ item.gap_size }}</p>
-        <p><strong>Current:</strong> {{ item.current_value }}; <strong>Required:</strong> {{ item.required_value }}</p>
-        <p><strong>Earliest eligibility:</strong> {{ item.earliest_eligible_fy }}</p>
+        <h3>{{ item.rule_id }}{% if item.verdict %} <span class="muted">({{ item.verdict }})</span>{% endif %}</h3>
+        <p><strong>Gap:</strong> {{ item.gap_size }}<br><strong>Current:</strong> {{ item.current_value }}<br><strong>Required:</strong> {{ item.required_value }}<br><strong>Timing:</strong> {{ item.earliest_eligible_fy }}</p>
         <ul>{% for step in item.remediation_steps %}<li>{{ step }}</li>{% endfor %}</ul>
       {% endfor %}
     {% else %}
-      <p>No failed mandatory requirements.</p>
+      <p>No failed or undetermined mandatory rules.</p>
     {% endif %}
   </section>
 
-  <section class="observations">
-    <h2>Observations</h2>
-    {% if report.observations %}
-      <ul>{% for observation in report.observations %}<li>{{ observation }}</li>{% endfor %}</ul>
-    {% else %}
-      <p>No additional observations.</p>
-    {% endif %}
+  <section>
+    <h2>D. Unresolved issues</h2>
+    {% if report.unresolved_issues %}<ul>{% for i in report.unresolved_issues %}<li>{{ i }}</li>{% endfor %}</ul>{% else %}<p>None recorded.</p>{% endif %}
+    <h3>Observations</h3>
+    {% if report.observations %}<ul>{% for o in report.observations %}<li>{{ o }}</li>{% endfor %}</ul>{% else %}<p>No additional observations.</p>{% endif %}
+  </section>
+
+  <section>
+    <h2>E. Limitations</h2>
+    <ul>{% for l in report.limitations %}<li>{{ l }}</li>{% else %}<li>Legacy report: limitations not recorded.</li>{% endfor %}</ul>
   </section>
 </body>
 </html>

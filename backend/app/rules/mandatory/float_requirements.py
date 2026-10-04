@@ -1,195 +1,128 @@
 """
 backend/app/rules/mandatory/float_requirements.py
 
-Mandatory Rule: Minimum Public Float Offer Percentage.
+Minimum public offer — Securities Contracts (Regulation) Rules, 1957, Rule
+19(2)(b) as substituted by G.S.R. 184(E) dated 13 March 2026 (six tiers).
 
-Implements SEBI (ICDR) Regulations, 2018, Regulation 26(5), which mandates
-the minimum percentage of post-issue capital that must be offered to the
-public. The threshold is tiered by expected market capitalisation:
+Tier selection uses post-issue capital at the offer price ``M`` (₹ crore); upper
+bounds are inclusive. Offer value ``V = M × p / 100``.
 
-  - Market cap ≤ ₹1,600 Cr  →  minimum public offer of 25%
-  - Market cap > ₹1,600 Cr  →  minimum public offer of 10%
+  1. M ≤ 1,600           p ≥ 25 %
+  2. 1,600 < M ≤ 4,000    V ≥ 400
+  3. 4,000 < M ≤ 50,000   p ≥ 10 %
+  4. 50,000 < M ≤ 1,00,000      V ≥ 1,000 and p ≥ 8 %
+  5. 1,00,000 < M ≤ 5,00,000    V ≥ 6,250 and p ≥ 2.75 %
+  6. M > 5,00,000         V ≥ 15,000 and p ≥ 1 %, and p ≥ 2.5 %
 
-This rule ensures meaningful public participation and liquidity in newly
-listed securities.
-
-This module MUST NOT import from:
-  - app.parser, app.api, app.services, app.engine
-
-Import constraint compliance:
-  - Imports only from app.models and app.rules.base_rule
+Primary gazette text was not retrieved (see sources register); tiers 4-6 are
+flagged for human review.
 """
 
 from __future__ import annotations
 
-from datetime import date
 from decimal import Decimal
 
 from app.models.company_data import CompanyData
-from app.models.enums import RuleCategory, Verdict
-from app.models.rule_result import RuleMetadata, RuleResult
-from app.rules.base_rule import BaseRule
-
-_SEBI_ICDR_REGULATION = "SEBI (ICDR) Regulations, 2018"
-_SEBI_ICDR_SOURCE_URL = "https://www.sebi.gov.in/legal/regulations/nov-2018/sebi-icdr-2018.html"
-
-# Market cap threshold (₹ Crores) that determines the applicable float percentage.
-_MARKET_CAP_THRESHOLD = Decimal("1600")
-
-# Minimum public offer percentages by market cap tier.
-_MIN_OFFER_SMALL_CAP = Decimal("25")   # for market cap ≤ ₹1,600 Cr
-_MIN_OFFER_LARGE_CAP = Decimal("10")   # for market cap > ₹1,600 Cr
+from app.models.enums import Verdict
+from app.models.rule_result import RuleResult
+from app.rules.base_rule import BaseRule, Inputs, fmt_crore, fmt_pct
 
 
 class FloatRequirementsRule(BaseRule):
-    """Mandatory Rule — PUBLIC_OFFER_MIN.
+    """Minimum public offer per SCRR Rule 19(2)(b) (2026 tiers)."""
 
-    Enforces the minimum public offer percentage as specified in SEBI (ICDR)
-    Regulations, 2018, Regulation 26(5). The required minimum float depends
-    on the company's expected post-issue market capitalisation:
-
-    - If ``expected_market_cap ≤ ₹1,600 Cr``:  ``public_offer_percentage ≥ 25%``
-    - If ``expected_market_cap > ₹1,600 Cr``:  ``public_offer_percentage ≥ 10%``
-
-    Evaluation logic:
-      - If either ``expected_market_cap`` or ``public_offer_percentage`` is not
-        reliable, returns INCONCLUSIVE.
-      - Selects the applicable minimum threshold based on market cap tier.
-      - PASS if ``public_offer_percentage ≥ applicable_minimum``.
-      - FAIL otherwise.
-
-    Data sources:
-      - ``company.issue_details.expected_market_cap``    — ExtractedValue[Decimal]
-      - ``company.issue_details.public_offer_percentage`` — ExtractedValue[Decimal]
-
-    All financial values are in Indian Rupees (₹) in Crore units.
-    Percentages are expressed as values between 0 and 100.
-
-    Example::
-
-        >>> rule = FloatRequirementsRule()
-        >>> rule.rule_id
-        'PUBLIC_OFFER_MIN'
-        >>> rule.category.value
-        'mandatory'
-    """
+    rule_id = "PUBLIC_OFFER_MIN"
 
     @property
-    def rule_id(self) -> str:
-        """Unique identifier for the Float Requirements rule.
-
-        Returns:
-            The string ``"PUBLIC_OFFER_MIN"``.
-        """
-        return "PUBLIC_OFFER_MIN"
-
-    @property
-    def metadata(self) -> RuleMetadata:
-        """Regulatory metadata for SEBI ICDR Regulation 26(5).
-
-        Returns:
-            A frozen RuleMetadata instance citing the minimum public float
-            requirement regulation.
-        """
-        return RuleMetadata(
-            regulation=_SEBI_ICDR_REGULATION,
-            section="Regulation 26(5)",
-            clause=None,
-            description=(
-                "Minimum public offer percentage: ≥ 25% for market cap ≤ ₹1,600 Cr; "
-                "≥ 10% for market cap > ₹1,600 Cr"
-            ),
-            category=RuleCategory.MANDATORY,
-            effective_date=date(2018, 11, 1),
-            source_url=_SEBI_ICDR_SOURCE_URL,
-        )
-
-    @property
-    def _required_value(self) -> str:
-        """Human-readable statement of the required threshold.
-
-        Returns:
-            A tiered description of the applicable minimum float requirement.
-        """
+    def required_value(self) -> str:
         return (
-            "≥ 25% if market cap ≤ ₹1600 Cr; ≥ 10% if market cap > ₹1600 Cr"
+            "Minimum public offer per the applicable SCRR Rule 19(2)(b) tier (post-issue "
+            "capital at offer price)"
         )
 
-    def evaluate(self, company: CompanyData) -> RuleResult:
-        """Evaluate the public float requirement against CompanyData.
+    def tier_requirements(self, market_cap: Decimal) -> tuple[int, Decimal | None, Decimal | None]:
+        """Return (tier, minimum offer value ₹ Cr or None, minimum offer % or None)."""
+        s = self.spec
+        if market_cap <= s.decimal("tier1_max_crore"):
+            return 1, None, s.decimal("tier1_min_pct")
+        if market_cap <= s.decimal("tier2_max_crore"):
+            return 2, s.decimal("tier2_min_value_crore"), None
+        if market_cap <= s.decimal("tier3_max_crore"):
+            return 3, None, s.decimal("tier3_min_pct")
+        if market_cap <= s.decimal("tier4_max_crore"):
+            return 4, s.decimal("tier4_min_value_crore"), s.decimal("tier4_min_pct")
+        if market_cap <= s.decimal("tier5_max_crore"):
+            return 5, s.decimal("tier5_min_value_crore"), s.decimal("tier5_min_pct")
+        floor = max(s.decimal("tier6_min_pct"), s.decimal("tier6_floor_pct"))
+        return 6, s.decimal("tier6_min_value_crore"), floor
 
-        Determines which market-cap tier applies to the company and checks
-        whether the proposed public offer percentage meets the minimum
-        required by SEBI (ICDR) Regulations, 2018, Regulation 26(5).
-
-        Args:
-            company: The canonical CompanyData object containing issue details.
-
-        Returns:
-            A RuleResult with:
-              - ``INCONCLUSIVE`` if either data point is unreliable.
-              - ``PASS`` if the public offer meets the applicable minimum.
-              - ``FAIL`` if the public offer is below the applicable minimum,
-                with a gap message specifying the shortfall.
-        """
-        market_cap_ev = company.issue_details.expected_market_cap
-        offer_pct_ev = company.issue_details.public_offer_percentage
-
-        if not market_cap_ev.is_reliable():
-            return self._build_inconclusive(
-                reason="expected market cap data has insufficient confidence",
-                actual_value=None,
+    def _evaluate(self, company: CompanyData) -> RuleResult:
+        inputs = Inputs()
+        issue = company.issue_details
+        market_cap = inputs.get("issue_details.expected_market_cap", issue.expected_market_cap)
+        pct = inputs.get("issue_details.public_offer_percentage", issue.public_offer_percentage)
+        if market_cap is None or pct is None or inputs.unreliable:
+            return self._undetermined(inputs)
+        if market_cap <= 0:
+            inputs.calc(
+                f"Post-issue capital at offer price {fmt_crore(market_cap)} is not positive."
             )
-
-        if not offer_pct_ev.is_reliable():
-            return self._build_inconclusive(
-                reason="public offer percentage data has insufficient confidence",
-                actual_value=None,
+            return self._result(
+                Verdict.REQUIRES_HUMAN_REVIEW,
+                inputs,
+                explanation="Post-issue capital at offer price must be positive to select a tier.",
+                review_reasons=["Implausible post-issue market capitalisation."],
             )
-
-        market_cap: Decimal = market_cap_ev.value
-        offer_pct: Decimal = offer_pct_ev.value
-
-        # Select the applicable minimum based on market cap tier.
-        is_small_cap = market_cap <= _MARKET_CAP_THRESHOLD
-        min_required: Decimal = _MIN_OFFER_SMALL_CAP if is_small_cap else _MIN_OFFER_LARGE_CAP
-        tier_label = (
-            f"≤ ₹{_MARKET_CAP_THRESHOLD:,.0f} Cr"
-            if is_small_cap
-            else f"> ₹{_MARKET_CAP_THRESHOLD:,.0f} Cr"
+        tier, min_value, min_pct = self.tier_requirements(market_cap)
+        offer_value = market_cap * pct / Decimal(100)
+        inputs.calc(f"Tier {tier}: post-issue capital at offer price {fmt_crore(market_cap)}")
+        inputs.calc(
+            f"Offer value = {fmt_crore(market_cap)} × {fmt_pct(pct)} = {fmt_crore(offer_value)}"
         )
+        inputs.calculated("issue_details.public_offer_value", f"{offer_value:.4f}", "INR_CRORE")
 
-        actual_value = (
-            f"₹{market_cap:.2f} Cr market cap, {offer_pct:.1f}% offered to public"
-        )
+        shortfalls: list[str] = []
+        required_parts: list[str] = []
+        if min_value is not None:
+            required_parts.append(f"offer value ≥ {fmt_crore(min_value)}")
+            if offer_value < min_value:
+                shortfalls.append(f"offer value {fmt_crore(offer_value)} < {fmt_crore(min_value)}")
+        if min_pct is not None:
+            required_parts.append(f"offer ≥ {fmt_pct(min_pct)}")
+            if pct < min_pct:
+                shortfalls.append(f"offer {fmt_pct(pct)} < {fmt_pct(min_pct)}")
+        inputs.calc("Requirement: " + " and ".join(required_parts))
 
-        if offer_pct >= min_required:
-            return self._build_result(
-                verdict=Verdict.PASS,
-                actual_value=actual_value,
-                gap=None,
-                explanation=(
-                    f"Public offer of {offer_pct:.1f}% meets the minimum {min_required:.0f}% "
-                    f"required for a market cap of ₹{market_cap:.2f} Cr "
-                    f"(market cap tier: {tier_label}). "
-                    "Compliant with SEBI (ICDR) Regulations, 2018, Regulation 26(5)."
-                ),
+        review = []
+        if tier >= 4:
+            review.append(
+                f"Tier {tier} thresholds are taken from secondary summaries of G.S.R. 184(E); "
+                "confirm against the gazette text."
             )
-
-        shortfall: Decimal = min_required - offer_pct
-        gap = (
-            f"Public offer is {offer_pct:.1f}%; minimum required for market cap "
-            f"{tier_label} is {min_required:.0f}%"
+        actual = (
+            f"{fmt_pct(pct)} of {fmt_crore(market_cap)} = {fmt_crore(offer_value)} (tier {tier})"
         )
-        return self._build_result(
-            verdict=Verdict.FAIL,
-            actual_value=actual_value,
-            gap=gap,
-            explanation=(
-                f"Public offer percentage of {offer_pct:.1f}% is below the minimum "
-                f"{min_required:.0f}% required for a company with expected market cap "
-                f"of ₹{market_cap:.2f} Cr (market cap tier: {tier_label}). "
-                f"Shortfall: {shortfall:.1f} percentage points. "
-                "Fails SEBI (ICDR) Regulations, 2018, Regulation 26(5)."
-            ),
+        if shortfalls:
+            return self._result(
+                Verdict.FAIL,
+                inputs,
+                actual_value=actual,
+                gap="; ".join(shortfalls),
+                explanation=f"The proposed public offer does not meet the tier {tier} minimum: "
+                + "; ".join(shortfalls)
+                + ".",
+                remediation=[
+                    "Increase the offer size (fresh issue and/or offer for sale) to meet the "
+                    "tier minimum."
+                ],
+                review_reasons=review,
+            )
+        return self._result(
+            Verdict.PASS,
+            inputs,
+            actual_value=actual,
+            explanation=f"The proposed public offer meets the tier {tier} minimum ("
+            + " and ".join(required_parts)
+            + ").",
+            review_reasons=review,
         )

@@ -3,7 +3,7 @@ backend/app/engine/__init__.py
 
 Engine package — deterministic orchestration layer.
 
-This package contains the rules engine, decision engine, evidence mapper,
+This package contains the rules engine, decision engine
 and gap planner. All components are deterministic: given the same CompanyData
 and the same ruleset, they always produce identical output.
 

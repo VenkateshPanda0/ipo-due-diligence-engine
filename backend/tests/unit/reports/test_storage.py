@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from uuid import uuid4
 
 from app.engine.decision_engine import DecisionEngine
-from app.engine.evidence_mapper import EvidenceMapper
-from app.models.rule_result import RuleResult
+from app.models.ipo_report import IPOReport
 from app.reports.storage import InMemoryReportStorage, SQLiteReportStorage
 from app.rules.registry import RuleRegistry
 from tests.fixtures.company_data_factory import CompanyDataFactory
@@ -52,25 +53,28 @@ def test_sqlite_storage_persists_report_across_instances(tmp_path) -> None:
     assert second_storage.get(report.report_id) == report
 
 
-def test_sqlite_storage_preserves_citation_decimal_types(tmp_path) -> None:
+def test_sqlite_storage_round_trips_evidence(tmp_path) -> None:
     company = CompanyDataFactory.create()
     report = DecisionEngine(RuleRegistry()).evaluate(company)
-    annotated_mandatory: list[RuleResult] = EvidenceMapper().annotate(
-        report.mandatory_results,
-        company,
-    )
-    report = report.model_copy(update={"mandatory_results": annotated_mandatory})
-    database_url = f"sqlite:///{tmp_path / 'reports.db'}"
-
-    storage = SQLiteReportStorage(database_url)
+    storage = SQLiteReportStorage(f"sqlite:///{tmp_path / 'reports.db'}")
     storage.save(report.report_id, report)
     reloaded = storage.get(report.report_id)
 
-    assert reloaded is not None
-    citation = reloaded.mandatory_results[0].source_citation
-    assert citation is not None
-    expected_value = company.financials.fiscal_years[-3].net_tangible_assets.value
-    assert citation.extracted_values[0].value == expected_value
-    assert type(citation.extracted_values[0].value) is type(
-        expected_value
-    )
+    assert reloaded == report
+    nta = next(r for r in reloaded.mandatory_results if r.rule_id == "NTA_3CR")
+    expected = company.financials.fiscal_years[-3].net_tangible_assets
+    assert expected is not None
+    assert nta.evidence[0].value == str(expected.value)
+    assert nta.evidence[0].page_number == expected.page_number
+
+
+def test_reports_stored_under_ruleset_1_still_load() -> None:
+    """Historical v1 reports must deserialise unchanged (no silent rewrite)."""
+    sample = Path(__file__).resolve().parents[4] / "sample_data" / "reports" / "ruleset-1.0.0"
+    for path in sorted(sample.glob("*.json")):
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if payload["ruleset_version"]["version"] != "1.0.0":
+            continue
+        report = IPOReport.model_validate(payload)
+        assert report.outcome is None
+        assert report.ruleset_version.version == "1.0.0"

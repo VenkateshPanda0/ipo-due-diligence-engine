@@ -1,75 +1,51 @@
 """
 backend/app/models/extracted_value.py
 
-Generic provenance wrapper for every extracted financial data point.
+Generic provenance wrapper for every fact used by the rules engine.
 
-Every numeric, boolean, or string value that originates from a document
-is wrapped in ExtractedValue[T]. The wrapper carries full provenance
-metadata: where it came from, how it was obtained, and how confident
-we are in the extraction.
+The normalised business value (``value``) is kept separate from its source
+representation (``original_text``/``original_unit``) and provenance. Values are
+immutable; a human correction produces a new ExtractedValue and an append-only
+correction event elsewhere — the original is never overwritten.
 
-This module MUST NOT import from:
-  - app.rules, app.parser, app.api, app.engine
-
-Design notes:
-  - Generic[T] allows typed wrapping of Decimal, int, str, bool, etc.
-  - frozen=True enforces immutability — extracted values are facts.
-  - LOW confidence without human confirmation causes INCONCLUSIVE verdicts.
+This module MUST NOT import from app.rules, app.parser, app.api, app.engine.
 """
 
 from __future__ import annotations
 
 from typing import Generic, TypeVar
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
-from app.models.enums import ConfidenceLevel, ExtractionMethod
+from app.models.enums import ConfidenceLevel, ExtractionMethod, FieldStatus, StatementBasis
 
 T = TypeVar("T")
 
+_NEEDS_CONFIRMATION = frozenset(
+    {FieldStatus.CONFLICTING_CANDIDATES, FieldStatus.EXTRACTED_NEEDS_VERIFICATION}
+)
+
 
 class ExtractedValue(BaseModel, Generic[T]):
-    """Provenance-wrapped value extracted from a source document.
-
-    Every financial data point in CompanyData is wrapped in this type.
-    The wrapper is immutable after construction — extracted values are
-    domain facts and must not be modified after the extraction pipeline
-    produces them.
-
-    A value with confidence=LOW and confirmed_by_human=False will cause
-    any rule that reads it to return INCONCLUSIVE instead of PASS or FAIL.
-    This is the system's mechanism for surfacing data quality problems
-    without silently producing wrong eligibility verdicts.
+    """Provenance-wrapped value.
 
     Attributes:
-        value: The actual data value. Use Decimal for all financial figures.
-        source_document: Name of the document this was extracted from,
-            e.g., "Annual_Report_FY2024.pdf".
-        page_number: Page in the source document, if known.
-        extraction_method: How the value was obtained (PDF_TABLE, OCR,
-            MANUAL, or AI_EXTRACTED).
-        confidence: Confidence in the extracted value. See ConfidenceLevel.
-        confirmed_by_human: True if a human has reviewed and confirmed this
-            value. Required before a LOW confidence value can be used in
-            a deterministic verdict.
-        raw_text: Original text snippet from the document before parsing,
-            for audit purposes.
-
-    Example:
-        >>> from decimal import Decimal
-        >>> from app.models.enums import ConfidenceLevel, ExtractionMethod
-        >>> ev = ExtractedValue(
-        ...     value=Decimal("18.4"),
-        ...     source_document="Annual_Report_FY2024.pdf",
-        ...     page_number=143,
-        ...     extraction_method=ExtractionMethod.PDF_TABLE,
-        ...     confidence=ConfidenceLevel.HIGH,
-        ...     confirmed_by_human=False,
-        ... )
-        >>> ev.value
-        Decimal('18.4')
-        >>> ev.confidence
-        <ConfidenceLevel.HIGH: 'high'>
+        value: Normalised value. Monetary values are Decimal ₹ crore.
+        source_document: Document name (or "manual entry").
+        page_number: 1-based page in the source document, if known.
+        extraction_method: How the value was obtained.
+        confidence: Extraction confidence (not a legal confidence).
+        confirmed_by_human: A reviewer confirmed this value.
+        raw_text: Source snippet (row/line context) for audit.
+        unit: Canonical unit of ``value`` (e.g. ``INR_CRORE``, ``PERCENT``).
+        original_text: Exact token as printed, e.g. ``"(1,234.50)"``.
+        original_unit: Unit as declared in the source, e.g. ``INR_LAKH``.
+        period_label: Reporting period the value belongs to.
+        statement_basis: Consolidated / standalone / unknown.
+        field_status: Field-level extraction status.
+        conflicting_values: Other candidate values found for the same field.
+        notes: Normalisation and validation notes.
+        document_id: Stable document identifier (SHA-256) when known.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -81,39 +57,38 @@ class ExtractedValue(BaseModel, Generic[T]):
     confidence: ConfidenceLevel
     confirmed_by_human: bool = False
     raw_text: str | None = None
+    unit: str | None = None
+    original_text: str | None = None
+    original_unit: str | None = None
+    period_label: str | None = None
+    statement_basis: StatementBasis | None = None
+    field_status: FieldStatus | None = None
+    conflicting_values: list[str] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+    document_id: str | None = None
 
     def is_reliable(self) -> bool:
-        """Return True if this value can be used in a deterministic verdict.
+        """Return True if the value may be used for a PASS/FAIL determination.
 
-        A value is reliable when its confidence is HIGH or MEDIUM, or when
-        it has LOW confidence but a human has confirmed it. MANUAL entries
-        are always considered reliable regardless of confidence level.
-
-        Returns:
-            True if the value may be used in rule evaluation without
-            triggering an INCONCLUSIVE verdict.
-
-        Example:
-            >>> from decimal import Decimal
-            >>> ev_high = ExtractedValue(
-            ...     value=Decimal("5.0"),
-            ...     source_document="doc.pdf",
-            ...     extraction_method=ExtractionMethod.PDF_TABLE,
-            ...     confidence=ConfidenceLevel.HIGH,
-            ... )
-            >>> ev_high.is_reliable()
-            True
-            >>> ev_low = ExtractedValue(
-            ...     value=Decimal("5.0"),
-            ...     source_document="doc.pdf",
-            ...     extraction_method=ExtractionMethod.OCR,
-            ...     confidence=ConfidenceLevel.LOW,
-            ... )
-            >>> ev_low.is_reliable()
-            False
+        MANUAL entries and human-confirmed values are reliable. Otherwise a
+        value is unreliable if it is LOW confidence or flagged as conflicting /
+        needing verification.
         """
-        if self.extraction_method == ExtractionMethod.MANUAL:
+        if self.confirmed_by_human:
             return True
-        if self.confidence == ConfidenceLevel.LOW:
-            return self.confirmed_by_human
-        return True
+        if self.extraction_method in (ExtractionMethod.MANUAL, ExtractionMethod.HUMAN_CORRECTED):
+            return True
+        if self.field_status in _NEEDS_CONFIRMATION:
+            return False
+        return self.confidence != ConfidenceLevel.LOW
+
+    def review_reason(self) -> str:
+        """Explain why the value is not reliable (empty string if reliable)."""
+        if self.is_reliable():
+            return ""
+        if self.field_status == FieldStatus.CONFLICTING_CANDIDATES:
+            others = ", ".join(self.conflicting_values) or "other candidates"
+            return f"conflicting candidates ({others})"
+        if self.field_status == FieldStatus.EXTRACTED_NEEDS_VERIFICATION:
+            return "extracted value requires verification"
+        return "low extraction confidence without human confirmation"

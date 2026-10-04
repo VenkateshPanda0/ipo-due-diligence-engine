@@ -1,297 +1,135 @@
 """
 backend/app/rules/advisory/governance.py
 
-Advisory governance rules: BOARD_INDEPENDENCE and AUDIT_COMMITTEE.
+Post-listing governance obligations screened as listing-readiness indicators:
 
-These rules implement the board composition requirements of the Companies Act
-2013 and SEBI LODR Regulations 2015. They are advisory (non-blocking) —
-failures are flagged as governance risk warnings in the IPOReport.
+  * BOARD_INDEPENDENCE — SEBI LODR Regulation 17(1)(b).
+  * AUDIT_COMMITTEE    — SEBI LODR Regulation 18(1)(a), (b), (d).
 
-Import constraints:
-  - MUST NOT import from: app.parser, app.api, app.services, app.engine
+Advisory: results never affect the case outcome.
 """
 
 from __future__ import annotations
 
-from datetime import date
+from fractions import Fraction
 
 from app.models.company_data import CompanyData
-from app.models.enums import RuleCategory, Verdict
-from app.models.rule_result import RuleMetadata, RuleResult
-from app.rules.base_rule import BaseRule
-
-_EFFECTIVE_DATE_COMPANIES_ACT = date(2014, 4, 1)
-_EFFECTIVE_DATE_LODR = date(2015, 9, 2)
-
-_SEBI_LODR_URL = (
-    "https://www.sebi.gov.in/legal/regulations/sep-2015/sebi-lodr-regulations-2015.html"
-)
+from app.models.enums import Verdict
+from app.models.rule_result import RuleResult
+from app.rules.base_rule import BaseRule, Inputs
 
 
 class BoardIndependenceRule(BaseRule):
-    """Advisory rule: board must have sufficient independent directors.
+    """Independent directors >= 1/3 (non-executive, non-promoter chair) or >= 1/2."""
 
-    Companies Act 2013 s.149 and SEBI LODR Reg. 17 require:
-      - At least 1/3 independent directors if the chairperson is non-executive.
-      - At least 1/2 independent directors if the chairperson is executive
-        OR is a promoter.
-
-    This is an advisory check — failure flags a governance gap for human review
-    but does not block IPO eligibility.
-
-    Rule ID: BOARD_INDEPENDENCE
-    """
+    rule_id = "BOARD_INDEPENDENCE"
 
     @property
-    def rule_id(self) -> str:
-        """Return the unique identifier for this rule."""
-        return "BOARD_INDEPENDENCE"
-
-    @property
-    def metadata(self) -> RuleMetadata:
-        """Return regulatory metadata for this rule."""
-        return RuleMetadata(
-            regulation="Companies Act, 2013 / SEBI (LODR) Regulations, 2015",
-            section="Section 149 / Regulation 17",
-            clause=None,
-            description=(
-                "Board must have \u2265 1/3 independent directors (non-exec chair) "
-                "or \u2265 1/2 independent directors (exec or promoter chair)"
-            ),
-            category=RuleCategory.ADVISORY,
-            effective_date=_EFFECTIVE_DATE_LODR,
-            source_url=_SEBI_LODR_URL,
-        )
-
-    @property
-    def _required_value(self) -> str:
+    def required_value(self) -> str:
         return (
-            "\u2265 1/3 independent directors if non-executive chair; "
-            "\u2265 1/2 if executive or promoter chair"
+            "≥ 1/3 independent directors if the chair is non-executive and not a promoter; "
+            "otherwise ≥ 1/2"
         )
 
-    def evaluate(self, company: CompanyData) -> RuleResult:
-        """Evaluate board independence requirements.
-
-        Args:
-            company: The canonical company schema.
-
-        Returns:
-            PASS if independence ratio meets requirement, FAIL if not,
-            INCONCLUSIVE if data quality is insufficient.
-        """
+    def _evaluate(self, company: CompanyData) -> RuleResult:
+        inputs = Inputs()
         gov = company.governance
-
-        # Reliability checks
-        if not gov.total_directors.is_reliable():
-            return self._build_inconclusive(
-                "total_directors has LOW confidence and has not been human-confirmed"
-            )
-        if not gov.independent_directors.is_reliable():
-            return self._build_inconclusive(
-                "independent_directors has LOW confidence and has not been human-confirmed"
-            )
-        if not gov.is_chair_executive.is_reliable():
-            return self._build_inconclusive(
-                "is_chair_executive has LOW confidence and has not been human-confirmed"
-            )
-        if not gov.is_chair_promoter.is_reliable():
-            return self._build_inconclusive(
-                "is_chair_promoter has LOW confidence and has not been human-confirmed"
-            )
-
-        total = gov.total_directors.value
-        independent = gov.independent_directors.value
-        is_exec_chair = gov.is_chair_executive.value
-        is_promoter_chair = gov.is_chair_promoter.value
-
+        total = inputs.get("governance.total_directors", gov.total_directors)
+        independent = inputs.get("governance.independent_directors", gov.independent_directors)
+        exec_chair = inputs.get("governance.is_chair_executive", gov.is_chair_executive)
+        promoter_chair = inputs.get("governance.is_chair_promoter", gov.is_chair_promoter)
+        if None in (total, independent, exec_chair, promoter_chair) or inputs.unreliable:
+            return self._undetermined(inputs)
+        assert total is not None and independent is not None
         if total <= 0:
-            return self._build_inconclusive(
-                f"total_directors is {total}, which is invalid"
+            return self._result(
+                Verdict.REQUIRES_HUMAN_REVIEW,
+                inputs,
+                explanation=f"Board size {total} is not valid.",
+                review_reasons=["Implausible board size."],
             )
-
-        # Determine required ratio based on chair type
-        requires_half = is_exec_chair or is_promoter_chair
-        actual_value = (
-            f"{independent} of {total} directors are independent "
-            f"(chair: {'executive' if is_exec_chair else 'non-executive'}"
-            f"{', promoter' if is_promoter_chair else ''})"
+        half_required = bool(exec_chair) or bool(promoter_chair)
+        required = self.spec.fraction(
+            "min_fraction_other" if half_required else "min_fraction_non_exec_chair"
         )
-
-        if requires_half:
-            # Need at least half (ceiling division: independent * 2 >= total)
-            passes = (independent * 2) >= total
-            gap = (
-                None
-                if passes
-                else (
-                    f"{independent} of {total} independent directors "
-                    f"(requires \u2265 {(total + 1) // 2} for exec/promoter chair)"
-                )
+        actual = Fraction(independent, total)
+        inputs.calc(
+            f"{independent}/{total} independent vs required {required} "
+            f"(chair executive: {exec_chair}, chair promoter: {promoter_chair})"
+        )
+        actual_text = f"{independent} of {total} independent"
+        if actual >= required:
+            return self._result(
+                Verdict.PASS,
+                inputs,
+                actual_value=actual_text,
+                explanation=(
+                    f"{actual_text}; meets the {required} requirement under LODR Reg 17(1)(b)."
+                ),
             )
-            explanation = (
-                f"Board has {independent} independent director(s) of {total} total. "
-                f"Chair is {'executive' if is_exec_chair else ''}"
-                f"{'and ' if is_exec_chair and is_promoter_chair else ''}"
-                f"{'promoter' if is_promoter_chair else ''}. "
-                f"Requirement: at least half (\u2265 1/2) must be independent. "
-                + (
-                    "Requirement satisfied."
-                    if passes
-                    else (
-                        f"Shortfall: {(total + 1) // 2 - independent} more independent "
-                        "director(s) needed."
-                    )
-                )
-            )
-        else:
-            # Need at least one-third (independent * 3 >= total)
-            passes = (independent * 3) >= total
-            needed = (total + 2) // 3  # ceiling of total/3
-            gap = (
-                None
-                if passes
-                else (
-                    f"{independent} of {total} independent directors "
-                    f"(requires \u2265 {needed} for non-exec chair)"
-                )
-            )
-            explanation = (
-                f"Board has {independent} independent director(s) of {total} total. "
-                f"Chairperson is non-executive (non-promoter). "
-                f"Requirement: at least one-third (\u2265 1/3) must be independent. "
-                + (
-                    "Requirement satisfied."
-                    if passes
-                    else f"Shortfall: {needed - independent} more independent director(s) needed."
-                )
-            )
-
-        return self._build_result(
-            verdict=Verdict.PASS if passes else Verdict.FAIL,
-            actual_value=actual_value,
-            gap=gap,
-            explanation=explanation,
+        needed = -(-required.numerator * total // required.denominator)  # ceil
+        return self._result(
+            Verdict.FAIL,
+            inputs,
+            actual_value=actual_text,
+            gap=f"{needed - independent} more independent director(s) needed",
+            explanation=(
+                f"{actual_text}; LODR Reg 17(1)(b) requires at least {required} of the board."
+            ),
+            remediation=[
+                f"Appoint at least {needed - independent} additional independent director(s) "
+                "before listing."
+            ],
         )
 
 
 class AuditCommitteeRule(BaseRule):
-    """Advisory rule: audit committee composition must meet LODR requirements.
+    """Audit committee: >= 3 members, >= 2/3 independent, independent chair."""
 
-    SEBI LODR Regulation 18 requires:
-      - Minimum 3 directors on the audit committee.
-      - At least 2/3 of members must be independent directors.
-      - The chairperson of the audit committee must be an independent director.
-
-    Rule ID: AUDIT_COMMITTEE
-    """
+    rule_id = "AUDIT_COMMITTEE"
 
     @property
-    def rule_id(self) -> str:
-        """Return the unique identifier for this rule."""
-        return "AUDIT_COMMITTEE"
+    def required_value(self) -> str:
+        return "≥ 3 members, ≥ 2/3 independent directors, independent chairperson"
 
-    @property
-    def metadata(self) -> RuleMetadata:
-        """Return regulatory metadata for this rule."""
-        return RuleMetadata(
-            regulation="SEBI (LODR) Regulations, 2015",
-            section="Regulation 18",
-            clause=None,
-            description=(
-                "Audit Committee: \u2265 3 directors, \u2265 2/3 independent, "
-                "chairperson must be independent"
-            ),
-            category=RuleCategory.ADVISORY,
-            effective_date=_EFFECTIVE_DATE_LODR,
-            source_url=_SEBI_LODR_URL,
-        )
-
-    @property
-    def _required_value(self) -> str:
-        return (
-            "\u2265 3 audit committee members, \u2265 2/3 independent, "
-            "chair must be independent"
-        )
-
-    def evaluate(self, company: CompanyData) -> RuleResult:
-        """Evaluate audit committee composition requirements.
-
-        Three sub-checks are performed: member count, independence ratio,
-        and chair independence. Failure of any sub-check results in FAIL
-        with a detailed explanation of which requirement was not met.
-
-        Args:
-            company: The canonical company schema.
-
-        Returns:
-            PASS only if all three sub-checks pass, FAIL if any fail,
-            INCONCLUSIVE if data quality is insufficient.
-        """
+    def _evaluate(self, company: CompanyData) -> RuleResult:
+        inputs = Inputs()
         ac = company.governance.audit_committee
-
-        # Reliability checks
-        if not ac.total_members.is_reliable():
-            return self._build_inconclusive(
-                "audit_committee.total_members has LOW confidence"
-            )
-        if not ac.independent_members.is_reliable():
-            return self._build_inconclusive(
-                "audit_committee.independent_members has LOW confidence"
-            )
-        if not ac.chair_is_independent.is_reliable():
-            return self._build_inconclusive(
-                "audit_committee.chair_is_independent has LOW confidence"
-            )
-
-        total = ac.total_members.value
-        independent = ac.independent_members.value
-        chair_is_independent = ac.chair_is_independent.value
-
-        failures: list[str] = []
-
-        # Sub-check 1: Minimum 3 members
-        if total < 3:
-            failures.append(
-                f"Insufficient members: {total} (requires \u2265 3)"
-            )
-
-        # Sub-check 2: At least 2/3 independent (independent * 3 >= total * 2)
-        if total > 0 and (independent * 3) < (total * 2):
-            needed = (total * 2 + 2) // 3  # ceiling of 2*total/3
-            failures.append(
-                f"Insufficient independent members: {independent}/{total} "
-                f"(requires \u2265 2/3, i.e., \u2265 {needed})"
-            )
-
-        # Sub-check 3: Chair must be independent
-        if not chair_is_independent:
-            failures.append("Audit committee chairperson is not an independent director")
-
-        actual_value = (
-            f"{total} members, {independent} independent, "
-            f"chair independent: {chair_is_independent}"
+        total = inputs.get("governance.audit_committee.total_members", ac.total_members)
+        independent = inputs.get(
+            "governance.audit_committee.independent_members", ac.independent_members
         )
-
-        if failures:
-            gap = "; ".join(failures)
-            explanation = (
-                f"Audit Committee does not meet LODR Reg. 18 requirements. "
-                f"Failures: {gap}."
+        chair = inputs.get(
+            "governance.audit_committee.chair_is_independent", ac.chair_is_independent
+        )
+        if None in (total, independent, chair) or inputs.unreliable:
+            return self._undetermined(inputs)
+        assert total is not None and independent is not None
+        minimum = self.spec.integer("min_members")
+        fraction = self.spec.fraction("min_independent_fraction")
+        issues: list[str] = []
+        if total < minimum:
+            issues.append(f"{total} member(s); minimum is {minimum}")
+        if total > 0 and Fraction(independent, total) < fraction:
+            issues.append(f"{independent} of {total} independent; at least {fraction} required")
+        if not chair:
+            issues.append("chairperson is not an independent director")
+        inputs.calc(f"members={total}, independent={independent}, chair independent={chair}")
+        actual = f"{total} members, {independent} independent, chair independent: {chair}"
+        if issues:
+            return self._result(
+                Verdict.FAIL,
+                inputs,
+                actual_value=actual,
+                gap="; ".join(issues),
+                explanation="Audit committee does not meet LODR Reg 18(1): "
+                + "; ".join(issues)
+                + ".",
+                remediation=["Reconstitute the audit committee before listing."],
             )
-            return self._build_result(
-                verdict=Verdict.FAIL,
-                actual_value=actual_value,
-                gap=gap,
-                explanation=explanation,
-            )
-
-        return self._build_result(
-            verdict=Verdict.PASS,
-            actual_value=actual_value,
-            explanation=(
-                f"Audit Committee meets all LODR Reg. 18 requirements: "
-                f"{total} members (\u2265 3), {independent}/{total} independent "
-                f"(\u2265 2/3), chair is independent."
-            ),
+        return self._result(
+            Verdict.PASS,
+            inputs,
+            actual_value=actual,
+            explanation="Audit committee composition meets LODR Reg 18(1)(a), (b) and (d).",
         )

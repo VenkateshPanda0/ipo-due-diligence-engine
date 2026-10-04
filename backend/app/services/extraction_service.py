@@ -61,8 +61,7 @@ class ExtractionService:
         lines: list[str] = []
         for table_index, table in enumerate(tables, start=1):
             lines.append(
-                f"Table {table_index} page {table.page_number} "
-                f"method {table.extraction_method}"
+                f"Table {table_index} page {table.page_number} method {table.extraction_method}"
             )
             lines.extend(" | ".join(row) for row in table.rows)
         return "\n".join(lines)

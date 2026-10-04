@@ -13,9 +13,9 @@ def test_rules_list_and_category_filter() -> None:
     advisory = client.get("/rules?category=advisory")
 
     assert all_rules.status_code == 200
-    assert all_rules.json()["total_count"] == 16
-    assert mandatory.json()["total_count"] == 11
-    assert advisory.json()["total_count"] == 5
+    assert all_rules.json()["total_count"] == 19
+    assert mandatory.json()["total_count"] == 13
+    assert advisory.json()["total_count"] == 6
 
 
 def test_rule_detail_and_unknown_rule() -> None:

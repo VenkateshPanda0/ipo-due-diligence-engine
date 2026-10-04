@@ -28,7 +28,7 @@ def list_rules(
     return RuleListResponse(
         rules=[_rule_detail(rule) for rule in rules],
         total_count=len(rules),
-        ruleset_version="1.0.0",
+        ruleset_version=registry.version,
         categories={"mandatory": mandatory_count, "advisory": advisory_count},
     )
 
@@ -51,11 +51,12 @@ def get_rule_detail(
 
 def _rule_detail(rule: BaseRule) -> RuleDetailSchema:
     metadata = rule.metadata
-    clause = f" {metadata.clause}" if metadata.clause else ""
     return RuleDetailSchema(
         rule_id=rule.rule_id,
         category=rule.category,
         metadata=metadata,
-        regulation_reference=f"{metadata.regulation} {metadata.section}{clause}",
-        threshold=getattr(rule, "_required_value", metadata.description),
+        regulation_reference=f"{metadata.regulation}, {metadata.section}",
+        threshold=rule.required_value,
+        status="active" if rule.spec.effective_to is None else "superseded",
+        spec=rule.spec.model_dump(mode="json"),
     )

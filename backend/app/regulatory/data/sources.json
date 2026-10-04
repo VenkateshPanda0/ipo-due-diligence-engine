@@ -1,0 +1,100 @@
+{
+  "sources": [
+    {
+      "source_id": "SEBI_ICDR_2018_CONSOL_2026_03_21",
+      "title": "Securities and Exchange Board of India (Issue of Capital and Disclosure Requirements) Regulations, 2018 — consolidated, last amended on March 21, 2026",
+      "issuer": "Securities and Exchange Board of India",
+      "kind": "primary",
+      "url": "https://www.sebi.gov.in/legal/regulations/mar-2026/securities-and-exchange-board-of-india-issue-of-capital-and-disclosure-requirements-regulations-2018-last-amended-on-march-21-2026-_100581.html",
+      "document_url": "https://www.sebi.gov.in/sebi_data/attachdocs/mar-2026/1774592300989.pdf",
+      "document_sha256": "98b627709b65f174f9b86b44d725bf5d0c43da79b80a704cf22ea48c6755bcf6",
+      "publication_date": "2026-03-21",
+      "accessed_on": "2026-10-04",
+      "notes": "Provisions read: Reg 2(1)(gg) NTA, 2(1)(hh) net worth, Reg 5, Reg 6(1)(a)-(d), 6(2), Reg 7, Reg 14, Reg 16(1), Reg 229. Consolidated texts published by SEBI are not authoritative gazette copies."
+    },
+    {
+      "source_id": "SEBI_LODR_2015_CONSOL_2026_07_14",
+      "title": "Securities and Exchange Board of India (Listing Obligations and Disclosure Requirements) Regulations, 2015 — consolidated, last amended on July 14, 2026",
+      "issuer": "Securities and Exchange Board of India",
+      "kind": "primary",
+      "url": "https://www.sebi.gov.in/legal/regulations/jul-2026/securities-and-exchange-board-of-india-listing-obligations-and-disclosure-requirements-regulations-2015-last-amended-on-july-14-2026-_102974.html",
+      "document_url": "https://www.sebi.gov.in/sebi_data/attachdocs/jul-2026/1784630770711.pdf",
+      "document_sha256": "f3c187d46aeb15e10d05614400e653086df1799e575ee4e11a49b5d28d5c9b67",
+      "publication_date": "2026-07-14",
+      "accessed_on": "2026-10-04",
+      "notes": "Provisions read: Reg 17(1)(a)-(b), Reg 18(1)(a)-(d)."
+    },
+    {
+      "source_id": "SCRR_1957_R19_2B_GSR184E_2026",
+      "title": "Securities Contracts (Regulation) Amendment Rules, 2026 — G.S.R. 184(E) dated 13 March 2026, substituting Rule 19(2)(b) of the Securities Contracts (Regulation) Rules, 1957",
+      "issuer": "Ministry of Finance, Government of India",
+      "kind": "primary_not_retrieved",
+      "url": null,
+      "document_url": null,
+      "document_sha256": null,
+      "publication_date": "2026-03-13",
+      "accessed_on": "2026-10-04",
+      "notes": "The e-Gazette text could not be retrieved. Tier content cross-checked against two independent secondary summaries (see SECONDARY_AZB_SCRR_2026, SECONDARY_MONDAQ_SCRR_2026)."
+    },
+    {
+      "source_id": "SECONDARY_AZB_SCRR_2026",
+      "title": "AZB & Partners — Securities Contracts (Regulation) Amendment Rules, 2026",
+      "issuer": "AZB & Partners",
+      "kind": "secondary",
+      "url": "https://www.azbpartners.com/bank/securities-contracts-regulation-amendment-rules-2026/",
+      "document_url": null,
+      "document_sha256": null,
+      "publication_date": null,
+      "accessed_on": "2026-10-04",
+      "notes": "Secondary commentary; used only to corroborate the primary instrument."
+    },
+    {
+      "source_id": "SECONDARY_MONDAQ_SCRR_2026",
+      "title": "Mondaq — MoF Notifies The Securities Contracts (Regulation) Amendment Rules, 2026",
+      "issuer": "Mondaq",
+      "kind": "secondary",
+      "url": "https://www.mondaq.com/india/commoditiesderivativesstock-exchanges/1762642/mof-notifies-the-securities-contracts-regulation-amendment-rules-2026",
+      "document_url": null,
+      "document_sha256": null,
+      "publication_date": null,
+      "accessed_on": "2026-10-04",
+      "notes": "Secondary commentary; used only to corroborate the primary instrument."
+    },
+    {
+      "source_id": "BSE_MAINBOARD_IPO_CRITERIA",
+      "title": "BSE — Eligibility criteria for IPO / FPO listing on the main board",
+      "issuer": "BSE Limited",
+      "kind": "primary_not_retrieved",
+      "url": "https://www.bseindia.com/Static/about/Ipo_Fpo.aspx",
+      "document_url": null,
+      "document_sha256": null,
+      "publication_date": null,
+      "accessed_on": "2026-10-04",
+      "notes": "Page returned HTTP 403 to automated retrieval. Thresholds (post-issue paid-up capital >= Rs 10 crore, issue size >= Rs 10 crore, market capitalisation >= Rs 25 crore) taken from a search-engine extract of this page only."
+    },
+    {
+      "source_id": "NSE_MAINBOARD_ELIGIBILITY",
+      "title": "NSE — Eligibility criteria for listing on the main board (IPO)",
+      "issuer": "National Stock Exchange of India Limited",
+      "kind": "primary_not_retrieved",
+      "url": "https://www.nseindia.com/companies-listing/raising-capital-public-issues-eligibility-criteria",
+      "document_url": null,
+      "document_sha256": null,
+      "publication_date": null,
+      "accessed_on": "2026-10-04",
+      "notes": "nseindia.com returned HTTP 403 to automated retrieval. Not verified."
+    },
+    {
+      "source_id": "ENGINEERING_HEURISTIC",
+      "title": "Engineering diligence heuristic (no regulatory threshold)",
+      "issuer": "IPO Due Diligence Engine",
+      "kind": "heuristic",
+      "url": null,
+      "document_url": null,
+      "document_sha256": null,
+      "publication_date": null,
+      "accessed_on": null,
+      "notes": "Thresholds marked as heuristics are screening aids chosen by the engineering team. They are not legal requirements."
+    }
+  ]
+}

@@ -7,9 +7,9 @@ from decimal import Decimal
 from typing import Any
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
-from app.models.enums import IPOStatus, RuleCategory, Verdict
+from app.models.enums import IPOStatus, ListingRoute, RuleCategory, ScreeningOutcome, Verdict
 from app.models.human_review import HumanFinalDecision, HumanReviewRecord, HumanReviewStatus
 from app.models.ipo_report import EligibilityProgress, IPOReport
 from app.models.rule_result import RuleMetadata, RuleResult
@@ -45,6 +45,19 @@ class RuleResultSchema(BaseModel):
     explanation: str
     evaluated_at: datetime
     source_citation: dict[str, Any] | None
+    rule_name: str = ""
+    rule_version: str | None = None
+    legal_category: str | None = None
+    verification_status: str | None = None
+    source_url: str | None = None
+    applicable: bool = True
+    calculation: list[str] = Field(default_factory=list)
+    evidence: list[dict[str, Any]] = Field(default_factory=list)
+    missing_inputs: list[str] = Field(default_factory=list)
+    requires_human_review: bool = False
+    review_reasons: list[str] = Field(default_factory=list)
+    remediation: list[str] = Field(default_factory=list)
+    limitations: list[str] = Field(default_factory=list)
 
     @classmethod
     def from_domain(cls, result: RuleResult) -> RuleResultSchema:
@@ -66,6 +79,21 @@ class RuleResultSchema(BaseModel):
             explanation=result.explanation,
             evaluated_at=result.evaluated_at,
             source_citation=citation,
+            rule_name=result.rule_name,
+            rule_version=result.rule_version,
+            legal_category=result.legal_category.value if result.legal_category else None,
+            verification_status=(
+                result.verification_status.value if result.verification_status else None
+            ),
+            source_url=result.source_url,
+            applicable=result.applicable,
+            calculation=result.calculation,
+            evidence=[e.model_dump(mode="json") for e in result.evidence],
+            missing_inputs=result.missing_inputs,
+            requires_human_review=result.requires_human_review,
+            review_reasons=result.review_reasons,
+            remediation=result.remediation,
+            limitations=result.limitations,
         )
 
 
@@ -86,6 +114,14 @@ class ScreeningResponse(BaseModel):
     machine_assessment_only: bool = True
     human_review_required: bool = True
     decision_authority: str = "human_reviewer"
+    outcome: ScreeningOutcome | None = None
+    listing_route: ListingRoute | None = None
+    engine_version: str | None = None
+    case_id: UUID | None = None
+    input_sha256: str | None = None
+    unresolved_issues: list[str] = Field(default_factory=list)
+    limitations: list[str] = Field(default_factory=list)
+    regulatory_validation_confirmed: bool = False
 
     @classmethod
     def from_report(cls, report: IPOReport) -> ScreeningResponse:
@@ -106,6 +142,14 @@ class ScreeningResponse(BaseModel):
             observations=report.observations,
             ruleset_version=report.ruleset_version.version,
             evaluated_at=report.evaluated_at,
+            outcome=report.outcome,
+            listing_route=report.listing_route,
+            engine_version=report.engine_version,
+            case_id=report.case_id,
+            input_sha256=report.input_sha256,
+            unresolved_issues=report.unresolved_issues,
+            limitations=report.limitations,
+            regulatory_validation_confirmed=report.regulatory_validation_confirmed,
         )
 
 
@@ -118,6 +162,7 @@ class RuleDetailSchema(BaseModel):
     regulation_reference: str
     threshold: str
     status: str = "active"
+    spec: dict[str, Any] = Field(default_factory=dict)
 
 
 class RuleListResponse(BaseModel):

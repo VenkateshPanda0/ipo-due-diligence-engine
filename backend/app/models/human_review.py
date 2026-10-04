@@ -62,7 +62,5 @@ class HumanReviewRecord(BaseModel):
                 if value in (None, "")
             ]
             if missing:
-                raise ValueError(
-                    f"Completed human review is missing required fields: {missing}"
-                )
+                raise ValueError(f"Completed human review is missing required fields: {missing}")
         return self

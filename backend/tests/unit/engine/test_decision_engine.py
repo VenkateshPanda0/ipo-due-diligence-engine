@@ -1,178 +1,160 @@
-"""
-backend/tests/unit/engine/test_decision_engine.py
-
-Unit tests for DecisionEngine milestone 4 behavior.
-"""
+"""Decision engine: outcome precedence, progress counts, report metadata."""
 
 from __future__ import annotations
 
-from decimal import Decimal
+from typing import ClassVar
 
 import pytest
-from pydantic import ValidationError
 
-from app.engine.decision_engine import DecisionEngine
+from app.engine.decision_engine import DecisionEngine, company_fingerprint
 from app.engine.rules_engine import RulesEngine
 from app.models.company_data import CompanyData
-from app.models.enums import IPOStatus, RuleCategory, Verdict
-from app.models.ipo_report import EligibilityProgress, IPOReport
+from app.models.enums import IPOStatus, ListingRoute, ScreeningOutcome, Verdict
 from app.models.rule_result import RuleResult
+from app.rules.base_rule import BaseRule
 from app.rules.registry import RuleRegistry
-from tests.fixtures.company_data_factory import CompanyDataFactory
+from tests.fixtures.builders import D, base, declarations, ev, update, with_years
 
 
-def _result(
-    rule_id: str,
-    verdict: Verdict,
-    category: RuleCategory = RuleCategory.MANDATORY,
-) -> RuleResult:
-    return RuleResult(
-        rule_id=rule_id,
-        verdict=verdict,
-        category=category,
-        regulation_reference="Test Regulation 1",
-        description=f"{rule_id} description",
-        required_value="Test requirement",
-        actual_value="Test actual",
-        explanation=f"{rule_id} explanation",
+@pytest.fixture(scope="module")
+def engine() -> DecisionEngine:
+    return DecisionEngine(RuleRegistry())
+
+
+def test_clean_company_has_no_failure_identified(engine: DecisionEngine) -> None:
+    r = engine.evaluate(base())
+    assert r.outcome == ScreeningOutcome.NO_FAILURE_IDENTIFIED
+    assert r.status == IPOStatus.ELIGIBLE  # legacy compatibility
+    assert r.ruleset_version.version == "2.0.0"
+    assert r.engine_version and r.input_sha256 and r.limitations
+    assert any("not a legal determination" in o for o in r.observations)
+    assert not any("appears eligible" in o for o in r.observations)
+
+
+def test_failure_dominates_review_and_missing(engine: DecisionEngine) -> None:
+    c = with_years(base(), "net_worth", ["0.5", "5", "5"])
+    c = with_years(c, "net_tangible_assets", [ev(D(10), low=True), "10", "10"])
+    c = c.model_copy(update={"declarations": declarations(debarred_by_sebi=None)})
+    r = engine.evaluate(c)
+    assert r.outcome == ScreeningOutcome.SCREENING_FAILURE
+    assert r.status == IPOStatus.NOT_ELIGIBLE
+
+
+def test_review_dominates_missing(engine: DecisionEngine) -> None:
+    c = with_years(base(), "net_tangible_assets", [ev(D(10), low=True), "10", "10"])
+    c = c.model_copy(update={"declarations": declarations(debarred_by_sebi=None)})
+    r = engine.evaluate(c)
+    assert r.outcome == ScreeningOutcome.AWAITING_HUMAN_REVIEW
+    assert r.status == IPOStatus.NEEDS_REVIEW
+
+
+def test_missing_evidence_gives_insufficient_evidence(engine: DecisionEngine) -> None:
+    c = base().model_copy(update={"declarations": declarations(debarred_by_sebi=None)})
+    r = engine.evaluate(c)
+    assert r.outcome == ScreeningOutcome.INSUFFICIENT_EVIDENCE
+    assert any("ICDR_REG5" in i for i in r.unresolved_issues)
+
+
+def test_advisory_failure_never_changes_outcome(engine: DecisionEngine) -> None:
+    c = update(base(), "auditor", has_qualifications=ev(True))
+    c = update(c, "litigation", has_criminal_cases=ev(True))
+    r = engine.evaluate(c)
+    assert r.outcome == ScreeningOutcome.NO_FAILURE_IDENTIFIED
+    assert r.advisory_progress.failed == 2
+
+
+def test_sme_route_is_unsupported_scope(engine: DecisionEngine) -> None:
+    r = engine.evaluate(update(base(), "issue_details", listing_route=ListingRoute.SME_CHAPTER_IX))
+    assert r.outcome == ScreeningOutcome.UNSUPPORTED_SCOPE
+    assert r.status == IPOStatus.NEEDS_REVIEW
+    assert all(x.verdict == Verdict.NOT_APPLICABLE for x in r.mandatory_results)
+
+
+def test_reg6_2_route_replaces_reg6_1_financial_tests(engine: DecisionEngine) -> None:
+    c = with_years(base(), "operating_profit", ["-5", "-5", "-5"])
+    c = update(
+        c,
+        "issue_details",
+        listing_route=ListingRoute.MAINBOARD_REG6_2,
+        is_book_built=True,
+        refund_undertaking=True,
+        qib_net_offer_allocation=ev(D(75)),
     )
+    r = engine.evaluate(c)
+    assert r.outcome == ScreeningOutcome.NO_FAILURE_IDENTIFIED
+    by_id = {x.rule_id: x.verdict for x in r.mandatory_results}
+    assert by_id["AVG_OPERATING_PROFIT_15CR"] == Verdict.NOT_APPLICABLE
+    assert by_id["ICDR_REG6_2_QIB_ROUTE"] == Verdict.PASS
 
 
-class TestDecisionEngineStatus:
-    """Status determination is a deterministic mandatory-rule rollup."""
-
-    def test_all_pass_returns_eligible(self) -> None:
-        results = [_result("A", Verdict.PASS), _result("B", Verdict.PASS)]
-        assert DecisionEngine.determine_status(results) == IPOStatus.ELIGIBLE
-
-    def test_single_fail_returns_not_eligible(self) -> None:
-        results = [_result("A", Verdict.PASS), _result("B", Verdict.FAIL)]
-        assert DecisionEngine.determine_status(results) == IPOStatus.NOT_ELIGIBLE
-
-    def test_single_inconclusive_returns_needs_review(self) -> None:
-        results = [_result("A", Verdict.PASS), _result("B", Verdict.INCONCLUSIVE)]
-        assert DecisionEngine.determine_status(results) == IPOStatus.NEEDS_REVIEW
-
-    def test_fail_takes_precedence_over_inconclusive(self) -> None:
-        results = [_result("A", Verdict.FAIL), _result("B", Verdict.INCONCLUSIVE)]
-        assert DecisionEngine.determine_status(results) == IPOStatus.NOT_ELIGIBLE
-
-    def test_empty_results_are_eligible_by_vacuous_rollup(self) -> None:
-        assert DecisionEngine.determine_status([]) == IPOStatus.ELIGIBLE
+def test_reg6_1_failure_suggests_reg6_2(engine: DecisionEngine) -> None:
+    r = engine.evaluate(with_years(base(), "operating_profit", ["1", "1", "1"]))
+    assert any("Reg 6(2)" in o for o in r.observations)
 
 
-class TestDecisionEngineClassification:
-    """RuleResult category splitting preserves input order."""
-
-    def test_classifies_mandatory_and_advisory_results(self) -> None:
-        mandatory_a = _result("MANDATORY_A", Verdict.PASS)
-        advisory = _result("ADVISORY", Verdict.FAIL, RuleCategory.ADVISORY)
-        mandatory_b = _result("MANDATORY_B", Verdict.INCONCLUSIVE)
-
-        mandatory, advisory_results = DecisionEngine.classify_results(
-            [mandatory_a, advisory, mandatory_b]
-        )
-
-        assert mandatory == [mandatory_a, mandatory_b]
-        assert advisory_results == [advisory]
-
-    def test_empty_input_returns_empty_groups(self) -> None:
-        assert DecisionEngine.classify_results([]) == ([], [])
+def test_progress_counts_sum(engine: DecisionEngine) -> None:
+    r = engine.evaluate(base())
+    p = r.mandatory_progress
+    assert (
+        p.passed + p.failed + p.inconclusive + p.requires_review + p.not_applicable == p.total_rules
+    )
+    assert p.not_applicable >= 2  # name change + Reg 6(2)
 
 
-class TestDecisionEngineProgress:
-    """Progress counts are objective counts, not weighted scores."""
-
-    def test_progress_counts_and_failed_ids_are_correct(self) -> None:
-        results = [
-            _result("PASS_A", Verdict.PASS),
-            _result("FAIL_A", Verdict.FAIL),
-            _result("INCONCLUSIVE_A", Verdict.INCONCLUSIVE),
-            _result("FAIL_B", Verdict.FAIL),
-        ]
-
-        progress = DecisionEngine.compute_progress(results)
-
-        assert progress.total_rules == 4
-        assert progress.passed == 1
-        assert progress.failed == 2
-        assert progress.inconclusive == 1
-        assert progress.pass_percentage == Decimal("25.00")
-        assert progress.failed_rule_ids == ["FAIL_A", "FAIL_B"]
-
-    def test_empty_progress_uses_zero_percentage(self) -> None:
-        progress = DecisionEngine.compute_progress([])
-
-        assert progress.total_rules == 0
-        assert progress.passed == 0
-        assert progress.failed == 0
-        assert progress.inconclusive == 0
-        assert progress.pass_percentage == Decimal("0")
-        assert progress.failed_rule_ids == []
-
-    def test_progress_model_rejects_inconsistent_counts(self) -> None:
-        with pytest.raises(ValidationError):
-            EligibilityProgress(
-                total_rules=2,
-                passed=1,
-                failed=0,
-                inconclusive=0,
-                pass_percentage=Decimal("50"),
-                failed_rule_ids=[],
-            )
+def test_pass_percentage_excludes_not_applicable(engine: DecisionEngine) -> None:
+    assert engine.evaluate(base()).mandatory_progress.pass_percentage == D("100.00")
 
 
-class TestDecisionEngineObservations:
-    """Observation generation surfaces deterministic non-blocking patterns."""
-
-    def test_observations_for_eligible_company_include_positive_signal(
-        self, registry: RuleRegistry, company: CompanyData
-    ) -> None:
-        results = RulesEngine(registry).evaluate_all(company)
-        mandatory, advisory = DecisionEngine.classify_results(results)
-
-        observations = DecisionEngine.generate_observations(company, mandatory, advisory)
-
-        assert any("All 11 mandatory" in observation for observation in observations)
-
-    def test_observations_include_young_company_and_criminal_litigation(self) -> None:
-        company = CompanyDataFactory.create(
-            years_of_operation=2,
-            has_criminal_cases=True,
-        )
-        observations = DecisionEngine.generate_observations(company, [], [])
-
-        assert any("2 year(s)" in observation for observation in observations)
-        assert any("Criminal litigation" in observation for observation in observations)
+def test_determinism_except_ids_and_times(engine: DecisionEngine) -> None:
+    a, b = engine.evaluate(base()), engine.evaluate(base())
+    strip = {"report_id", "evaluated_at"}
+    da = a.model_dump(mode="json", exclude=strip)
+    db = b.model_dump(mode="json", exclude=strip)
+    for d in (da, db):
+        for grp in ("mandatory_results", "advisory_results"):
+            for res in d[grp]:
+                res.pop("evaluated_at")
+    assert da == db
+    assert a.input_sha256 == company_fingerprint(base())
 
 
-class TestDecisionEngineReportAssembly:
-    """Full report assembly populates the IPOReport aggregate."""
+def test_gap_items_for_fail_and_undetermined(engine: DecisionEngine) -> None:
+    c = with_years(base(), "net_worth", ["0.5", "5", "5"])
+    c = c.model_copy(update={"declarations": declarations(debarred_by_sebi=None)})
+    gaps = {g.rule_id: g for g in engine.evaluate(c).gap_analysis}
+    assert gaps["NET_WORTH_1CR"].verdict == "fail"
+    assert gaps["ICDR_REG5_INELIGIBLE_ENTITIES"].verdict == "inconclusive"
+    assert "not a regulatory failure" in gaps["ICDR_REG5_INELIGIBLE_ENTITIES"].earliest_eligible_fy
+    assert all(g.professional_review_required for g in gaps.values())
+    assert any("not a guarantee" in s for s in gaps["NET_WORTH_1CR"].remediation_steps)
 
-    def test_evaluate_returns_complete_report(
-        self, registry: RuleRegistry, company: CompanyData
-    ) -> None:
-        report = DecisionEngine(registry).evaluate(company)
 
-        assert isinstance(report, IPOReport)
-        assert report.company_name == company.identification.company_name
-        assert report.status == IPOStatus.ELIGIBLE
-        assert report.mandatory_progress.total_rules == 11
-        assert report.advisory_progress.total_rules == 5
-        assert len(report.mandatory_results) == 11
-        assert len(report.advisory_results) == 5
-        assert report.ruleset_version == company.ruleset_version
+class _Boom(BaseRule):
+    rule_id: ClassVar[str] = "NTA_3CR"
 
-    def test_report_ids_are_unique(self, registry: RuleRegistry, company: CompanyData) -> None:
-        engine = DecisionEngine(registry)
+    @property
+    def required_value(self) -> str:
+        return "x"
 
-        first = engine.evaluate(company)
-        second = engine.evaluate(company)
+    def _evaluate(self, company: CompanyData) -> RuleResult:
+        raise RuntimeError("secret internal path /etc/passwd")
 
-        assert first.report_id != second.report_id
 
-    def test_report_is_immutable(self, registry: RuleRegistry, company: CompanyData) -> None:
-        report = DecisionEngine(registry).evaluate(company)
+def test_rule_exception_is_isolated_and_not_leaked() -> None:
+    reg = RuleRegistry()
+    reg._rules["NTA_3CR"] = _Boom(reg.ruleset.spec("NTA_3CR"))  # noqa: SLF001
+    results = RulesEngine(reg).evaluate_all(base())
+    boom = next(r for r in results if r.rule_id == "NTA_3CR")
+    assert boom.verdict == Verdict.REQUIRES_HUMAN_REVIEW
+    assert "/etc/passwd" not in boom.explanation and "RuntimeError" not in boom.explanation
+    assert len(results) == len(reg)
 
-        with pytest.raises(ValidationError):
-            report.status = IPOStatus.NOT_ELIGIBLE
+
+def test_empty_company_never_fails() -> None:
+    from app.models.company_data import CompanyIdentification
+
+    r = DecisionEngine(RuleRegistry()).evaluate(
+        CompanyData(identification=CompanyIdentification(company_name="X"))
+    )
+    assert r.outcome == ScreeningOutcome.INSUFFICIENT_EVIDENCE
+    assert all(x.verdict != Verdict.FAIL for x in r.mandatory_results + r.advisory_results)

@@ -22,5 +22,6 @@ def test_text_formatter_renders_evidence_citations() -> None:
     report = DecisionEngine(RuleRegistry()).evaluate(CompanyDataFactory.create())
     rendered = TextReportFormatter().format(report)
 
-    assert "Evidence: Annual_Report_Test.pdf" in rendered
-    assert "page(s) 1" in rendered
+    assert "Annual_Report_Test.pdf p.1" in rendered
+    assert "Evidence: financials.FY2022.net_tangible_assets" in rendered
+    assert "Limitations" in rendered

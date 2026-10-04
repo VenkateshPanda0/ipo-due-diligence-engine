@@ -1,310 +1,171 @@
 """
 backend/app/rules/mandatory/promoter.py
 
-Promoter mandatory rules: PROMOTER_CONTRIBUTION_20 and PROMOTER_LOCK_IN.
+SEBI ICDR 2018 promoter rules:
 
-This module implements two related mandatory eligibility rules:
-
-  1. PromoterContributionRule (PROMOTER_CONTRIBUTION_20):
-     Promoter(s) must contribute at least 20% of the post-issue paid-up
-     capital. This is evaluated using the post_issue_holding ExtractedValue
-     in PromoterData, which represents the promoter group's aggregate
-     percentage of total post-issue capital.
-
-  2. PromoterLockInRule (PROMOTER_LOCK_IN):
-     The promoter contribution must be locked in for a minimum period:
-       - Standard issues: 18 months from the date of allotment.
-       - Capex issues (where proceeds are for capital expenditure):
-         36 months (3 years) from the date of allotment.
-     The is_capex_issue flag in PromoterData determines which threshold applies.
-
-Regulations:
-  - PROMOTER_CONTRIBUTION_20: SEBI (ICDR) Regulations, 2018, Regulation 32
-  - PROMOTER_LOCK_IN: SEBI (ICDR) Regulations, 2018, Regulation 36
+  * PROMOTER_CONTRIBUTION_20 — Regulation 14(1) and provisos.
+  * PROMOTER_LOCK_IN         — Regulation 16(1)(a) and proviso (w.e.f. 13-08-2021).
 """
 
 from __future__ import annotations
 
-from datetime import date
-from decimal import Decimal
-
 from app.models.company_data import CompanyData
-from app.models.enums import RuleCategory, Verdict
-from app.models.rule_result import RuleMetadata, RuleResult
-from app.rules.base_rule import BaseRule
-
-# ---------------------------------------------------------------------------
-# Shared constants
-# ---------------------------------------------------------------------------
-
-_REGULATION = "SEBI (ICDR) Regulations, 2018"
-_EFFECTIVE_DATE = date(2018, 11, 1)
-_SOURCE_URL = (
-    "https://www.sebi.gov.in/legal/regulations/nov-2018/"
-    "sebi-icdr-regulations-2018.html"
-)
-
-# PromoterContributionRule constants
-_MIN_CONTRIBUTION_PCT = Decimal("20")  # 20% of post-issue capital
-
-# PromoterLockInRule constants
-_LOCK_IN_STANDARD_MONTHS = 18   # 18 months for standard issues
-_LOCK_IN_CAPEX_MONTHS = 36      # 36 months (3 years) for capex issues
-
-
-def _fmt_pct(value: Decimal) -> str:
-    """Format a Decimal percentage as 'X.XX%'."""
-    return f"{value:.2f}%"
+from app.models.enums import Verdict
+from app.models.rule_result import RuleResult
+from app.rules.base_rule import BaseRule, Inputs, fmt_pct
 
 
 class PromoterContributionRule(BaseRule):
-    """Mandatory rule: Promoter contribution ≥ 20% of post-issue capital.
+    """Promoters hold at least 20 % of post-issue capital (Reg 14(1))."""
 
-    SEBI (ICDR) Regulations, 2018, Regulation 32 requires that promoter(s)
-    contribute at least 20% of the post-issue paid-up capital. This ensures
-    that the promoter group retains meaningful skin in the game after the IPO.
-
-    The check uses PromoterData.post_issue_holding, which is the aggregate
-    promoter shareholding as a percentage of total post-issue capital
-    (i.e., after the IPO allotment).
-
-    Evaluation logic:
-      - Returns INCONCLUSIVE if post_issue_holding is not reliable.
-      - Returns PASS if post_issue_holding ≥ 20%.
-      - Returns FAIL otherwise, with a gap message showing the shortfall.
-
-    Example::
-
-        rule = PromoterContributionRule()
-        result = rule.evaluate(company)
-        assert result.rule_id == "PROMOTER_CONTRIBUTION_20"
-    """
+    rule_id = "PROMOTER_CONTRIBUTION_20"
 
     @property
-    def rule_id(self) -> str:
-        """Unique identifier for this rule.
+    def required_value(self) -> str:
+        return (
+            f"Promoters hold ≥ {fmt_pct(self.spec.decimal('min_contribution_pct'))} of post-issue "
+            "capital (shortfall up to "
+            f"{fmt_pct(self.spec.decimal('max_non_promoter_shortfall_pct'))} "
+            "may be met by eligible investors)"
+        )
 
-        Returns:
-            The string ``"PROMOTER_CONTRIBUTION_20"``.
-        """
-        return "PROMOTER_CONTRIBUTION_20"
-
-    @property
-    def metadata(self) -> RuleMetadata:
-        """Regulatory metadata for the promoter contribution rule.
-
-        Returns:
-            RuleMetadata citing SEBI ICDR Reg. 32.
-        """
-        return RuleMetadata(
-            regulation=_REGULATION,
-            section="Regulation 32",
-            clause=None,
-            description=(
-                "Promoter(s) must contribute at least 20% of post-issue "
-                "paid-up capital."
+    def _evaluate(self, company: CompanyData) -> RuleResult:
+        inputs = Inputs()
+        promoter = company.promoter
+        minimum = self.spec.decimal("min_contribution_pct")
+        cap = self.spec.decimal("max_non_promoter_shortfall_pct")
+        if not promoter.has_identifiable_promoter:
+            inputs.declared("promoter.has_identifiable_promoter", "false")
+            return self._result(
+                Verdict.NOT_APPLICABLE,
+                inputs,
+                explanation="The issuer has no identifiable promoter (Reg 14(1), second proviso).",
+            )
+        holding = inputs.get("promoter.post_issue_holding", promoter.post_issue_holding)
+        if holding is None or inputs.unreliable:
+            return self._undetermined(inputs)
+        inputs.calc(f"Post-issue promoter holding {fmt_pct(holding)} vs minimum {fmt_pct(minimum)}")
+        if holding >= minimum:
+            return self._result(
+                Verdict.PASS,
+                inputs,
+                actual_value=fmt_pct(holding),
+                explanation=f"Promoters hold {fmt_pct(holding)} of post-issue capital.",
+            )
+        shortfall = minimum - holding
+        others = inputs.get(
+            "promoter.eligible_non_promoter_contribution",
+            promoter.eligible_non_promoter_contribution,
+        )
+        if others is not None and inputs.unreliable:
+            return self._undetermined(inputs, fmt_pct(holding))
+        if others is not None:
+            counted = min(others, cap)
+            inputs.calc(
+                f"First proviso: eligible non-promoter contribution {fmt_pct(others)} "
+                f"(counted up to {fmt_pct(cap)}) → {fmt_pct(counted)}; total "
+                f"{fmt_pct(holding + counted)}"
+            )
+            if holding + counted >= minimum:
+                return self._result(
+                    Verdict.PASS,
+                    inputs,
+                    actual_value=f"{fmt_pct(holding)} + {fmt_pct(counted)} (Reg 14(1) proviso)",
+                    explanation=(
+                        "The promoter shortfall is met by contributions from entities permitted by "
+                        "the first proviso to Reg 14(1), within the 10% cap."
+                    ),
+                    review_reasons=[
+                        "Verify that contributing entities qualify under the Reg 14(1) proviso."
+                    ],
+                )
+        return self._result(
+            Verdict.FAIL,
+            inputs,
+            actual_value=fmt_pct(holding),
+            gap=f"{fmt_pct(shortfall)} of post-issue capital",
+            explanation=(
+                f"Promoters hold {fmt_pct(holding)} of post-issue capital, below "
+                f"{fmt_pct(minimum)}, "
+                "and the shortfall is not met under the Reg 14(1) proviso."
             ),
-            category=RuleCategory.MANDATORY,
-            effective_date=_EFFECTIVE_DATE,
-            source_url=_SOURCE_URL,
-        )
-
-    @property
-    def _required_value(self) -> str:
-        """Human-readable threshold description.
-
-        Returns:
-            A string describing the regulatory requirement.
-        """
-        return "≥ 20% of post-issue paid-up capital"
-
-    def evaluate(self, company: CompanyData) -> RuleResult:
-        """Evaluate promoter contribution against the 20% post-issue threshold.
-
-        Checks that post_issue_holding ≥ 20%. Returns INCONCLUSIVE if data
-        is unreliable; FAIL if the contribution falls short; PASS otherwise.
-
-        Args:
-            company: Canonical company data with promoter shareholding details.
-
-        Returns:
-            A RuleResult with verdict PASS, FAIL, or INCONCLUSIVE.
-        """
-        post_issue_ev = company.promoter.post_issue_holding
-
-        if not post_issue_ev.is_reliable():
-            return self._build_inconclusive(
-                reason=(
-                    "promoter post_issue_holding has low confidence without "
-                    "human confirmation"
-                ),
-                actual_value=None,
-            )
-
-        post_issue_pct: Decimal = post_issue_ev.value
-        actual_value = f"Promoter holds {_fmt_pct(post_issue_pct)} post-issue"
-
-        if post_issue_pct >= _MIN_CONTRIBUTION_PCT:
-            return self._build_result(
-                verdict=Verdict.PASS,
-                actual_value=actual_value,
-                explanation=(
-                    f"Promoter post-issue holding of {_fmt_pct(post_issue_pct)} "
-                    f"meets the minimum {_fmt_pct(_MIN_CONTRIBUTION_PCT)} "
-                    "required by SEBI (ICDR) Regulations, 2018, Regulation 32."
-                ),
-            )
-
-        shortfall: Decimal = _MIN_CONTRIBUTION_PCT - post_issue_pct
-        gap = (
-            f"Promoter holds {_fmt_pct(post_issue_pct)} post-issue; "
-            f"minimum required is {_fmt_pct(_MIN_CONTRIBUTION_PCT)} "
-            f"(shortfall: {_fmt_pct(shortfall)})"
-        )
-        explanation = (
-            f"Promoter post-issue holding of {_fmt_pct(post_issue_pct)} "
-            f"is below the minimum {_fmt_pct(_MIN_CONTRIBUTION_PCT)} "
-            "required by SEBI (ICDR) Regulations, 2018, Regulation 32. "
-            f"Shortfall: {_fmt_pct(shortfall)}."
-        )
-
-        return self._build_result(
-            verdict=Verdict.FAIL,
-            actual_value=actual_value,
-            gap=gap,
-            explanation=explanation,
+            remediation=[
+                "Increase promoter holding, reduce the offer size, or arrange contributions from "
+                "AIFs, FVCIs, scheduled commercial banks, PFIs, IRDAI-registered insurers, ≥5% "
+                "non-individual public shareholders or promoter-group entities (max 10%).",
+            ],
         )
 
 
 class PromoterLockInRule(BaseRule):
-    """Mandatory rule: Promoter shares must be locked in for the required period.
+    """Lock-in of minimum promoters' contribution (Reg 16(1)(a))."""
 
-    SEBI (ICDR) Regulations, 2018, Regulation 36 mandates a minimum lock-in
-    period for the promoter contribution:
-
-      - Standard issues:  18 months from the date of allotment.
-      - Capex issues:     36 months (3 years) from the date of allotment.
-
-    The is_capex_issue flag in PromoterData switches between the two thresholds.
-    The check reads lock_in_months from PromoterData to determine the committed
-    lock-in period.
-
-    Evaluation logic:
-      - Returns INCONCLUSIVE if lock_in_months is not reliable.
-      - Selects the applicable threshold based on is_capex_issue.
-      - Returns PASS if lock_in_months ≥ required minimum.
-      - Returns FAIL otherwise, with a gap message.
-
-    Example::
-
-        rule = PromoterLockInRule()
-        result = rule.evaluate(company)
-        assert result.rule_id == "PROMOTER_LOCK_IN"
-    """
+    rule_id = "PROMOTER_LOCK_IN"
 
     @property
-    def rule_id(self) -> str:
-        """Unique identifier for this rule.
-
-        Returns:
-            The string ``"PROMOTER_LOCK_IN"``.
-        """
-        return "PROMOTER_LOCK_IN"
-
-    @property
-    def metadata(self) -> RuleMetadata:
-        """Regulatory metadata for the promoter lock-in rule.
-
-        Returns:
-            RuleMetadata citing SEBI ICDR Reg. 36.
-        """
-        return RuleMetadata(
-            regulation=_REGULATION,
-            section="Regulation 36",
-            clause=None,
-            description=(
-                "Promoter contribution must be locked in for ≥ 18 months "
-                "(standard issues) or ≥ 36 months (capex issues)."
-            ),
-            category=RuleCategory.MANDATORY,
-            effective_date=_EFFECTIVE_DATE,
-            source_url=_SOURCE_URL,
-        )
-
-    @property
-    def _required_value(self) -> str:
-        """Human-readable threshold description.
-
-        Returns:
-            A string describing the dual-threshold lock-in requirement.
-        """
+    def required_value(self) -> str:
         return (
-            "≥ 18 months lock-in (standard issues); "
-            "≥ 36 months lock-in (capex issues)"
+            f"Minimum promoters' contribution locked in for {self.spec.integer('standard_months')} "
+            f"months ({self.spec.integer('capex_months')} months if the majority of fresh-issue "
+            "proceeds is for capital expenditure)"
         )
 
-    def evaluate(self, company: CompanyData) -> RuleResult:
-        """Evaluate the promoter lock-in period against the applicable minimum.
-
-        Reads is_capex_issue to determine the applicable threshold, then
-        checks that lock_in_months meets or exceeds that threshold.
-
-        Args:
-            company: Canonical company data with promoter lock-in details.
-
-        Returns:
-            A RuleResult with verdict PASS, FAIL, or INCONCLUSIVE.
-        """
-        lock_in_ev = company.promoter.lock_in_months
-        is_capex = company.promoter.is_capex_issue
-
-        if not lock_in_ev.is_reliable():
-            return self._build_inconclusive(
-                reason=(
-                    "lock_in_months has low confidence without "
-                    "human confirmation"
-                ),
-                actual_value=None,
-            )
-
-        lock_in_months: int = lock_in_ev.value
-        required_months: int = (
-            _LOCK_IN_CAPEX_MONTHS if is_capex else _LOCK_IN_STANDARD_MONTHS
-        )
-        issue_type_label = "capex issue" if is_capex else "standard issue"
-        actual_value = (
-            f"{lock_in_months} months lock-in "
-            f"(issue type: {issue_type_label})"
-        )
-
-        if lock_in_months >= required_months:
-            return self._build_result(
-                verdict=Verdict.PASS,
-                actual_value=actual_value,
+    def _evaluate(self, company: CompanyData) -> RuleResult:
+        inputs = Inputs()
+        promoter = company.promoter
+        standard = self.spec.integer("standard_months")
+        capex = self.spec.integer("capex_months")
+        if not promoter.has_identifiable_promoter:
+            inputs.declared("promoter.has_identifiable_promoter", "false")
+            return self._result(
+                Verdict.NOT_APPLICABLE,
+                inputs,
                 explanation=(
-                    f"Promoter lock-in period of {lock_in_months} months "
-                    f"meets the {required_months}-month minimum required for "
-                    f"a {issue_type_label} under SEBI (ICDR) Regulations, "
-                    "2018, Regulation 36."
+                    "No identifiable promoter, so there is no minimum promoters' "
+                    "contribution to lock in."
                 ),
             )
-
-        shortfall: int = required_months - lock_in_months
-        gap = (
-            f"Lock-in is {lock_in_months} months; "
-            f"minimum required for a {issue_type_label} is {required_months} months "
-            f"(shortfall: {shortfall} month{'s' if shortfall != 1 else ''})"
+        months = inputs.get("promoter.lock_in_months", promoter.lock_in_months)
+        is_capex = inputs.require_flag("promoter.is_capex_issue", promoter.is_capex_issue)
+        if months is None or inputs.unreliable:
+            return self._undetermined(inputs)
+        if is_capex is None:
+            if months >= capex:
+                # satisfied whichever lock-in applies
+                inputs.missing.clear()
+                inputs.calc(
+                    f"{months} months ≥ {capex} (stricter capex period) → satisfied in either case"
+                )
+                return self._result(
+                    Verdict.PASS,
+                    inputs,
+                    actual_value=f"{months} months",
+                    explanation=(
+                        "The committed lock-in satisfies even the capital-expenditure lock-in."
+                    ),
+                )
+            return self._undetermined(inputs, f"{months} months")
+        required = capex if is_capex else standard
+        inputs.calc(
+            f"Required {required} months (capex issue: {is_capex}); committed {months} months"
         )
-        explanation = (
-            f"Promoter lock-in period of {lock_in_months} months is below "
-            f"the {required_months}-month minimum required for a {issue_type_label} "
-            "under SEBI (ICDR) Regulations, 2018, Regulation 36. "
-            f"Shortfall: {shortfall} month{'s' if shortfall != 1 else ''}."
-        )
-
-        return self._build_result(
-            verdict=Verdict.FAIL,
-            actual_value=actual_value,
-            gap=gap,
-            explanation=explanation,
+        if months >= required:
+            return self._result(
+                Verdict.PASS,
+                inputs,
+                actual_value=f"{months} months",
+                explanation=(
+                    f"Committed lock-in of {months} months meets the {required}-month requirement."
+                ),
+            )
+        return self._result(
+            Verdict.FAIL,
+            inputs,
+            actual_value=f"{months} months",
+            gap=f"{required - months} months short",
+            explanation=(
+                f"Committed lock-in of {months} months is shorter than the required "
+                f"{required} months."
+            ),
+            remediation=[f"Extend the promoter lock-in undertaking to at least {required} months."],
         )

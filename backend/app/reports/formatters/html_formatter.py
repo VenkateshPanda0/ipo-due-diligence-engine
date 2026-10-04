@@ -14,7 +14,12 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from app.models.ipo_report import IPOReport
-from app.reports.formatters.utils import format_date, format_status, format_verdict
+from app.reports.formatters.utils import (
+    format_date,
+    format_outcome,
+    format_status,
+    format_verdict,
+)
 
 
 class HTMLReportFormatter:
@@ -30,6 +35,7 @@ class HTMLReportFormatter:
         self._environment.filters["format_status"] = format_status
         self._environment.filters["format_verdict"] = format_verdict
         self._environment.filters["format_date"] = format_date
+        self._environment.filters["format_outcome"] = format_outcome
 
     def format(self, report: IPOReport) -> str:
         """Render a complete HTML report."""

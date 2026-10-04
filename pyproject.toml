@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ipo-due-diligence-engine"
-version = "0.1.0"
+version = "2.0.0"
 description = "Deterministic regulatory decision engine for evaluating IPO eligibility under SEBI ICDR regulations."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -25,11 +25,12 @@ dependencies = [
     "fastapi>=0.111",
     "uvicorn[standard]>=0.30",
     "python-multipart>=0.0.9",
-    "sqlmodel>=0.0.19",
+    "sqlalchemy>=2.0.30,<3",
+    "alembic>=1.13,<2",
     "jinja2>=3.1",
-    "structlog>=24.1",
-    "pdfplumber>=0.11",
+    "pdfplumber>=0.11,<0.12",
     "pypdfium2>=4.30",
+    "pikepdf>=9.0",
     "pytesseract>=0.3",
     "pillow>=10.4",
 ]
@@ -43,18 +44,20 @@ dev = [
     "ruff>=0.4",
     "mypy>=1.10",
     "pre-commit>=3.7",
-    "factory-boy>=3.3",
-    "polyfactory>=2.16",
+    "hypothesis>=6.100",
+    "pip-audit>=2.7",
+    "reportlab>=4.2",  # test fixtures only: synthetic PDFs
 ]
+
 docs = [
     "mkdocs>=1.6",
     "mkdocs-material>=9.5",
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/example/ipo-due-diligence-engine"
-"Documentation" = "https://github.com/example/ipo-due-diligence-engine/blob/main/docs"
-"Issues" = "https://github.com/example/ipo-due-diligence-engine/issues"
+"Homepage" = "https://github.com/VenkateshPanda0/ipo-due-diligence-engine"
+"Documentation" = "https://github.com/VenkateshPanda0/ipo-due-diligence-engine/blob/main/docs"
+"Issues" = "https://github.com/VenkateshPanda0/ipo-due-diligence-engine/issues"
 
 # ---------------------------------------------------------------------------
 # Hatch build configuration
@@ -74,6 +77,7 @@ src = ["backend"]
 select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "TCH"]
 ignore = [
     "TC001",  # Pydantic runtime type resolution needs these imports available
+    "TC002",  # FastAPI/Pydantic resolve annotations at runtime
     "TC003",  # Pydantic runtime type resolution needs these imports available
     "UP042",  # Project convention requires str, Enum for public API stability
     "UP046",  # Keep Pydantic generic model syntax compatible with current models
@@ -103,6 +107,8 @@ module = [
     "pdfplumber.*",
     "easyocr.*",
     "pytesseract.*",
+    "pikepdf.*",
+    "pypdfium2.*",
 ]
 ignore_missing_imports = true
 
@@ -133,7 +139,6 @@ source = ["backend/app"]
 branch = true
 omit = [
     "backend/tests/*",
-    "backend/app/parser/ai_extractor.py",  # requires live LLM API
 ]
 
 [tool.coverage.report]

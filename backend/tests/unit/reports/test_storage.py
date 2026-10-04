@@ -4,9 +4,11 @@ import json
 from pathlib import Path
 from uuid import uuid4
 
+from app.db.base import Database
+from app.db.repositories import SqlReportStorage
 from app.engine.decision_engine import DecisionEngine
 from app.models.ipo_report import IPOReport
-from app.reports.storage import InMemoryReportStorage, SQLiteReportStorage
+from app.reports.storage import InMemoryReportStorage
 from app.rules.registry import RuleRegistry
 from tests.fixtures.company_data_factory import CompanyDataFactory
 
@@ -45,9 +47,11 @@ def test_sqlite_storage_persists_report_across_instances(tmp_path) -> None:
     report = DecisionEngine(RuleRegistry()).evaluate(CompanyDataFactory.create())
     database_url = f"sqlite:///{tmp_path / 'reports.db'}"
 
-    first_storage = SQLiteReportStorage(database_url)
+    db = Database(database_url)
+    db.migrate()
+    first_storage = SqlReportStorage(db)
     first_storage.save(report.report_id, report)
-    second_storage = SQLiteReportStorage(database_url)
+    second_storage = SqlReportStorage(Database(database_url))
 
     assert second_storage.exists(report.report_id)
     assert second_storage.get(report.report_id) == report
@@ -56,7 +60,9 @@ def test_sqlite_storage_persists_report_across_instances(tmp_path) -> None:
 def test_sqlite_storage_round_trips_evidence(tmp_path) -> None:
     company = CompanyDataFactory.create()
     report = DecisionEngine(RuleRegistry()).evaluate(company)
-    storage = SQLiteReportStorage(f"sqlite:///{tmp_path / 'reports.db'}")
+    db = Database(f"sqlite:///{tmp_path / 'reports.db'}")
+    db.migrate()
+    storage = SqlReportStorage(db)
     storage.save(report.report_id, report)
     reloaded = storage.get(report.report_id)
 
@@ -78,3 +84,15 @@ def test_reports_stored_under_ruleset_1_still_load() -> None:
         report = IPOReport.model_validate(payload)
         assert report.outcome is None
         assert report.ruleset_version.version == "1.0.0"
+
+
+def test_sql_reports_are_immutable(tmp_path) -> None:
+    import pytest
+
+    db = Database(f"sqlite:///{tmp_path / 'reports.db'}")
+    db.migrate()
+    storage = SqlReportStorage(db)
+    report = DecisionEngine(RuleRegistry()).evaluate(CompanyDataFactory.create())
+    storage.save(report.report_id, report)
+    with pytest.raises(ValueError, match="immutable"):
+        storage.save(report.report_id, report)

@@ -12,8 +12,13 @@ def test_html_formatter_renders_complete_html_document() -> None:
 
     assert rendered.startswith("<!doctype html>")
     assert report.company_name in rendered
-    for section in ("A. Case summary", "B. Mandatory rule assessment", "C. Evidence register",
-                    "D. Unresolved issues", "E. Limitations"):
+    for section in (
+        "A. Case summary",
+        "B. Mandatory rule assessment",
+        "C. Evidence register",
+        "D. Unresolved issues",
+        "E. Limitations",
+    ):
         assert section in rendered
     assert "Annual_Report_Test.pdf" in rendered
     assert "{{" not in rendered

@@ -1,17 +1,20 @@
-"""Screening endpoints."""
+"""Screening endpoints (API v0, kept for backward compatibility)."""
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi.concurrency import run_in_threadpool
 
-from app.api.dependencies import get_screening_service
+from app.api.dependencies import Container, get_container, get_screening_service
+from app.api.routers.v1 import _read_limited
 from app.api.schemas.request_schemas import CompanyDataSchema
 from app.api.schemas.response_schemas import ScreeningResponse
-from app.core.constants import MAX_UPLOAD_SIZE_BYTES, MAX_UPLOAD_SIZE_MB, PDF_MEDIA_TYPES
 from app.core.security import require_api_key
 from app.services.screening_service import ScreeningService
 
-router = APIRouter(prefix="/screen", tags=["screening"], dependencies=[Depends(require_api_key)])
+router = APIRouter(
+    prefix="/screen", tags=["screening (v0)"], dependencies=[Depends(require_api_key)]
+)
 
 
 @router.post("/json", response_model=ScreeningResponse)
@@ -26,20 +29,15 @@ def screen_json(
 
 @router.post("/pdf", response_model=ScreeningResponse)
 async def screen_pdf(
-    file: UploadFile,
-    service: ScreeningService = Depends(get_screening_service),
+    file: UploadFile = File(...),
+    c: Container = Depends(get_container),
 ) -> ScreeningResponse:
-    """Screen a company from an uploaded PDF."""
-    if file.content_type not in PDF_MEDIA_TYPES:
-        raise HTTPException(
-            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-            detail="Only PDF uploads are supported.",
-        )
-    content = await file.read()
-    if len(content) > MAX_UPLOAD_SIZE_BYTES:
-        raise HTTPException(
-            status_code=413,
-            detail=f"Upload exceeds the {MAX_UPLOAD_SIZE_MB} MB limit.",
-        )
-    report = service.screen_pdf(file.filename or "uploaded.pdf", content)
+    """Screen a company from one uploaded PDF (synchronous; prefer /api/v1 cases).
+
+    The file type is established from its bytes, not the declared content type.
+    """
+    content = await _read_limited(file, c.settings.max_upload_size_bytes)
+    report = await run_in_threadpool(
+        c.screening.screen_pdf, file.filename or "uploaded.pdf", content
+    )
     return ScreeningResponse.from_report(report)

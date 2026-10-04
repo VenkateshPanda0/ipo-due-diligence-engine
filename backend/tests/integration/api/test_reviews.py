@@ -4,7 +4,6 @@ from uuid import uuid4
 
 from fastapi.testclient import TestClient
 
-from app.core.config import Settings, get_settings
 from app.main import app
 from tests.fixtures.company_data_factory import CompanyDataFactory
 
@@ -74,40 +73,49 @@ def test_open_review_unknown_report_returns_404() -> None:
     assert response.json()["error"]["code"] == "REPORT_NOT_FOUND"
 
 
-def test_complete_review_requires_reviewer_role_when_api_key_configured() -> None:
-    app.dependency_overrides[get_settings] = lambda: Settings(API_KEY="secret")
-    client = TestClient(app)
-    report_response = client.post(
-        "/screen/json",
-        json=CompanyDataFactory.create().model_dump(mode="json"),
-        headers={"Authorization": "Bearer secret"},
+def test_self_declared_role_header_is_ignored(app_factory) -> None:  # type: ignore[no-untyped-def]
+    """Regression (D11): X-User-Role must not grant reviewer rights."""
+    client = app_factory(API_KEYS="ana|analyst|ana-key,rev|reviewer|rev-key")
+    analyst = {"Authorization": "Bearer ana-key"}
+    report = client.post(
+        "/screen/json", json=CompanyDataFactory.create().model_dump(mode="json"), headers=analyst
     )
-    review_response = client.post(
-        f"/reviews/reports/{report_response.json()['report_id']}",
-        headers={"Authorization": "Bearer secret"},
-    )
+    assert report.status_code == 200
+    review = client.post(f"/reviews/reports/{report.json()['report_id']}", headers=analyst)
+    decision = {
+        "reviewer_name": "Lead Analyst",
+        "final_decision": "proceed",
+        "rationale": "Reviewed.",
+        "conditions": [],
+    }
 
-    missing_role = client.post(
-        f"/reviews/{review_response.json()['review_id']}/decision",
-        json={
-            "reviewer_name": "Lead Analyst",
-            "final_decision": "proceed",
-            "rationale": "Reviewed.",
-            "conditions": [],
-        },
-        headers={"Authorization": "Bearer secret"},
+    spoofed = client.post(
+        f"/reviews/{review.json()['review_id']}/decision",
+        json=decision,
+        headers={**analyst, "X-User-Role": "reviewer"},
     )
-    valid_role = client.post(
-        f"/reviews/{review_response.json()['review_id']}/decision",
-        json={
-            "reviewer_name": "Lead Analyst",
-            "final_decision": "proceed",
-            "rationale": "Reviewed.",
-            "conditions": [],
-        },
-        headers={"Authorization": "Bearer secret", "X-User-Role": "reviewer"},
-    )
-    app.dependency_overrides.clear()
+    assert spoofed.status_code == 403
 
-    assert missing_role.status_code == 403
-    assert valid_role.status_code == 200
+    legit = client.post(
+        f"/reviews/{review.json()['review_id']}/decision",
+        json=decision,
+        headers={"Authorization": "Bearer rev-key"},
+    )
+    assert legit.status_code == 200
+
+    again = client.post(
+        f"/reviews/{review.json()['review_id']}/decision",
+        json=decision,
+        headers={"Authorization": "Bearer rev-key"},
+    )
+    assert again.status_code == 409  # decisions are immutable
+
+
+def test_legacy_api_key_maps_to_analyst(app_factory) -> None:  # type: ignore[no-untyped-def]
+    client = app_factory(API_KEY="secret")
+    assert (
+        client.get("/api/v1/me", headers={"Authorization": "Bearer secret"}).json()["role"]
+        == "analyst"
+    )
+    assert client.get("/api/v1/me").status_code == 401
+    assert client.get("/api/v1/me", headers={"Authorization": "Bearer wrong"}).status_code == 401

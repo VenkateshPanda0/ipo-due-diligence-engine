@@ -14,11 +14,15 @@ import pytest
 
 APP_ROOT = Path(__file__).resolve().parents[2] / "app"
 
+_INFRA = ("app.api", "app.services", "app.db")
 BOUNDARY_RULES = {
-    "parser": ("app.rules", "app.engine"),
-    "rules": ("app.parser",),
-    "engine": ("app.parser",),
-    "models": ("app.parser", "app.rules", "app.engine", "app.api", "app.services"),
+    # Document intelligence extracts facts; it never evaluates rules.
+    "intelligence": ("app.rules", "app.engine", "app.regulatory", *_INFRA),
+    # Rules and engine are pure: no extraction, persistence or HTTP.
+    "rules": ("app.intelligence", *_INFRA),
+    "engine": ("app.intelligence", *_INFRA),
+    "regulatory": ("app.rules", "app.engine", "app.intelligence", *_INFRA),
+    "models": ("app.intelligence", "app.rules", "app.engine", "app.regulatory", *_INFRA),
 }
 
 

@@ -28,4 +28,9 @@ def get_report(
 ) -> Response:
     """Retrieve a previously generated report."""
     rendered = service.get_report(report_id, format)
-    return Response(content=rendered, media_type=_MEDIA_TYPES[format])
+    headers = (
+        {"Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'"}
+        if format == "html"
+        else {}
+    )
+    return Response(content=rendered, media_type=_MEDIA_TYPES[format], headers=headers)

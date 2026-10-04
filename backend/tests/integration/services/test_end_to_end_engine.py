@@ -29,9 +29,7 @@ class TestDeterministicPipeline:
         )
 
     def test_not_eligible_company_produces_failed_mandatory_gaps(self) -> None:
-        report = DecisionEngine(RuleRegistry()).evaluate(
-            CompanyDataFactory.create_not_eligible()
-        )
+        report = DecisionEngine(RuleRegistry()).evaluate(CompanyDataFactory.create_not_eligible())
 
         assert report.status == IPOStatus.NOT_ELIGIBLE
         assert report.mandatory_progress.failed > 0
@@ -42,9 +40,7 @@ class TestDeterministicPipeline:
         )
 
     def test_low_confidence_company_produces_needs_review_report(self) -> None:
-        report = DecisionEngine(RuleRegistry()).evaluate(
-            CompanyDataFactory.create_needs_review()
-        )
+        report = DecisionEngine(RuleRegistry()).evaluate(CompanyDataFactory.create_needs_review())
 
         assert report.status == IPOStatus.NEEDS_REVIEW
         # Present-but-low-confidence evidence requires human review (not "missing").

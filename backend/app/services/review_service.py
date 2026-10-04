@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from uuid import UUID
 
-from app.models.exceptions import ReportNotFoundError
+from app.models.exceptions import InvalidStateError, ReportNotFoundError
 from app.models.human_review import (
     HumanFinalDecision,
     HumanReviewRecord,
@@ -22,7 +22,7 @@ class HumanReviewService:
         self._report_storage = report_storage
         self._review_storage = review_storage
 
-    def open_review(self, report_id: UUID) -> HumanReviewRecord:
+    def open_review(self, report_id: UUID, actor: str = "system") -> HumanReviewRecord:
         """Create or return the pending human review for a report."""
         report = self._report_storage.get(report_id)
         if report is None:
@@ -36,7 +36,7 @@ class HumanReviewService:
             report_id=report_id,
             machine_status=report.status,
         )
-        self._review_storage.save(review)
+        self._save(review, actor)
         return review
 
     def get_review(self, review_id: UUID) -> HumanReviewRecord:
@@ -54,9 +54,16 @@ class HumanReviewService:
         final_decision: HumanFinalDecision,
         rationale: str,
         conditions: list[str] | None = None,
+        actor: str = "system",
     ) -> HumanReviewRecord:
-        """Record the human final decision for a review."""
+        """Record the human final decision. A completed review cannot be changed."""
         existing = self.get_review(review_id)
+        if existing.status == HumanReviewStatus.COMPLETED:
+            raise InvalidStateError(
+                "human review",
+                existing.status.value,
+                "This review is already completed; decisions are immutable.",
+            )
         completed = HumanReviewRecord(
             review_id=existing.review_id,
             report_id=existing.report_id,
@@ -69,5 +76,12 @@ class HumanReviewService:
             created_at=existing.created_at,
             completed_at=datetime.now(tz=UTC),
         )
-        self._review_storage.save(completed)
+        self._save(completed, actor)
         return completed
+
+    def _save(self, review: HumanReviewRecord, actor: str) -> None:
+        self._review_storage.save(review, actor=actor)
+
+    def history(self, review_id: UUID) -> list[dict[str, object]]:
+        history = getattr(self._review_storage, "history", None)
+        return history(review_id) if callable(history) else []

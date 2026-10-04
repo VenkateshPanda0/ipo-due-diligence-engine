@@ -1,7 +1,7 @@
 # Makefile for IPO Due Diligence Engine
 # Targets: install, dev, test, lint, typecheck, coverage, clean, run
 
-.PHONY: install dev test test-unit test-integration test-regression \
+.PHONY: install dev test test-unit test-integration test-regression test-frontend test-e2e benchmark \
         lint format typecheck coverage clean run help
 
 # ---------------------------------------------------------------------------
@@ -10,6 +10,7 @@
 
 install:
 	pip install -e ".[dev]"
+	cd frontend && npm ci
 
 dev: install
 	pre-commit install
@@ -18,20 +19,30 @@ dev: install
 # Testing
 # ---------------------------------------------------------------------------
 
+# Backend tests run from backend/ so that `app` and `tests` import as packages.
 test:
-	pytest backend/tests/
+	cd backend && pytest -q tests/
 
 test-unit:
-	pytest backend/tests/unit/ -m unit
+	cd backend && pytest -q tests/unit/
 
 test-integration:
-	pytest backend/tests/integration/ -m integration
+	cd backend && pytest -q tests/integration/
 
 test-regression:
-	pytest backend/tests/regression/ -m regression
+	cd backend && pytest -q tests/regression/
+
+test-frontend:
+	cd frontend && npm run typecheck && npm test
+
+test-e2e:
+	cd frontend && npx playwright test
 
 coverage:
-	pytest backend/tests/ --cov=backend/app --cov-report=term-missing --cov-report=html
+	cd backend && pytest -q tests/ --cov=app --cov-report=term-missing --cov-report=html
+
+benchmark:
+	python scripts/benchmark_extraction.py --download --run
 
 # ---------------------------------------------------------------------------
 # Code quality
@@ -51,7 +62,7 @@ typecheck:
 # ---------------------------------------------------------------------------
 
 run:
-	uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
+	cd backend && uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
 # ---------------------------------------------------------------------------
 # Housekeeping

@@ -1,6 +1,6 @@
 # ADR-0001: Deterministic Rules Engine
 
-**Status:** Accepted
+**Status:** Accepted (extraction approach refined by ADR-0005: no AI/LLM extraction)
 **Date:** 2026-07-09
 
 ## Context

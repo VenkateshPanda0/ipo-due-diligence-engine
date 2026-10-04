@@ -1,5 +1,9 @@
 # IPO Due Diligence Engine — Build Spec
 
+> **Historical document (pre-2.0.0).** Kept for context. Where it conflicts with the current
+> design — LLM extraction, PostgreSQL, `Eligible`/`Not Eligible` wording, ICDR 2009 numbering —
+> the current documents win: README.md, ARCHITECTURE.md, REGULATIONS.md and ADR 0005–0007.
+
 ## 1. What this is
 
 A tool that evaluates a private/SME company's readiness for an IPO against

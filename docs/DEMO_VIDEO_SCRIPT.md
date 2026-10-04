@@ -1,5 +1,9 @@
 # Demo Video Script
 
+> **Historical document (pre-2.0.0).** Kept for context. Where it conflicts with the current
+> design — LLM extraction, PostgreSQL, `Eligible`/`Not Eligible` wording, ICDR 2009 numbering —
+> the current documents win: README.md, ARCHITECTURE.md, REGULATIONS.md and ADR 0005–0007.
+
 Target length: 3 to 5 minutes.
 
 ## 1. Opening

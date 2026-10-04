@@ -1,41 +1,43 @@
-# Regulatory Validation Gate
+# Regulatory validation gate
 
-This project is technically runnable, but it must not be represented as a
-legally complete SEBI IPO eligibility product until a qualified regulatory
-review signs off on the encoded rules.
+This project runs, but it must not be presented as a legally complete or legally
+reviewed SEBI IPO eligibility product. No qualified securities-law professional has
+reviewed the encoded rules.
 
-## Current SEBI Source Check
+## Current state (ruleset 2.0.0, 2026-10-04)
 
-Source checked: SEBI Legal -> Regulations -> Updated List.
+* The primary sources were retrieved, with SHA-256 hashes recorded in
+  `backend/app/regulatory/data/sources.json`:
+  * SEBI ICDR 2018 consolidated text, last amended 21-03-2026.
+  * SEBI LODR 2015 consolidated text, last amended 14-07-2026.
+* The SCRR Rule 19(2)(b) 2026 substitution could not be retrieved, so the rule rests on
+  two secondary summaries (`secondary_sources_only`).
+* The BSE and NSE main-board criteria could not be retrieved (HTTP 403), so those rules
+  are marked `unverified`.
+* There are 13 mandatory and 6 advisory rules for the main-board Reg 6(1) and Reg 6(2)
+  routes. SME (Chapter IX) is out of scope and returns `UNSUPPORTED_SCOPE`.
+* `REGULATORY_VALIDATION_CONFIRMED=false`, and the ruleset's
+  `legal_review.confirmed=false` with an empty `reviewed_rule_ids` list. Every report
+  shows this value.
 
-As of the project readiness review on 2026-07-09:
+The open legal questions are listed in [REGULATIONS.md](REGULATIONS.md#unresolved-legal-questions).
 
-- SEBI ICDR 2018 is listed by SEBI as last amended on 2026-03-21.
-- SEBI LODR 2015 is listed by SEBI as last amended on 2026-01-22.
+## Sign-off procedure
 
-Project status:
+1. A qualified reviewer compares each rule in `rulesets/2.0.0.json` (provision,
+   parameters, decision procedure, limitations) against the current primary text and
+   records any discrepancies.
+2. The engineering team fixes the discrepancies in a **new ruleset version**. Published
+   versions are never edited in place. Each fix comes with tests for pass, fail,
+   boundary, missing and unreliable inputs.
+3. The reviewer resolves or accepts each unresolved legal question in writing.
+4. The ruleset's `legal_review` block records `confirmed: true`, the reviewed rule IDs
+   and a reference to the signed memo. Only then may a deployment set
+   `REGULATORY_VALIDATION_CONFIRMED=true` and `REGULATORY_VALIDATION_REFERENCE`.
 
-- The engine implements 11 mandatory checks and 5 advisory checks.
-- The implementation is a useful screening subset, not a clause-by-clause
-  encoding of every current ICDR, LODR, Companies Act, NSE, or BSE obligation.
-- `REGULATORY_VALIDATION_CONFIRMED=false` by default. Keep it false until a
-  legal/regulatory reviewer confirms coverage and interpretation.
+## Accuracy policy
 
-## Sign-Off Requirements
-
-Before enabling production use:
-
-1. Compare every implemented rule in `docs/REGULATIONS.md` against the latest
-   consolidated SEBI ICDR and LODR texts.
-2. Identify missing eligibility paths, SME provisions, disclosure obligations,
-   exemptions, transitional provisions, and exchange-specific listing criteria.
-3. Add or update rules with tests for pass, fail, boundary, and inconclusive cases.
-4. Update `docs/CHANGELOG.md` with source references and effective dates.
-5. Regenerate demo outputs and regression fixtures.
-6. Set `REGULATORY_VALIDATION_CONFIRMED=true` only after sign-off.
-
-## Accuracy Policy
-
-Do not claim a numeric accuracy percentage until the system has been benchmarked
-against a representative, reviewed dataset of real filings and known eligibility
-outcomes. Test pass rate is not the same thing as regulatory accuracy.
+Do not quote an accuracy percentage as a property of the product. The extraction
+benchmark ([BENCHMARK_RESULTS.md](BENCHMARK_RESULTS.md)) uses answer keys that have not
+been human-verified, and it measures extraction, not eligibility outcomes. A test pass
+rate is not regulatory accuracy.

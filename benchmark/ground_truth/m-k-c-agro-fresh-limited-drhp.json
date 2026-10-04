@@ -1,0 +1,154 @@
+{
+  "document_id": "m-k-c-agro-fresh-limited-drhp",
+  "sha256": "6cd7f0dc40ee1bfd02f00e6654c0e928eba6ee7ee7a501503f19ae69eb47dc6b",
+  "expected_route": "mainboard_reg6_1",
+  "table_note": "Caption '(₹ in lakhs, unless otherwise stated)'; 'Fiscal 2026' headers; footnote markers printed on the line above labels; FY2026 monetary assets printed without grouping (1299.43).",
+  "reviewer": "Answer key prepared by an AI assistant reading poppler pdftotext output after the 2026-10-04 code freeze (commit 96169ca), without running the pipeline on this document. NOT yet verified by a human.",
+  "prepared_on": "2026-10-04",
+  "fields": [
+    {
+      "field_path": "financials.fiscal_years[FY2026].net_tangible_assets",
+      "original_text": "12,025.64",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "120.2564",
+      "period": "FY2026",
+      "basis": "consolidated",
+      "pages": [
+        479
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].net_tangible_assets",
+      "original_text": "10,571.12",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "105.7112",
+      "period": "FY2025",
+      "basis": "consolidated",
+      "pages": [
+        479
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].net_tangible_assets",
+      "original_text": "8,903.28",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "89.0328",
+      "period": "FY2024",
+      "basis": "consolidated",
+      "pages": [
+        479
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].monetary_assets",
+      "original_text": "1299.43",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "12.9943",
+      "period": "FY2026",
+      "basis": "consolidated",
+      "pages": [
+        479
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].monetary_assets",
+      "original_text": "533.67",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "5.3367",
+      "period": "FY2025",
+      "basis": "consolidated",
+      "pages": [
+        479
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].monetary_assets",
+      "original_text": "276.46",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "2.7646",
+      "period": "FY2024",
+      "basis": "consolidated",
+      "pages": [
+        479
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].operating_profit",
+      "original_text": "5,207.64",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "52.0764",
+      "period": "FY2026",
+      "basis": "consolidated",
+      "pages": [
+        479
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].operating_profit",
+      "original_text": "3,439.71",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "34.3971",
+      "period": "FY2025",
+      "basis": "consolidated",
+      "pages": [
+        479
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].operating_profit",
+      "original_text": "3,511.15",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "35.1115",
+      "period": "FY2024",
+      "basis": "consolidated",
+      "pages": [
+        479
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].net_worth",
+      "original_text": "13,327.08",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "133.2708",
+      "period": "FY2026",
+      "basis": "consolidated",
+      "pages": [
+        479
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].net_worth",
+      "original_text": "11,108.36",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "111.0836",
+      "period": "FY2025",
+      "basis": "consolidated",
+      "pages": [
+        479
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].net_worth",
+      "original_text": "9,183.17",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "91.8317",
+      "period": "FY2024",
+      "basis": "consolidated",
+      "pages": [
+        479
+      ],
+      "notes": ""
+    }
+  ]
+}

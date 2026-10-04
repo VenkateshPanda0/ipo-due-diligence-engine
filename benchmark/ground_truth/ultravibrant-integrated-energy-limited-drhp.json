@@ -1,0 +1,154 @@
+{
+  "document_id": "ultravibrant-integrated-energy-limited-drhp",
+  "sha256": "a184561dfdb582b7b960ca468a1e551b6dc820a090f5919c82362069a7806c8c",
+  "expected_route": "mainboard_reg6_2",
+  "table_note": "Reg 6(2) issuer; caption '(₹ in lakhs …)'; per-column basis (Consolidated)/(Consolidated)/(Standalone).",
+  "reviewer": "Answer key prepared by an AI assistant reading poppler pdftotext output after the 2026-10-04 code freeze (commit 96169ca), without running the pipeline on this document. NOT yet verified by a human.",
+  "prepared_on": "2026-10-04",
+  "fields": [
+    {
+      "field_path": "financials.fiscal_years[FY2026].net_tangible_assets",
+      "original_text": "4,190.59",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "41.9059",
+      "period": "FY2026",
+      "basis": "consolidated",
+      "pages": [
+        474
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].net_tangible_assets",
+      "original_text": "1,782.29",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "17.8229",
+      "period": "FY2025",
+      "basis": "consolidated",
+      "pages": [
+        474
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].net_tangible_assets",
+      "original_text": "223.75",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "2.2375",
+      "period": "FY2024",
+      "basis": "standalone",
+      "pages": [
+        474
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].monetary_assets",
+      "original_text": "421.54",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "4.2154",
+      "period": "FY2026",
+      "basis": "consolidated",
+      "pages": [
+        474
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].monetary_assets",
+      "original_text": "3,235.99",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "32.3599",
+      "period": "FY2025",
+      "basis": "consolidated",
+      "pages": [
+        474
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].monetary_assets",
+      "original_text": "207.22",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "2.0722",
+      "period": "FY2024",
+      "basis": "standalone",
+      "pages": [
+        474
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].operating_profit",
+      "original_text": "5,377.29",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "53.7729",
+      "period": "FY2026",
+      "basis": "consolidated",
+      "pages": [
+        474
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].operating_profit",
+      "original_text": "2,662.42",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "26.6242",
+      "period": "FY2025",
+      "basis": "consolidated",
+      "pages": [
+        474
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].operating_profit",
+      "original_text": "213.67",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "2.1367",
+      "period": "FY2024",
+      "basis": "standalone",
+      "pages": [
+        474
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].net_worth",
+      "original_text": "5,630.41",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "56.3041",
+      "period": "FY2026",
+      "basis": "consolidated",
+      "pages": [
+        474
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].net_worth",
+      "original_text": "2,231.10",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "22.3110",
+      "period": "FY2025",
+      "basis": "consolidated",
+      "pages": [
+        474
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].net_worth",
+      "original_text": "234.05",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "2.3405",
+      "period": "FY2024",
+      "basis": "standalone",
+      "pages": [
+        474
+      ],
+      "notes": ""
+    }
+  ]
+}

@@ -3,7 +3,7 @@
   "documents": [
     {
       "id": "madhur-iron-and-steel-india-limited-drhp",
-      "title": "Madhur Iron & Steel India Limited \u2014 DRHP",
+      "title": "Madhur Iron & Steel India Limited — DRHP",
       "filing_page": "https://www.sebi.gov.in/filings/public-issues/sep-2026/madhur-iron-and-steel-india-limited-drhp_104575.html",
       "pdf_url": "https://www.sebi.gov.in/sebi_data/attachdocs/sep-2026/1789720399852.pdf",
       "sha256": "6ee410a6ec28b771be0754352d42d09b3495b474086413733a1e884250b0d1ad",
@@ -12,7 +12,7 @@
     },
     {
       "id": "ekkaa-electronics-india-limited-drhp",
-      "title": "Ekkaa Electronics (India) Limited \u2014 DRHP",
+      "title": "Ekkaa Electronics (India) Limited — DRHP",
       "filing_page": "https://www.sebi.gov.in/filings/public-issues/oct-2026/ekkaa-electronics-india-limited-drhp_104862.html",
       "pdf_url": "https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1790859034640.pdf",
       "sha256": "be9e503ae7cd1dc3a4c0ea296ec44b51c0cb40fb0448f8530812cb5cc4123fb2",
@@ -21,7 +21,7 @@
     },
     {
       "id": "jsw-one-platforms-limited-drhp",
-      "title": "JSW One Platforms Limited \u2014 DRHP",
+      "title": "JSW One Platforms Limited — DRHP",
       "filing_page": "https://www.sebi.gov.in/filings/public-issues/sep-2026/jsw-one-platforms-limited-drhp_104742.html",
       "pdf_url": "https://www.sebi.gov.in/sebi_data/attachdocs/sep-2026/1790585630648.pdf",
       "sha256": "6e1c8ac697135604740296a476bb760e70240ae88bb8627f4e50ca06d94a750a",
@@ -30,7 +30,7 @@
     },
     {
       "id": "iris-global-services-limited-drhp",
-      "title": "Iris Global Services Limited \u2014 DRHP",
+      "title": "Iris Global Services Limited — DRHP",
       "filing_page": "https://www.sebi.gov.in/filings/public-issues/sep-2026/iris-global-services-limited-drhp_104746.html",
       "pdf_url": "https://www.sebi.gov.in/sebi_data/attachdocs/sep-2026/1790743844411.pdf",
       "sha256": "c39a528f48cb59b67b6c6ea32fab509b5a8b643d360e2541102a8717e983c3a0",
@@ -39,7 +39,7 @@
     },
     {
       "id": "jagatjit-agri-engineering-limited-drhp",
-      "title": "Jagatjit Agri Engineering Limited \u2014 DRHP",
+      "title": "Jagatjit Agri Engineering Limited — DRHP",
       "filing_page": "https://www.sebi.gov.in/filings/public-issues/oct-2026/jagatjit-agri-engineering-limited-drhp_104866.html",
       "pdf_url": "https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1790859620068.pdf",
       "sha256": "d03c7e2c2f1007e3ecc89cdd91704e7c279d924acf08494c6f130e8f1d586ab7",
@@ -48,7 +48,7 @@
     },
     {
       "id": "iberia-pharmaceuticals-india-limited-drhp",
-      "title": "Iberia Pharmaceuticals India Limited \u2014 DRHP",
+      "title": "Iberia Pharmaceuticals India Limited — DRHP",
       "filing_page": "https://www.sebi.gov.in/filings/public-issues/sep-2026/iberia-pharmaceuticals-india-limited-drhp_104542.html",
       "pdf_url": "https://www.sebi.gov.in/sebi_data/attachdocs/sep-2026/1789635115853.pdf",
       "sha256": "0c54a969523396a6aeecb6cd285a4d0a7426c5c0712f4bf3e168a9ea54ca5ff7",
@@ -57,7 +57,7 @@
     },
     {
       "id": "vardaan-biotech-limited-drhp",
-      "title": "Vardaan Biotech Limited \u2014 DRHP",
+      "title": "Vardaan Biotech Limited — DRHP",
       "filing_page": "https://www.sebi.gov.in/filings/public-issues/sep-2026/vardaan-biotech-limited-drhp_104652.html",
       "pdf_url": "https://www.sebi.gov.in/sebi_data/attachdocs/sep-2026/1790076604769_1355.pdf",
       "sha256": "a25e896b63bff0724e52683dc6623edd0f25bafe110cf421aa373b7d61c8acb7",
@@ -66,12 +66,57 @@
     },
     {
       "id": "anchor-offshore-services-limited-drhp",
-      "title": "Anchor Offshore Services Limited \u2014 DRHP",
+      "title": "Anchor Offshore Services Limited — DRHP",
       "filing_page": "https://www.sebi.gov.in/filings/public-issues/sep-2026/anchor-offshore-services-limited-drhp_104580.html",
       "pdf_url": "https://www.sebi.gov.in/sebi_data/attachdocs/sep-2026/1789731006415_1354.pdf",
       "sha256": "c329bb7d550f91d441c144fffbfb32a89138b0e649796a7f7b7961b48a877d9c",
       "retrieved_on": "2026-10-04",
       "ground_truth": "ground_truth/anchor-offshore-services-limited-drhp.json"
+    },
+    {
+      "id": "royal-chain-limited-drhp",
+      "title": "Royal Chain Limited — DRHP",
+      "filing_page": "https://www.sebi.gov.in/filings/public-issues/oct-2026/royal-chain-limited-drhp_104015.html",
+      "pdf_url": "https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1790844520797.pdf",
+      "sha256": "5d71e04b220c777fb121f736013ec5d73928aa3dd6c1be63d38bf534d4aa9910",
+      "retrieved_on": "2026-10-04",
+      "ground_truth": "ground_truth/royal-chain-limited-drhp.json"
+    },
+    {
+      "id": "hi-tech-flow-solutions-limited-drhp",
+      "title": "Hi-Tech Flow Solutions Limited — DRHP",
+      "filing_page": "https://www.sebi.gov.in/filings/public-issues/sep-2026/hi-tech-flow-solutions-limited-drhp_104635.html",
+      "pdf_url": "https://www.sebi.gov.in/sebi_data/attachdocs/sep-2026/1790058959002.pdf",
+      "sha256": "5ff5b04ff3227f6f2a87dbd6ceac6895a09b4d6022868ed15a927c68d60d0cac",
+      "retrieved_on": "2026-10-04",
+      "ground_truth": "ground_truth/hi-tech-flow-solutions-limited-drhp.json"
+    },
+    {
+      "id": "m-k-c-agro-fresh-limited-drhp",
+      "title": "M K C Agro Fresh Limited — DRHP",
+      "filing_page": "https://www.sebi.gov.in/filings/public-issues/sep-2026/m-k-c-agro-fresh-limited-drhp_104430.html",
+      "pdf_url": "https://www.sebi.gov.in/sebi_data/attachdocs/sep-2026/1789111806400_1350.pdf",
+      "sha256": "6cd7f0dc40ee1bfd02f00e6654c0e928eba6ee7ee7a501503f19ae69eb47dc6b",
+      "retrieved_on": "2026-10-04",
+      "ground_truth": "ground_truth/m-k-c-agro-fresh-limited-drhp.json"
+    },
+    {
+      "id": "maharashtra-oil-extractions-limited-drhp",
+      "title": "Maharashtra Oil Extractions Limited — DRHP",
+      "filing_page": "https://www.sebi.gov.in/filings/public-issues/sep-2026/maharashtra-oil-extractions-limited-drhp_104503.html",
+      "pdf_url": "https://www.sebi.gov.in/sebi_data/attachdocs/sep-2026/1789531323564.pdf",
+      "sha256": "28e68d6bacf0c62ef3dc1c915a3bc0c94a79716c4ef587d87e5bbdf9357d44ad",
+      "retrieved_on": "2026-10-04",
+      "ground_truth": "ground_truth/maharashtra-oil-extractions-limited-drhp.json"
+    },
+    {
+      "id": "ultravibrant-integrated-energy-limited-drhp",
+      "title": "Ultravibrant Integrated Energy Limited — DRHP",
+      "filing_page": "https://www.sebi.gov.in/filings/public-issues/sep-2026/ultravibrant-integrated-energy-limited-drhp_104809.html",
+      "pdf_url": "https://www.sebi.gov.in/sebi_data/attachdocs/sep-2026/1790681405842_1375.pdf",
+      "sha256": "a184561dfdb582b7b960ca468a1e551b6dc820a090f5919c82362069a7806c8c",
+      "retrieved_on": "2026-10-04",
+      "ground_truth": "ground_truth/ultravibrant-integrated-energy-limited-drhp.json"
     }
   ]
 }

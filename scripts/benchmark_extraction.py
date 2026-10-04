@@ -56,7 +56,13 @@ SPLITS = {
         "anchor-offshore-services-limited-drhp",
     ],
     # Fresh holdout: added after the code freeze, never used for tuning.
-    "holdout": [],
+    "holdout": [
+        "royal-chain-limited-drhp",
+        "hi-tech-flow-solutions-limited-drhp",
+        "m-k-c-agro-fresh-limited-drhp",
+        "maharashtra-oil-extractions-limited-drhp",
+        "ultravibrant-integrated-energy-limited-drhp",
+    ],
 }
 
 

@@ -111,77 +111,145 @@ class PageExtractionConfig:
     deadline: float | None = None  # monotonic timestamp
 
 
+def _pdfium_words(page: object, height: float) -> tuple[list[Word], int, float]:
+    """Native words from pdfium character boxes. Returns (upright words, char count, upright ratio).
+
+    Characters are grouped into words on whitespace and on horizontal gaps wider than
+    a third of the character height. Non-upright characters (|angle| > ~10°) are counted
+    for rotation detection but not emitted as words.
+    """
+    import ctypes
+
+    import pypdfium2.raw as pdfium_c
+
+    textpage = page.get_textpage()  # type: ignore[attr-defined]
+    try:
+        n = textpage.count_chars()
+        rect = pdfium_c.FS_RECTF()
+        words: list[Word] = []
+        cur: list[tuple[str, float, float, float, float]] = []
+        upright = 0
+        counted = 0
+
+        def flush() -> None:
+            if cur:
+                words.append(
+                    Word(
+                        "".join(c[0] for c in cur),
+                        min(c[1] for c in cur),
+                        max(c[2] for c in cur),
+                        min(c[3] for c in cur),
+                        max(c[4] for c in cur),
+                    )
+                )
+                cur.clear()
+
+        for k in range(n):
+            if pdfium_c.FPDFText_IsGenerated(textpage, k):
+                flush()
+                continue
+            code = pdfium_c.FPDFText_GetUnicode(textpage, k)
+            ch = chr(code) if code else ""
+            if not ch or ch.isspace():
+                flush()
+                continue
+            counted += 1
+            angle = pdfium_c.FPDFText_GetCharAngle(textpage, k)
+            is_upright = angle < 0.17 or angle > 6.11  # radians, ~10 degrees
+            upright += is_upright
+            if not is_upright:
+                flush()
+                continue
+            # Loose boxes use font ascent/descent, so punctuation shares the line's height.
+            pdfium_c.FPDFText_GetLooseCharBox(textpage, k, ctypes.byref(rect))
+            box = (ch, rect.left, rect.right, height - rect.top, height - rect.bottom)
+            if cur:
+                prev = cur[-1]
+                gap = box[1] - prev[2]
+                char_h = max(prev[4] - prev[3], 1.0)
+                if gap > char_h * 0.33 or abs(box[3] - prev[3]) > char_h * 0.6 or gap < -char_h:
+                    flush()
+            cur.append(box)
+        flush()
+        return words, counted, (upright / counted) if counted else 1.0
+    finally:
+        textpage.close()
+
+
+def _image_coverage(page: object, width: float, height: float) -> float:
+    import pypdfium2.raw as pdfium_c
+
+    area = 0.0
+    try:
+        for obj in page.get_objects(filter=[pdfium_c.FPDF_PAGEOBJ_IMAGE], max_depth=2):  # type: ignore[attr-defined]
+            left, bottom, right, top = obj.get_bounds()
+            area += max(0.0, right - left) * max(0.0, top - bottom)
+    except Exception:
+        return 0.0
+    return min(1.0, area / max(width * height, 1.0))
+
+
 def extract_pages(
     content: bytes,
     config: PageExtractionConfig,
     progress: Callable[[str, int], None] | None = None,
 ) -> list[PageData]:
-    """Run classification + native extraction + OCR fallback for all pages."""
+    """Run classification + native extraction + OCR fallback for all pages.
+
+    Native text and geometry come from pdfium (fast, C); pdfplumber is opened lazily
+    only for vector-table extraction on pages that already look tabular.
+    """
+    import pypdfium2 as pdfium
+
     pages: list[PageData] = []
     can_ocr = config.ocr_enabled and ocr_available()
-    with pdfplumber.open(io.BytesIO(content)) as pdf:
-        total = len(pdf.pages)
-        for idx, page in enumerate(pdf.pages):
-            if config.deadline is not None and time.monotonic() > config.deadline:
-                pages.append(
-                    PageData(
-                        idx + 1,
-                        float(page.width),
-                        float(page.height),
-                        "unprocessed",
-                        "none",
-                        readable=False,
-                        warnings=["processing time budget exhausted"],
-                    )
-                )
-                continue
+    doc = pdfium.PdfDocument(content)
+    plumber: pdfplumber.pdf.PDF | None = None
+    try:
+        total = len(doc)
+        for idx in range(total):
+            page = doc[idx]
             try:
-                raw_words = page.extract_words(
-                    keep_blank_chars=False, use_text_flow=False, extra_attrs=["upright"]
-                )
-            except Exception as exc:  # malformed content stream on one page
-                logger.warning(
-                    "page_text_error", extra={"page": idx + 1, "error": type(exc).__name__}
-                )
-                raw_words = []
-            text = " ".join(w["text"] for w in raw_words)
-            upright = (
-                (sum(1 for w in raw_words if w.get("upright", True)) / len(raw_words))
-                if raw_words
-                else 1.0
-            )
-            area = float(page.width * page.height) or 1.0
-            img_area = 0.0
-            for im in page.images:
-                img_area += max(0.0, float(im["x1"]) - float(im["x0"])) * max(
-                    0.0, float(im["bottom"]) - float(im["top"])
-                )
-            image_cov = min(1.0, img_area / area)
+                width, height = float(page.get_width()), float(page.get_height())
+                if config.deadline is not None and time.monotonic() > config.deadline:
+                    pages.append(
+                        PageData(
+                            idx + 1,
+                            width,
+                            height,
+                            "unprocessed",
+                            "none",
+                            readable=False,
+                            warnings=["processing time budget exhausted"],
+                        )
+                    )
+                    continue
+                try:
+                    words, char_count, upright = _pdfium_words(page, height)
+                except Exception as exc:  # malformed content on one page
+                    logger.warning(
+                        "page_text_error", extra={"page": idx + 1, "error": type(exc).__name__}
+                    )
+                    words, char_count, upright = [], 0, 1.0
+                text = " ".join(w.text for w in words)
+                image_cov = _image_coverage(page, width, height)
+            finally:
+                page.close()
             garbled = _garbled_ratio(text)
-            kind = _classify(len(text), image_cov, upright, garbled)
+            kind = _classify(char_count, image_cov, upright, garbled)
             data = PageData(
                 idx + 1,
-                float(page.width),
-                float(page.height),
+                width,
+                height,
                 kind,
                 "native",
-                char_count=len(text),
+                char_count=char_count,
                 image_coverage=image_cov,
                 upright_ratio=upright,
                 garbled_ratio=garbled,
             )
             if kind == "native":
-                data.words = [
-                    Word(
-                        w["text"],
-                        float(w["x0"]),
-                        float(w["x1"]),
-                        float(w["top"]),
-                        float(w["bottom"]),
-                    )
-                    for w in raw_words
-                    if w.get("upright", True)
-                ]
+                data.words = words
             elif kind == "blank":
                 data.method = "none"
             else:
@@ -222,11 +290,18 @@ def extract_pages(
             if data.method == "native" and looks_tabular(data.lines):
                 # Vector/text-alignment tables only where a period header exists (cost control).
                 try:
-                    data.native_tables = page.extract_tables() or []
+                    if plumber is None:
+                        plumber = pdfplumber.open(io.BytesIO(content))
+                    pl_page = plumber.pages[idx]
+                    data.native_tables = pl_page.extract_tables() or []
+                    pl_page.close()
                 except Exception:
                     data.warnings.append("vector table extraction failed on this page")
             pages.append(data)
-            page.close()
             if progress and (idx % 10 == 0 or idx == total - 1):
                 progress("extracting", int((idx + 1) / total * 100))
+    finally:
+        if plumber is not None:
+            plumber.close()
+        doc.close()
     return pages

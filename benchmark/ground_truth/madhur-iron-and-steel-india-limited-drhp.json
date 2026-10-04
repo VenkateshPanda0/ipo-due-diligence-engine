@@ -1,0 +1,154 @@
+{
+  "document_id": "madhur-iron-and-steel-india-limited-drhp",
+  "sha256": "6ee410a6ec28b771be0754352d42d09b3495b474086413733a1e884250b0d1ad",
+  "expected_route": "mainboard_reg6_1",
+  "table_note": "Eligibility table on the page after its '(₹ in lakhs)' caption; labels carry glued footnote digits; operating profit labelled 'Pre Tax Operating Profit'.",
+  "reviewer": "Answer key prepared by an AI assistant reading poppler pdftotext output (independent of the pipeline's pdfplumber/OCR code). NOT yet verified by a human.",
+  "prepared_on": "2026-10-04",
+  "fields": [
+    {
+      "field_path": "financials.fiscal_years[FY2026].net_tangible_assets",
+      "original_text": "32,946.97",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "329.4697",
+      "period": "FY2026",
+      "basis": null,
+      "pages": [
+        502
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].net_tangible_assets",
+      "original_text": "23,518.86",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "235.1886",
+      "period": "FY2025",
+      "basis": null,
+      "pages": [
+        502
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].net_tangible_assets",
+      "original_text": "12,659.15",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "126.5915",
+      "period": "FY2024",
+      "basis": null,
+      "pages": [
+        502
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].monetary_assets",
+      "original_text": "22.19",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "0.2219",
+      "period": "FY2026",
+      "basis": null,
+      "pages": [
+        502
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].monetary_assets",
+      "original_text": "69.92",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "0.6992",
+      "period": "FY2025",
+      "basis": null,
+      "pages": [
+        502
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].monetary_assets",
+      "original_text": "0.27",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "0.0027",
+      "period": "FY2024",
+      "basis": null,
+      "pages": [
+        502
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].operating_profit",
+      "original_text": "4,991.28",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "49.9128",
+      "period": "FY2026",
+      "basis": null,
+      "pages": [
+        502
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].operating_profit",
+      "original_text": "3,592.18",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "35.9218",
+      "period": "FY2025",
+      "basis": null,
+      "pages": [
+        502
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].operating_profit",
+      "original_text": "2,386.50",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "23.8650",
+      "period": "FY2024",
+      "basis": null,
+      "pages": [
+        502
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].net_worth",
+      "original_text": "11,789.73",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "117.8973",
+      "period": "FY2026",
+      "basis": null,
+      "pages": [
+        502
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].net_worth",
+      "original_text": "9,399.47",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "93.9947",
+      "period": "FY2025",
+      "basis": null,
+      "pages": [
+        502
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].net_worth",
+      "original_text": "4,277.12",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "42.7712",
+      "period": "FY2024",
+      "basis": null,
+      "pages": [
+        502
+      ],
+      "notes": ""
+    }
+  ]
+}

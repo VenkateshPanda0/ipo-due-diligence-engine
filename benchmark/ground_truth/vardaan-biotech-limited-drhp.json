@@ -1,0 +1,154 @@
+{
+  "document_id": "vardaan-biotech-limited-drhp",
+  "sha256": "a25e896b63bff0724e52683dc6623edd0f25bafe110cf421aa373b7d61c8acb7",
+  "expected_route": "mainboard_reg6_1",
+  "table_note": "Header 'Financial Year ended March 31, 2026' with dates broken across lines; wrapped label rows.",
+  "reviewer": "Answer key prepared by an AI assistant reading poppler pdftotext output (independent of the pipeline's pdfplumber/OCR code). NOT yet verified by a human.",
+  "prepared_on": "2026-10-04",
+  "fields": [
+    {
+      "field_path": "financials.fiscal_years[FY2026].net_tangible_assets",
+      "original_text": "9,954.75",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "99.5475",
+      "period": "FY2026",
+      "basis": null,
+      "pages": [
+        354
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].net_tangible_assets",
+      "original_text": "6,099.93",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "60.9993",
+      "period": "FY2025",
+      "basis": null,
+      "pages": [
+        354
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].net_tangible_assets",
+      "original_text": "4,336.70",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "43.3670",
+      "period": "FY2024",
+      "basis": null,
+      "pages": [
+        354
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].monetary_assets",
+      "original_text": "31.30",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "0.3130",
+      "period": "FY2026",
+      "basis": null,
+      "pages": [
+        354
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].monetary_assets",
+      "original_text": "55.79",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "0.5579",
+      "period": "FY2025",
+      "basis": null,
+      "pages": [
+        354
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].monetary_assets",
+      "original_text": "34.44",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "0.3444",
+      "period": "FY2024",
+      "basis": null,
+      "pages": [
+        354
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].operating_profit",
+      "original_text": "2,820.59",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "28.2059",
+      "period": "FY2026",
+      "basis": null,
+      "pages": [
+        354
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].operating_profit",
+      "original_text": "2,672.99",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "26.7299",
+      "period": "FY2025",
+      "basis": null,
+      "pages": [
+        354
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].operating_profit",
+      "original_text": "2,376.52",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "23.7652",
+      "period": "FY2024",
+      "basis": null,
+      "pages": [
+        354
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].net_worth",
+      "original_text": "9,954.75",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "99.5475",
+      "period": "FY2026",
+      "basis": null,
+      "pages": [
+        354
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].net_worth",
+      "original_text": "6,099.93",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "60.9993",
+      "period": "FY2025",
+      "basis": null,
+      "pages": [
+        354
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].net_worth",
+      "original_text": "4,336.71",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "43.3671",
+      "period": "FY2024",
+      "basis": null,
+      "pages": [
+        354
+      ],
+      "notes": ""
+    }
+  ]
+}

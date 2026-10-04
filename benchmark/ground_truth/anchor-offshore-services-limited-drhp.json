@@ -1,0 +1,227 @@
+{
+  "document_id": "anchor-offshore-services-limited-drhp",
+  "sha256": "c329bb7d550f91d441c144fffbfb32a89138b0e649796a7f7b7961b48a877d9c",
+  "expected_route": "mainboard_reg6_2",
+  "table_note": "Reg 6(2) issuer without an eligibility table; values from the KPI table. 'Net Worth' (1,281.35) differs from balance-sheet 'Total equity' (1,304.25) for FY2026 — a genuine competing candidate.",
+  "reviewer": "Answer key prepared by an AI assistant reading poppler pdftotext output (independent of the pipeline's pdfplumber/OCR code). NOT yet verified by a human.",
+  "prepared_on": "2026-10-04",
+  "fields": [
+    {
+      "field_path": "financials.fiscal_years[FY2026].revenue",
+      "original_text": "1,058.27",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "105.827",
+      "period": "FY2026",
+      "basis": null,
+      "pages": [
+        80,
+        142,
+        144,
+        208,
+        209,
+        283,
+        334,
+        335,
+        340,
+        358,
+        359
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].revenue",
+      "original_text": "1,399.89",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "139.989",
+      "period": "FY2025",
+      "basis": null,
+      "pages": [
+        80,
+        142,
+        145,
+        209,
+        283,
+        334,
+        335,
+        340,
+        359,
+        361
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].revenue",
+      "original_text": "1,179.04",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "117.904",
+      "period": "FY2024",
+      "basis": null,
+      "pages": [
+        80,
+        142,
+        145,
+        209,
+        283,
+        334,
+        335,
+        340,
+        361
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].pat",
+      "original_text": "80.35",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "8.035",
+      "period": "FY2026",
+      "basis": null,
+      "pages": [
+        142,
+        144,
+        209,
+        340
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].pat",
+      "original_text": "128.86",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "12.886",
+      "period": "FY2025",
+      "basis": null,
+      "pages": [
+        142,
+        145,
+        209,
+        340
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].pat",
+      "original_text": "(67.09)",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "-6.709",
+      "period": "FY2024",
+      "basis": null,
+      "pages": [
+        142,
+        145,
+        209,
+        340
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].ebitda",
+      "original_text": "120.33",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "12.033",
+      "period": "FY2026",
+      "basis": null,
+      "pages": [
+        142,
+        144,
+        209,
+        322,
+        334,
+        335,
+        340
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].ebitda",
+      "original_text": "116.49",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "11.649",
+      "period": "FY2025",
+      "basis": null,
+      "pages": [
+        142,
+        145,
+        209,
+        322,
+        334,
+        335,
+        340
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].ebitda",
+      "original_text": "36.50",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "3.650",
+      "period": "FY2024",
+      "basis": null,
+      "pages": [
+        142,
+        145,
+        209,
+        322,
+        334,
+        335,
+        340
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].net_worth",
+      "original_text": "1,281.35",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "128.135",
+      "period": "FY2026",
+      "basis": null,
+      "pages": [
+        142,
+        144,
+        209,
+        210,
+        322,
+        334,
+        340,
+        364
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].net_worth",
+      "original_text": "913.36",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "91.336",
+      "period": "FY2025",
+      "basis": null,
+      "pages": [
+        142,
+        145,
+        209,
+        322,
+        334,
+        335,
+        340
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].net_worth",
+      "original_text": "785.95",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "78.595",
+      "period": "FY2024",
+      "basis": null,
+      "pages": [
+        142,
+        145,
+        209,
+        322,
+        334,
+        335,
+        340
+      ],
+      "notes": ""
+    }
+  ]
+}

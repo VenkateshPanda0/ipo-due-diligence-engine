@@ -27,6 +27,7 @@ _YEAR_RE = re.compile(r"^(?:19|20)\d{2}$")
 _NOTE_SUFFIX_RE = re.compile(r"\s+(?:\d{1,2}(?:\.\d{1,2})?|[ivx]{1,4}|\([a-z0-9]{1,3}\))$", re.I)
 _LEADING_ENUM_RE = re.compile(r"^(?:\(?[a-z0-9ivx]{1,4}[).]\s+)", re.I)
 _MAX_BLANK_LINES = 6
+_ELIGIBILITY_RE = re.compile(r"eligib|regulation\s*6\s*\(|reg\.\s*6\s*\(", re.I)
 
 
 @dataclass
@@ -35,6 +36,7 @@ class PeriodColumn:
     x0: float
     x1: float
     header_text: str
+    basis: str | None = None  # per-column basis when the header annotates it
 
     @property
     def xc(self) -> float:
@@ -70,6 +72,7 @@ class FinancialTable:
     basis: str | None = None  # "consolidated" | "standalone" | None
     title: str = ""
     continued_from: str | None = None
+    eligibility_context: bool = False  # header sits under an ICDR eligibility discussion
     ocr: bool = False
     warnings: list[str] = field(default_factory=list)
 
@@ -94,6 +97,12 @@ def _cell_periods(cell: Cell) -> list[PeriodColumn]:
             i += 1
             continue
         j, period = found
+        # tighten the start: "Particulars March 31, 2025" must start at "March"
+        while i + 1 < j:
+            tighter = parse_period(" ".join(w.text for w in words[i + 1 : j]))
+            if tighter is None or tighter.label != period.label:
+                break
+            i, period = i + 1, tighter
         out.append(
             PeriodColumn(period, words[i].x0, words[j - 1].x1, " ".join(w.text for w in words[i:j]))
         )
@@ -101,15 +110,34 @@ def _cell_periods(cell: Cell) -> list[PeriodColumn]:
     return out
 
 
-def find_period_columns(line: Line, previous: Line | None) -> list[PeriodColumn]:
-    """Return ≥2 distinct, left-to-right period columns for a header line, else []."""
+def _valid(cols: list[PeriodColumn]) -> bool:
+    labels = [c.period.label for c in cols]
+    return (
+        len(cols) >= 2
+        and len(set(labels)) == len(labels)
+        and not any(b.x0 < a.x1 - 1 for a, b in zip(cols, cols[1:], strict=False))
+    )
+
+
+def find_period_columns(line: Line, previous: Line | list[Line] | None) -> list[PeriodColumn]:
+    """Return ≥2 distinct, left-to-right period columns for a header line, else [].
+
+    ``previous`` is the line (or up to two lines) immediately above, used for
+    multi-line headers such as "Fiscal" / "Description" above a row of bare years.
+    """
+    above_lines = [previous] if isinstance(previous, Line) else list(previous or [])
     cols: list[PeriodColumn] = []
     for cell in line.cells:
         cols.extend(_cell_periods(cell))
-    if len(cols) < 2 and previous is not None:
-        # Two-line header: "Fiscal" / "As at March 31," above a row of bare years.
+    # Header words split across cells ("March" | "31," | "2025"): also search the whole
+    # line and keep whichever reading finds more columns.
+    whole = _cell_periods(Cell(list(line.words)))
+    if _valid(whole) and (not _valid(cols) or len(whole) > len(cols)):
+        cols = whole
+    if len(cols) < 2 and above_lines:
+        # Multi-line header: "Fiscal" / "As at March 31," above a row of bare years.
         years = [w for w in line.words if _YEAR_RE.match(w.text)]
-        above = previous.text.lower()
+        above = " ".join(a.text for a in above_lines).lower()
         if (
             len(years) >= 2
             and len(years) >= len(line.words) - 2
@@ -117,7 +145,10 @@ def find_period_columns(line: Line, previous: Line | None) -> list[PeriodColumn]
         ):
             cols = [
                 PeriodColumn(
-                    Period(f"FY{int(w.text)}", None, 12), w.x0, w.x1, f"{previous.text} {w.text}"
+                    Period(f"FY{int(w.text)}", None, 12),
+                    w.x0,
+                    w.x1,
+                    f"{above_lines[-1].text} {w.text}",
                 )
                 for w in years
             ]
@@ -139,17 +170,28 @@ def _clean_label(text: str) -> str:
 
 
 def _context(
-    lines: list[Line], header_index: int, page: PageData
+    lines: list[Line],
+    header_index: int,
+    page: PageData,
+    prev_tail: list[Line] | None = None,
 ) -> tuple[str | None, str | None, str | None, str]:
-    """Return (unit, unit_source, basis, title) from lines above the header."""
+    """Return (unit, unit_source, basis, title) from lines above the header.
+
+    When the header sits near the top of the page, the last lines of the previous
+    page are searched too (captions are often printed before a page break).
+    """
     unit = detect_unit(lines[header_index].text)
     source = "header" if unit else None
     basis: str | None = None
     title_lines: list[str] = []
-    for k in range(header_index - 1, max(-1, header_index - 15), -1):
-        text = lines[k].text
+    above = list(lines[:header_index])
+    if prev_tail and header_index < 6:
+        above = list(prev_tail[-8:]) + above
+    h = len(above)
+    for k in range(h - 1, max(-1, h - 15), -1):
+        text = above[k].text
         low = text.lower()
-        if unit is None and k >= header_index - 8:
+        if unit is None and k >= h - 10:
             unit = detect_unit(text)
             source = "caption" if unit else None
         if basis is None:
@@ -170,6 +212,46 @@ def _context(
         if has_c != has_s:
             basis = "consolidated" if has_c else "standalone"
     return unit, source, basis, " / ".join(title_lines)[:300]
+
+
+_BASIS_RE = re.compile(r"\(?\b(consolidated|standalone)\b\)?", re.I)
+
+
+def _column_basis(lines: list[Line], header_index: int, columns: list[PeriodColumn]) -> int:
+    """Read per-column "(Consolidated)" / "(Standalone)" annotations next to the header.
+
+    Sets ``PeriodColumn.basis`` in place and returns how many lines directly below
+    the header were consumed as annotation lines (they must not be parsed as rows).
+    """
+    consumed = 0
+    for offset in (1, 2, -1):
+        k = header_index + offset
+        if k < 0 or k >= len(lines):
+            continue
+        line = lines[k]
+        words = [w for w in line.words if _BASIS_RE.fullmatch(w.text.strip())]
+        # an annotation line consists (almost) only of basis words
+        if not words or len(words) < len(line.words) - 1:
+            if offset > 0:
+                break
+            continue
+        for w in words:
+            col = _assign(w, columns)
+            if col is not None and col.basis is None:
+                col.basis = _BASIS_RE.fullmatch(w.text.strip()).group(1).lower()  # type: ignore[union-attr]
+        if offset > 0:
+            consumed = offset
+    return consumed
+
+
+def _eligibility_context(
+    lines: list[Line], header_index: int, prev_tail: list[Line] | None
+) -> bool:
+    """True when the ~40 lines above the header discuss ICDR eligibility (Reg 6)."""
+    above = [ln.text for ln in lines[max(0, header_index - 40) : header_index]]
+    if header_index < 40 and prev_tail:
+        above = [ln.text for ln in prev_tail[-(40 - header_index) :]] + above
+    return any(_ELIGIBILITY_RE.search(t) for t in above)
 
 
 def _assign(word: Word, columns: list[PeriodColumn]) -> PeriodColumn | None:
@@ -216,7 +298,13 @@ def _merge_numeric_words(words: list[Word]) -> list[Word]:
     return out
 
 
-def _parse_row(line: Line, columns: list[PeriodColumn]) -> tuple[str, dict[str, CellValue]]:
+def _parse_row(line: Line, columns: list[PeriodColumn]) -> tuple[str, dict[str, CellValue] | None]:
+    """Split a line into (label, values by period label).
+
+    Returns ``(label, None)`` when the numbers cannot be placed unambiguously —
+    a number outside every column, two numbers competing for one column, or more
+    numbers than columns. Guessing here would silently shift values between years.
+    """
     left_edge = (
         columns[0].x0 - max((columns[1].x0 - columns[0].x1) * 0.6, 10.0)
         if len(columns) > 1
@@ -224,21 +312,40 @@ def _parse_row(line: Line, columns: list[PeriodColumn]) -> tuple[str, dict[str, 
     )
     label_words: list[Word] = []
     values: dict[str, CellValue] = {}
+    ambiguous = False
+    numbers = 0
+    prose_words = 0
     for w in _merge_numeric_words(line.words):
         parsed = _numeric_word(w) if w.xc >= left_edge else None
         if parsed is None:
             if w.xc < left_edge:
                 label_words.append(w)
+            elif any(ch.isalpha() for ch in w.text):
+                prose_words += 1
             continue
+        numbers += 1
         col = _assign(w, columns)
         if col is None or col.period.label in values:
+            ambiguous = True
             continue
         values[col.period.label] = CellValue(parsed, w.text, w.conf)
-    return " ".join(w.text for w in label_words), values
+    label = " ".join(w.text for w in label_words)
+    if prose_words >= 3:
+        # running text across the value columns (notes, narrative): not a table row
+        return label, {}
+    if ambiguous or numbers > len(columns):
+        return label, None
+    return label, values
 
 
-def geometric_tables(page: PageData, carry: FinancialTable | None) -> list[FinancialTable]:
-    """Reconstruct period tables on one page. ``carry`` is the last table of the previous page."""
+def geometric_tables(
+    page: PageData, carry: FinancialTable | None, prev_tail: list[Line] | None = None
+) -> list[FinancialTable]:
+    """Reconstruct period tables on one page.
+
+    ``carry`` is the last table of the previous page; ``prev_tail`` its last lines
+    (searched for unit / basis captions printed just before the page break).
+    """
     tables: list[FinancialTable] = []
     lines = page.lines
     current: FinancialTable | None = None
@@ -256,14 +363,19 @@ def geometric_tables(page: PageData, carry: FinancialTable | None) -> list[Finan
             basis=carry.basis,
             title=carry.title,
             continued_from=carry.table_id,
+            eligibility_context=carry.eligibility_context,
             ocr=page.method == "ocr",
         )
+    skip_until = -1
     for idx, line in enumerate(lines):
-        cols = find_period_columns(line, lines[idx - 1] if idx else None)
+        if idx <= skip_until:
+            continue
+        cols = find_period_columns(line, lines[max(0, idx - 2) : idx])
         if cols:
             if current is not None and current.rows:
                 tables.append(current)
-            unit, source, basis, title = _context(lines, idx, page)
+            unit, source, basis, title = _context(lines, idx, page, prev_tail)
+            skip_until = idx + _column_basis(lines, idx, cols)
             current = FinancialTable(
                 f"p{page.number}-t{len(tables) + 1}",
                 page.number,
@@ -273,6 +385,7 @@ def geometric_tables(page: PageData, carry: FinancialTable | None) -> list[Finan
                 unit_source=source,
                 basis=basis,
                 title=title,
+                eligibility_context=_eligibility_context(lines, idx, prev_tail),
                 ocr=page.method == "ocr",
             )
             # A repeated header on a continuation page restarts with the same columns.
@@ -284,11 +397,17 @@ def geometric_tables(page: PageData, carry: FinancialTable | None) -> list[Finan
                 current.continued_from = carry.table_id
                 current.unit = current.unit or carry.unit
                 current.basis = current.basis or carry.basis
+                current.eligibility_context |= carry.eligibility_context
             blank_run, pending_label = 0, ""
             continue
         if current is None:
             continue
-        label, values = _parse_row(line, current.columns)
+        label, parsed_values = _parse_row(line, current.columns)
+        if parsed_values is None:
+            current.warnings.append(f"row skipped (column mismatch): {label[:60]}")
+            blank_run, pending_label = 0, ""
+            continue
+        values = parsed_values
         if not values:
             blank_run += 1
             if label:
@@ -343,11 +462,12 @@ def vector_tables(page: PageData) -> list[FinancialTable]:
         if table.unit is None or table.basis is None:
             # borrow caption context from the geometric view of the same page
             for line_idx, line in enumerate(page.lines):
-                if find_period_columns(line, page.lines[line_idx - 1] if line_idx else None):
+                if find_period_columns(line, page.lines[max(0, line_idx - 2) : line_idx]):
                     u, s, b, title = _context(page.lines, line_idx, page)
                     table.unit = table.unit or u
                     table.unit_source = table.unit_source or s
                     table.basis, table.title = b, title
+                    table.eligibility_context = _eligibility_context(page.lines, line_idx, None)
                     break
         for row in rows[header_idx + 1 :]:
             label_cells = [
@@ -375,11 +495,13 @@ def extract_tables(pages: list[PageData]) -> list[FinancialTable]:
     """Run both strategies over all pages, carrying table context across page breaks."""
     tables: list[FinancialTable] = []
     carry: FinancialTable | None = None
+    prev_tail: list[Line] | None = None
     for page in pages:
         if not page.lines:
-            carry = None
+            carry, prev_tail = None, None
             continue
-        page_tables = geometric_tables(page, carry)
+        page_tables = geometric_tables(page, carry, prev_tail)
+        prev_tail = page.lines[-40:]
         tables.extend(page_tables)
         # carry a table forward only if it ran to the bottom of the page
         carry = None

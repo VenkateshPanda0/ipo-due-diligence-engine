@@ -11,7 +11,7 @@ RulesetVersions are bumped manually when regulations change. Historical
 versions are retained so that past reports remain reproducible.
 
 This module MUST NOT import from:
-  - app.rules, app.parser, app.api, app.engine
+  - app.rules, app.intelligence, app.api, app.engine
 """
 
 from datetime import date

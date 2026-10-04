@@ -13,7 +13,7 @@ Design rules:
 The schema is backward compatible with v1 JSON payloads: every v1 field keeps its
 name and type; new fields are optional with neutral defaults.
 
-This module MUST NOT import from app.rules, app.parser, app.api, app.engine.
+This module MUST NOT import from app.rules, app.intelligence, app.api, app.engine.
 """
 
 from __future__ import annotations

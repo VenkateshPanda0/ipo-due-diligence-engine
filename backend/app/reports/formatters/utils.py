@@ -5,7 +5,7 @@ Formatting helpers for deterministic report renderers.
 
 This module MUST NOT import from:
   - app.rules
-  - app.parser
+  - app.intelligence
   - app.api
   - app.services
 """

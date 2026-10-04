@@ -8,7 +8,7 @@ versioned JSON under ``data/``. Rule code reads its parameters from the active
 ruleset, so a threshold change is a reviewed data change that produces a new
 ruleset version — never an in-place edit of a historical version.
 
-This module MUST NOT import from app.rules, app.parser, app.api, app.engine.
+This module MUST NOT import from app.rules, app.intelligence, app.api, app.engine.
 """
 
 from __future__ import annotations

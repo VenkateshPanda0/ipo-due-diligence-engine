@@ -8,7 +8,7 @@ representation (``original_text``/``original_unit``) and provenance. Values are
 immutable; a human correction produces a new ExtractedValue and an append-only
 correction event elsewhere — the original is never overwritten.
 
-This module MUST NOT import from app.rules, app.parser, app.api, app.engine.
+This module MUST NOT import from app.rules, app.intelligence, app.api, app.engine.
 """
 
 from __future__ import annotations

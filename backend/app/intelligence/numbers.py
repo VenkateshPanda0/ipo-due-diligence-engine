@@ -151,6 +151,11 @@ _UNIT_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"\bcrores?\b|\bcr\.?\b", re.I), "INR_CRORE"),
     (re.compile(r"\bbillions?\b|\bbn\b", re.I), "INR_BILLION"),
 )
+# "₹ 30 million", "10 lakhs", "₹1,000,000 crore": an amount in prose, not a unit declaration.
+_AMOUNT_PHRASE_RE = re.compile(
+    r"\d[\d,]*(?:\.\d+)?\s*(?:[lti1]akhs?|lacs?|millions?|mn|crores?|cr\.?|billions?|bn|thousands?)\b",
+    re.I,
+)
 _UNIT_CONTEXT_RE = re.compile(
     r"₹|[@%?]\s*in\b|\brs\.?|\binr\b|\brupees\b|\bamounts?\b|\bfigures?\b|\bin\b", re.I
 )
@@ -164,7 +169,7 @@ def detect_unit(text: str) -> str | None:
     """
     if not text:
         return None
-    lowered = text.lower()
+    lowered = _AMOUNT_PHRASE_RE.sub(" ", text.lower())
     short_caption = re.fullmatch(r"\s*\([^()]{1,24}\)\s*", lowered) is not None
     if not short_caption and not _UNIT_CONTEXT_RE.search(lowered):
         return None

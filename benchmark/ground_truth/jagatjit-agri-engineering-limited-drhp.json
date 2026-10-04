@@ -1,0 +1,118 @@
+{
+  "document_id": "jagatjit-agri-engineering-limited-drhp",
+  "sha256": "d03c7e2c2f1007e3ecc89cdd91704e7c279d924acf08494c6f130e8f1d586ab7",
+  "expected_route": "mainboard_reg6_2",
+  "table_note": "No unit declared at the eligibility table (surrounding text uses ₹ million thresholds). Correct behaviour is to abstain from normalisation. Three-line column headers; no operating profit row.",
+  "reviewer": "Answer key prepared by an AI assistant reading poppler pdftotext output (independent of the pipeline's pdfplumber/OCR code). NOT yet verified by a human.",
+  "prepared_on": "2026-10-04",
+  "fields": [
+    {
+      "field_path": "financials.fiscal_years[FY2026].net_tangible_assets",
+      "original_text": "704.75",
+      "original_unit": null,
+      "expected_crore": null,
+      "period": "FY2026",
+      "basis": "consolidated",
+      "pages": [
+        509
+      ],
+      "notes": "unit not declared at table: correct behaviour is to abstain"
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].net_tangible_assets",
+      "original_text": "70.78",
+      "original_unit": null,
+      "expected_crore": null,
+      "period": "FY2025",
+      "basis": "standalone",
+      "pages": [
+        509
+      ],
+      "notes": "unit not declared at table: correct behaviour is to abstain"
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].net_tangible_assets",
+      "original_text": "5.32",
+      "original_unit": null,
+      "expected_crore": null,
+      "period": "FY2024",
+      "basis": "standalone",
+      "pages": [
+        509
+      ],
+      "notes": "unit not declared at table: correct behaviour is to abstain"
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].monetary_assets",
+      "original_text": "161.59",
+      "original_unit": null,
+      "expected_crore": null,
+      "period": "FY2026",
+      "basis": "consolidated",
+      "pages": [
+        509
+      ],
+      "notes": "unit not declared at table: correct behaviour is to abstain"
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].monetary_assets",
+      "original_text": "39.14",
+      "original_unit": null,
+      "expected_crore": null,
+      "period": "FY2025",
+      "basis": "standalone",
+      "pages": [
+        509
+      ],
+      "notes": "unit not declared at table: correct behaviour is to abstain"
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].monetary_assets",
+      "original_text": "33.26",
+      "original_unit": null,
+      "expected_crore": null,
+      "period": "FY2024",
+      "basis": "standalone",
+      "pages": [
+        509
+      ],
+      "notes": "unit not declared at table: correct behaviour is to abstain"
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].net_worth",
+      "original_text": "709.29",
+      "original_unit": null,
+      "expected_crore": null,
+      "period": "FY2026",
+      "basis": "consolidated",
+      "pages": [
+        509
+      ],
+      "notes": "unit not declared at table: correct behaviour is to abstain"
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].net_worth",
+      "original_text": "70.78",
+      "original_unit": null,
+      "expected_crore": null,
+      "period": "FY2025",
+      "basis": "standalone",
+      "pages": [
+        509
+      ],
+      "notes": "unit not declared at table: correct behaviour is to abstain"
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].net_worth",
+      "original_text": "5.32",
+      "original_unit": null,
+      "expected_crore": null,
+      "period": "FY2024",
+      "basis": "standalone",
+      "pages": [
+        509
+      ],
+      "notes": "unit not declared at table: correct behaviour is to abstain"
+    }
+  ]
+}

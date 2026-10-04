@@ -38,18 +38,27 @@ def _p(pattern: str, strength: float) -> tuple[re.Pattern[str], float]:
 FIELDS: tuple[FieldDef, ...] = (
     FieldDef(
         "net_tangible_assets",
-        (_p(r"^net tangible assets\b", 1.0), _p(r"\bnet tangible assets\b", 0.9)),
+        (_p(r"^(?:restated )?net tangible assets\b", 1.0), _p(r"\bnet tangible assets\b", 0.9)),
         (re.compile(r"\bmonetary assets\b"),),
     ),
     FieldDef(
         "monetary_assets",
-        (_p(r"^monetary assets\b", 1.0), _p(r"\bmonetary assets\b", 0.9)),
+        (_p(r"^(?:restated )?monetary assets\b", 1.0), _p(r"\bmonetary assets\b", 0.9)),
         (re.compile(r"\bnet tangible assets\b"),),
     ),
     FieldDef(
         "operating_profit",
-        (_p(r"^(?:restated )?operating profit\b", 1.0), _p(r"\boperating profit\b", 0.85)),
-        (re.compile(r"before|\bebit|\bebitda\b|\bpbt\b|\btax\b|\bloss\b(?! )"),),
+        (
+            _p(r"^(?:restated )?(?:pre[- ]?tax )?operating profit\b", 1.0),
+            _p(r"\boperating profit\b", 0.85),
+        ),
+        # PBT / EBIT / EBITDA are not "operating profit"; a pre-tax *operating* profit is.
+        (
+            re.compile(
+                r"(?<!operating )profit before tax|\bebitda?\b|\bpbt\b|after tax|\baverage\b"
+                r"|working capital|\bmargin\b"
+            ),
+        ),
     ),
     FieldDef(
         "net_worth",
@@ -60,7 +69,11 @@ FIELDS: tuple[FieldDef, ...] = (
             _p(r"^(?:total )?shareholders? funds?$", 0.7),
             _p(r"^total equity attributable to (?:the )?(?:equity holders|owners)", 0.65),
         ),
-        (re.compile(r"\breturn\b|\bronw\b|\bnon[- ]controlling\b|\bnci\b"),),
+        (
+            re.compile(
+                r"\breturn\b|\bronw\b|\bnon[- ]controlling\b|\bnci\b|\btangible\b|\bper share\b"
+            ),
+        ),
     ),
     FieldDef(
         "revenue",
@@ -106,8 +119,17 @@ FIELDS: tuple[FieldDef, ...] = (
 )
 
 
+_AVERAGE = re.compile(r"\baverage\b|\bavg\b")
+
+
 def normalise_label(text: str) -> str:
     t = text.lower().replace("’", "'").replace("‘", "'")
+    t = re.sub(r"(?<=[a-z])\d{1,2}\b", " ", t)  # footnote digits glued to words: "assets1"
+    t = re.sub(r"(?<=[a-z])-(?=[a-z])", " ", t)  # "net-worth", "pre-tax"
+    t = re.sub(
+        r"\((?:in )?(?:₹|rs\.?|inr)?\s*(?:in )?(?:lakhs?|million|crores?|thousands?)\)", " ", t
+    )
+    t = re.sub(r"\(\s*[a-z0-9]{1,3}\s*\)", " ", t)  # (1), (a), (D) markers anywhere
     t = re.sub(r"\bas restated\b|\brestated\b", "restated", t)
     t = re.sub(r"[^a-z0-9%&/()'\- ]+", " ", t)
     t = re.sub(r"\(\s*[a-z0-9]{1,3}\s*\)$", "", t)  # trailing footnote (a)
@@ -138,6 +160,8 @@ def match_label(raw_label: str) -> LabelMatch | None:
             continue
         if _GLOBAL_NEGATIVE.search(label) and not fd.allow_percent_context:
             continue
+        if _AVERAGE.search(label):
+            continue  # an average spans periods; never a single-period value
         if best is None or strength > best.strength:
             best = LabelMatch(fd.field, strength, label)
     return best

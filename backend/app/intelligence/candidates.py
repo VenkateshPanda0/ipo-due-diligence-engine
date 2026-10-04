@@ -6,10 +6,10 @@ Scoring (0–1, documented in docs/DOCUMENT_INTELLIGENCE.md):
 
   0.35 × label strength (lexicon)
   0.20 × source quality (native table 1.0; OCR scaled by word confidence)
-  0.15 × unit evidence (header/caption 1.0, page heading 0.8, none 0)
+  0.15 × unit evidence (header/caption/row label 1.0, page heading 0.8, none 0)
   0.10 × period quality (12-month period 1.0, stub 0.7)
   0.10 × statement basis (consolidated 1.0, unknown 0.6, standalone 0.5)
-  0.10 × section context (eligibility / restated / summary tables)
+  0.10 × section context (Reg 6 eligibility table 1.0, restated / summary 0.75, other 0.5)
 
 Candidates are clustered by normalised value with a tolerance derived from the
 printed precision, so the same figure printed in lakhs and in millions agrees.
@@ -26,7 +26,7 @@ from dataclasses import field as dc_field
 from decimal import Decimal
 
 from app.intelligence.lexicon import match_label
-from app.intelligence.numbers import UNIT_TO_CRORE
+from app.intelligence.numbers import UNIT_TO_CRORE, detect_unit
 from app.intelligence.tables import FinancialTable
 from app.models.enums import FieldStatus
 from app.models.field_paths import fiscal_year_path
@@ -84,10 +84,17 @@ class Candidate:
 
 def _score(c: Candidate, label_strength: float, table: FinancialTable) -> None:
     source = 1.0 if c.ocr_conf is None else max(0.2, min(1.0, c.ocr_conf / 100))
-    unit = {"header": 1.0, "caption": 1.0, "page_heading": 0.8}.get(c.unit_source or "", 0.0)
+    unit = {"header": 1.0, "caption": 1.0, "row_label": 1.0, "page_heading": 0.8}.get(
+        c.unit_source or "", 0.0
+    )
     period = 1.0 if c.months == 12 else 0.7
     basis = {"consolidated": 1.0, "standalone": 0.5}.get(c.basis or "", 0.6)
-    section = 1.0 if _SECTION_RE.search(table.title or "") else 0.5
+    if table.eligibility_context:
+        section = 1.0
+    elif _SECTION_RE.search(table.title or ""):
+        section = 0.75
+    else:
+        section = 0.5
     comps = {
         "label": 0.35 * label_strength,
         "source": 0.20 * source,
@@ -104,20 +111,33 @@ def generate(tables: list[FinancialTable]) -> list[Candidate]:
     """Turn matched table rows into candidates (one per field × period)."""
     out: list[Candidate] = []
     for table in tables:
-        period_by_label = {c.period.label: c.period for c in table.columns}
+        col_by_label = {c.period.label: c for c in table.columns}
         for row in table.rows:
             match = match_label(row.raw_label)
             if match is None:
                 continue
+            unit, unit_source = table.unit, table.unit_source
+            row_warnings: list[str] = []
+            # e.g. "Net worth (in ₹ million)": a unit printed in the row label is the most
+            # specific declaration and overrides the table caption / page heading.
+            row_unit = detect_unit(row.raw_label)
+            if row_unit is not None and not (row_unit == "INR" and unit is not None):
+                # a bare "(₹)" in a label does not override a scaled caption like "₹ in lakhs"
+                if unit is not None and unit != row_unit:
+                    row_warnings.append(
+                        f"row label declares {row_unit} but the table caption declares {unit}"
+                    )
+                unit, unit_source = row_unit, "row_label"
             for period_label, cell in row.values.items():
-                period = period_by_label[period_label]
+                col = col_by_label[period_label]
+                period = col.period
                 raw = cell.parsed.value
-                warnings = list(cell.parsed.warnings)
+                warnings = list(cell.parsed.warnings) + row_warnings
                 value: Decimal | None = None
                 if cell.parsed.is_percent:
                     continue  # a percentage is never an amount
-                if raw is not None and table.unit is not None:
-                    value = raw * UNIT_TO_CRORE[table.unit]
+                if raw is not None and unit is not None:
+                    value = raw * UNIT_TO_CRORE[unit]
                 elif raw is not None:
                     warnings.append(
                         "monetary unit not declared near the table; value not normalised"
@@ -129,13 +149,13 @@ def generate(tables: list[FinancialTable]) -> list[Candidate]:
                     value=value,
                     raw_value=raw,
                     original_text=cell.text,
-                    original_unit=table.unit,
-                    unit_source=table.unit_source,
+                    original_unit=unit,
+                    unit_source=unit_source,
                     page=row.page,
                     period_label=period_label,
                     period_end=period.end.isoformat() if period.end else None,
                     months=period.months,
-                    basis=table.basis,
+                    basis=col.basis or table.basis,
                     method=method,
                     label=match.label,
                     raw_label=row.raw_label,
@@ -205,11 +225,11 @@ def decide(field_path: str, cands: list[Candidate]) -> FieldDecision:
                 "Source shows a dash / 'NA' for this period (no value; not treated as zero).",
             )
         return FieldDecision(field_path, FieldStatus.NOT_FOUND, None, cands, "No candidate found.")
-    # Prefer consolidated, then unknown basis, then standalone; other bases kept as alternatives.
-    for basis_group in ("consolidated", None, "standalone"):
-        group = [c for c in usable if c.basis == basis_group]
-        if group:
-            break
+    # Prefer consolidated figures. Otherwise unknown-basis and standalone candidates compete
+    # on score (standalone carries a lower basis component), so an eligibility table that
+    # labels a year "(Standalone)" is not overridden by an unlabelled copy elsewhere, and a
+    # disagreement between them surfaces as a conflict instead of being silently resolved.
+    group = [c for c in usable if c.basis == "consolidated"] or usable
     clusters = sorted(_cluster(group), key=_cluster_score, reverse=True)
     best = clusters[0]
     top = max(best, key=lambda c: c.score)
@@ -228,7 +248,7 @@ def decide(field_path: str, cands: list[Candidate]) -> FieldDecision:
         )
     threshold = _CRITICAL_HIGH_THRESHOLD if top.field in CRITICAL_FIELDS else _HIGH_THRESHOLD
     strong = best_score >= threshold and top.unit_source is not None and top.ocr_conf is None
-    corroborated = distinct_sources >= 2 or top.components.get("section", 0) >= 0.1
+    corroborated = distinct_sources >= 2 or top.components.get("section", 0) >= 0.075
     if strong and corroborated:
         return FieldDecision(
             field_path,

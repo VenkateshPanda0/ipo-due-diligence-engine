@@ -3,7 +3,7 @@ backend/app/models/enums.py
 
 Domain enumerations for the IPO Due Diligence Engine.
 
-This module MUST NOT import from app.rules, app.parser, app.api, app.engine.
+This module MUST NOT import from app.rules, app.intelligence, app.api, app.engine.
 All values are lowercase strings to keep JSON serialisation stable.
 """
 

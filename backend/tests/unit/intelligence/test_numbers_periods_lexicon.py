@@ -139,6 +139,8 @@ def test_unknown_unit_rejected() -> None:
         ("Particulars", None),
         ("Profit margin (%)", None),
         ("Revenue grew by 5 lakhs customers", None),  # no unit-declaration context
+        ("net tangible assets of at least ₹ 30 million, calculated", None),  # an amount
+        ("a net worth of not less than ₹ 1 crore (in ₹ lakhs)", "INR_LAKH"),
     ],
 )
 def test_detect_unit(text: str, unit: str | None) -> None:
@@ -193,6 +195,12 @@ def test_period_end_dates() -> None:
         ("Other equity", "reserves_and_surplus"),
         ("EBITDA", "ebitda"),
         ("Total equity", "net_worth"),
+        # real-DRHP label variants (footnote digits, hyphens, units in labels)
+        ("Net tangible assets1", "net_tangible_assets"),
+        ("Net-worth (in ₹ million)", "net_worth"),
+        ("Pre Tax Operating Profit", "operating_profit"),
+        ("Pre-tax operating profit/ (loss)", "operating_profit"),
+        ("Operating profit before tax", "operating_profit"),
     ],
 )
 def test_label_matches(label: str, field: str) -> None:
@@ -215,6 +223,10 @@ def test_label_matches(label: str, field: str) -> None:
         "Profit for the year attributable to non-controlling interest",
         "Net Asset Value per Equity Share",
         "Revenue growth (%)",
+        "Average Operating Profit",  # an average is not a per-year value
+        "Operating profit before working capital changes",  # cash-flow line
+        "Tangible Net Worth (Rs. million)",  # industry / peer metric
+        "Profit before tax",
     ],
 )
 def test_label_traps_do_not_match(label: str) -> None:

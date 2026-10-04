@@ -3,7 +3,7 @@ backend/app/models/__init__.py
 
 Public model exports for the domain layer.
 
-This module MUST NOT import from: app.parser, app.api, app.engine, app.rules.
+This module MUST NOT import from: app.intelligence, app.api, app.engine, app.rules.
 It depends only on the standard library and Pydantic.
 
 Exports:

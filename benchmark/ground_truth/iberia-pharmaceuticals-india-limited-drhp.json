@@ -1,0 +1,154 @@
+{
+  "document_id": "iberia-pharmaceuticals-india-limited-drhp",
+  "sha256": "0c54a969523396a6aeecb6cd285a4d0a7426c5c0712f4bf3e168a9ea54ca5ff7",
+  "expected_route": "mainboard_reg6_1",
+  "table_note": "Caption '(in Rs. Lakhs except % data)'; 'Fiscal 2026' headers.",
+  "reviewer": "Answer key prepared by an AI assistant reading poppler pdftotext output (independent of the pipeline's pdfplumber/OCR code). NOT yet verified by a human.",
+  "prepared_on": "2026-10-04",
+  "fields": [
+    {
+      "field_path": "financials.fiscal_years[FY2026].net_tangible_assets",
+      "original_text": "5,097.27",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "50.9727",
+      "period": "FY2026",
+      "basis": "consolidated",
+      "pages": [
+        374
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].net_tangible_assets",
+      "original_text": "4,003.10",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "40.0310",
+      "period": "FY2025",
+      "basis": "consolidated",
+      "pages": [
+        374
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].net_tangible_assets",
+      "original_text": "1,395.80",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "13.9580",
+      "period": "FY2024",
+      "basis": "consolidated",
+      "pages": [
+        374
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].monetary_assets",
+      "original_text": "759.96",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "7.5996",
+      "period": "FY2026",
+      "basis": "consolidated",
+      "pages": [
+        374
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].monetary_assets",
+      "original_text": "109.04",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "1.0904",
+      "period": "FY2025",
+      "basis": "consolidated",
+      "pages": [
+        374
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].monetary_assets",
+      "original_text": "72.32",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "0.7232",
+      "period": "FY2024",
+      "basis": "consolidated",
+      "pages": [
+        374
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].operating_profit",
+      "original_text": "1,508.92",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "15.0892",
+      "period": "FY2026",
+      "basis": "consolidated",
+      "pages": [
+        374
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].operating_profit",
+      "original_text": "2,054.18",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "20.5418",
+      "period": "FY2025",
+      "basis": "consolidated",
+      "pages": [
+        374
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].operating_profit",
+      "original_text": "1,043.24",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "10.4324",
+      "period": "FY2024",
+      "basis": "consolidated",
+      "pages": [
+        374
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].net_worth",
+      "original_text": "5,164.82",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "51.6482",
+      "period": "FY2026",
+      "basis": "consolidated",
+      "pages": [
+        374
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].net_worth",
+      "original_text": "3,995.18",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "39.9518",
+      "period": "FY2025",
+      "basis": "consolidated",
+      "pages": [
+        374
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].net_worth",
+      "original_text": "1,461.74",
+      "original_unit": "INR_LAKH",
+      "expected_crore": "14.6174",
+      "period": "FY2024",
+      "basis": "consolidated",
+      "pages": [
+        374
+      ],
+      "notes": ""
+    }
+  ]
+}

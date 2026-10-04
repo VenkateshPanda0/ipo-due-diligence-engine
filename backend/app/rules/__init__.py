@@ -11,7 +11,7 @@ This package contains:
 
 ARCHITECTURAL CONSTRAINTS:
   - Rules may only import from: app.models
-  - Rules MUST NOT import from: app.parser, app.api, app.services, app.engine
+  - Rules MUST NOT import from: app.intelligence, app.api, app.services, app.engine
   - Each rule is a pure function: f(CompanyData) → RuleResult
   - No shared mutable state between rules
 """

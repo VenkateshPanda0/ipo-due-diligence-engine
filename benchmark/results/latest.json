@@ -1,0 +1,1988 @@
+{
+  "generated_at": "2026-10-04T20:27:22+00:00",
+  "split": "all",
+  "ocr": true,
+  "summary": {
+    "documents": 8,
+    "scored_fields": 84,
+    "correct": 69,
+    "wrong": 6,
+    "missing": 9,
+    "flagged": 23,
+    "false_high": 3,
+    "correct_high": 55,
+    "precision": 0.92,
+    "recall": 0.8214,
+    "missing_rate": 0.1071,
+    "wrong_rate": 0.0714,
+    "false_high_rate": 0.0357,
+    "abstention_cases": 9,
+    "correct_abstentions": 6,
+    "route_correct": 8,
+    "by_field": {
+      "net_tangible_assets": {
+        "expected": 18,
+        "correct": 15,
+        "wrong": 0,
+        "missing": 3,
+        "false_high": 0
+      },
+      "monetary_assets": {
+        "expected": 18,
+        "correct": 15,
+        "wrong": 0,
+        "missing": 3,
+        "false_high": 0
+      },
+      "operating_profit": {
+        "expected": 18,
+        "correct": 15,
+        "wrong": 0,
+        "missing": 3,
+        "false_high": 0
+      },
+      "net_worth": {
+        "expected": 21,
+        "correct": 18,
+        "wrong": 3,
+        "missing": 0,
+        "false_high": 3
+      },
+      "revenue": {
+        "expected": 3,
+        "correct": 3,
+        "wrong": 0,
+        "missing": 0,
+        "false_high": 0
+      },
+      "pat": {
+        "expected": 3,
+        "correct": 0,
+        "wrong": 3,
+        "missing": 0,
+        "false_high": 0
+      },
+      "ebitda": {
+        "expected": 3,
+        "correct": 3,
+        "wrong": 0,
+        "missing": 0,
+        "false_high": 0
+      }
+    }
+  },
+  "by_split": {
+    "development": {
+      "documents": 5,
+      "scored_fields": 48,
+      "correct": 48,
+      "wrong": 0,
+      "missing": 0,
+      "flagged": 10,
+      "false_high": 0,
+      "correct_high": 38,
+      "precision": 1.0,
+      "recall": 1.0,
+      "missing_rate": 0.0,
+      "wrong_rate": 0.0,
+      "false_high_rate": 0.0,
+      "abstention_cases": 9,
+      "correct_abstentions": 6,
+      "route_correct": 5,
+      "by_field": {
+        "net_tangible_assets": {
+          "expected": 12,
+          "correct": 12,
+          "wrong": 0,
+          "missing": 0,
+          "false_high": 0
+        },
+        "monetary_assets": {
+          "expected": 12,
+          "correct": 12,
+          "wrong": 0,
+          "missing": 0,
+          "false_high": 0
+        },
+        "operating_profit": {
+          "expected": 12,
+          "correct": 12,
+          "wrong": 0,
+          "missing": 0,
+          "false_high": 0
+        },
+        "net_worth": {
+          "expected": 12,
+          "correct": 12,
+          "wrong": 0,
+          "missing": 0,
+          "false_high": 0
+        }
+      }
+    },
+    "holdout": {
+      "documents": 3,
+      "scored_fields": 36,
+      "correct": 21,
+      "wrong": 6,
+      "missing": 9,
+      "flagged": 13,
+      "false_high": 3,
+      "correct_high": 17,
+      "precision": 0.7778,
+      "recall": 0.5833,
+      "missing_rate": 0.25,
+      "wrong_rate": 0.1667,
+      "false_high_rate": 0.0833,
+      "abstention_cases": 0,
+      "correct_abstentions": 0,
+      "route_correct": 3,
+      "by_field": {
+        "net_tangible_assets": {
+          "expected": 6,
+          "correct": 3,
+          "wrong": 0,
+          "missing": 3,
+          "false_high": 0
+        },
+        "monetary_assets": {
+          "expected": 6,
+          "correct": 3,
+          "wrong": 0,
+          "missing": 3,
+          "false_high": 0
+        },
+        "operating_profit": {
+          "expected": 6,
+          "correct": 3,
+          "wrong": 0,
+          "missing": 3,
+          "false_high": 0
+        },
+        "net_worth": {
+          "expected": 9,
+          "correct": 6,
+          "wrong": 3,
+          "missing": 0,
+          "false_high": 3
+        },
+        "revenue": {
+          "expected": 3,
+          "correct": 3,
+          "wrong": 0,
+          "missing": 0,
+          "false_high": 0
+        },
+        "pat": {
+          "expected": 3,
+          "correct": 0,
+          "wrong": 3,
+          "missing": 0,
+          "false_high": 0
+        },
+        "ebitda": {
+          "expected": 3,
+          "correct": 3,
+          "wrong": 0,
+          "missing": 0,
+          "false_high": 0
+        }
+      }
+    }
+  },
+  "documents": [
+    {
+      "document_id": "madhur-iron-and-steel-india-limited-drhp",
+      "expected_route": "mainboard_reg6_1",
+      "suggested_route": "mainboard_reg6_1",
+      "route_correct": true,
+      "fields": [
+        {
+          "field_path": "financials.fiscal_years[FY2026].net_tangible_assets",
+          "expected": "329.4697",
+          "original": "32,946.97",
+          "status": "extracted_high_confidence",
+          "got": "329.4697",
+          "page": 502,
+          "expected_pages": [
+            502
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].net_tangible_assets",
+          "expected": "235.1886",
+          "original": "23,518.86",
+          "status": "extracted_high_confidence",
+          "got": "235.1886",
+          "page": 502,
+          "expected_pages": [
+            502
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].net_tangible_assets",
+          "expected": "126.5915",
+          "original": "12,659.15",
+          "status": "extracted_high_confidence",
+          "got": "126.5915",
+          "page": 502,
+          "expected_pages": [
+            502
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].monetary_assets",
+          "expected": "0.2219",
+          "original": "22.19",
+          "status": "extracted_high_confidence",
+          "got": "0.2219",
+          "page": 502,
+          "expected_pages": [
+            502
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].monetary_assets",
+          "expected": "0.6992",
+          "original": "69.92",
+          "status": "extracted_high_confidence",
+          "got": "0.6992",
+          "page": 502,
+          "expected_pages": [
+            502
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].monetary_assets",
+          "expected": "0.0027",
+          "original": "0.27",
+          "status": "extracted_high_confidence",
+          "got": "0.0027",
+          "page": 502,
+          "expected_pages": [
+            502
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].operating_profit",
+          "expected": "49.9128",
+          "original": "4,991.28",
+          "status": "extracted_high_confidence",
+          "got": "49.9128",
+          "page": 502,
+          "expected_pages": [
+            502
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].operating_profit",
+          "expected": "35.9218",
+          "original": "3,592.18",
+          "status": "extracted_high_confidence",
+          "got": "35.9218",
+          "page": 502,
+          "expected_pages": [
+            502
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].operating_profit",
+          "expected": "23.8650",
+          "original": "2,386.50",
+          "status": "extracted_high_confidence",
+          "got": "23.8650",
+          "page": 502,
+          "expected_pages": [
+            502
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].net_worth",
+          "expected": "117.8973",
+          "original": "11,789.73",
+          "status": "extracted_high_confidence",
+          "got": "117.8973",
+          "page": 502,
+          "expected_pages": [
+            502
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].net_worth",
+          "expected": "93.9947",
+          "original": "9,399.47",
+          "status": "extracted_high_confidence",
+          "got": "93.9947",
+          "page": 502,
+          "expected_pages": [
+            502
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].net_worth",
+          "expected": "42.7712",
+          "original": "4,277.12",
+          "status": "extracted_high_confidence",
+          "got": "42.7712",
+          "page": 502,
+          "expected_pages": [
+            502
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        }
+      ],
+      "metrics": {
+        "pages": 584,
+        "native_pages": 584,
+        "ocr_pages": 0,
+        "unreadable_pages": 0,
+        "tables": 199,
+        "candidates": 92,
+        "fields_high": 23,
+        "fields_needs_verification": 9,
+        "fields_conflicting": 4,
+        "fields_not_found": 0,
+        "seconds_pages": 26.904,
+        "seconds_tables": 20.117,
+        "seconds_total": 47.247
+      },
+      "warnings": [],
+      "seconds": 47.3,
+      "split": "development"
+    },
+    {
+      "document_id": "ekkaa-electronics-india-limited-drhp",
+      "expected_route": "mainboard_reg6_2",
+      "suggested_route": "mainboard_reg6_2",
+      "route_correct": true,
+      "fields": [
+        {
+          "field_path": "financials.fiscal_years[FY2026].net_tangible_assets",
+          "expected": "253.249",
+          "original": "2,532.49",
+          "status": "extracted_high_confidence",
+          "got": "253.249",
+          "page": 453,
+          "expected_pages": [
+            453
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].net_tangible_assets",
+          "expected": "41.980",
+          "original": "419.80",
+          "status": "extracted_needs_verification",
+          "got": "41.980",
+          "page": 453,
+          "expected_pages": [
+            453
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "standalone",
+          "expected_basis": "standalone",
+          "outcome": "correct",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].net_tangible_assets",
+          "expected": "16.711",
+          "original": "167.11",
+          "status": "extracted_needs_verification",
+          "got": "16.711",
+          "page": 453,
+          "expected_pages": [
+            453
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "standalone",
+          "expected_basis": "standalone",
+          "outcome": "correct",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].monetary_assets",
+          "expected": "2.340",
+          "original": "23.40",
+          "status": "extracted_high_confidence",
+          "got": "2.340",
+          "page": 453,
+          "expected_pages": [
+            453
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].monetary_assets",
+          "expected": "0.224",
+          "original": "2.24",
+          "status": "extracted_needs_verification",
+          "got": "0.224",
+          "page": 453,
+          "expected_pages": [
+            453
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "standalone",
+          "expected_basis": "standalone",
+          "outcome": "correct",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].monetary_assets",
+          "expected": "0.292",
+          "original": "2.92",
+          "status": "extracted_needs_verification",
+          "got": "0.292",
+          "page": 453,
+          "expected_pages": [
+            453
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "standalone",
+          "expected_basis": "standalone",
+          "outcome": "correct",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].operating_profit",
+          "expected": "100.869",
+          "original": "1,008.69",
+          "status": "extracted_high_confidence",
+          "got": "100.869",
+          "page": 453,
+          "expected_pages": [
+            453
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].operating_profit",
+          "expected": "46.656",
+          "original": "466.56",
+          "status": "extracted_high_confidence",
+          "got": "46.656",
+          "page": 453,
+          "expected_pages": [
+            453
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "standalone",
+          "expected_basis": "standalone",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].operating_profit",
+          "expected": "-1.196",
+          "original": "(11.96)",
+          "status": "extracted_high_confidence",
+          "got": "-1.196",
+          "page": 453,
+          "expected_pages": [
+            453
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "standalone",
+          "expected_basis": "standalone",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].net_worth",
+          "expected": "251.525",
+          "original": "2,515.25",
+          "status": "extracted_high_confidence",
+          "got": "251.525",
+          "page": 453,
+          "expected_pages": [
+            453
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].net_worth",
+          "expected": "38.221",
+          "original": "382.21",
+          "status": "extracted_high_confidence",
+          "got": "38.221",
+          "page": 453,
+          "expected_pages": [
+            453
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "standalone",
+          "expected_basis": "standalone",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].net_worth",
+          "expected": "14.669",
+          "original": "146.69",
+          "status": "extracted_high_confidence",
+          "got": "14.669",
+          "page": 453,
+          "expected_pages": [
+            453
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "standalone",
+          "expected_basis": "standalone",
+          "outcome": "correct",
+          "high": true
+        }
+      ],
+      "metrics": {
+        "pages": 582,
+        "native_pages": 581,
+        "ocr_pages": 1,
+        "unreadable_pages": 0,
+        "tables": 163,
+        "candidates": 66,
+        "fields_high": 13,
+        "fields_needs_verification": 19,
+        "fields_conflicting": 3,
+        "fields_not_found": 3,
+        "seconds_pages": 32.492,
+        "seconds_tables": 25.636,
+        "seconds_total": 58.41
+      },
+      "warnings": [
+        "financials.fiscal_years[FY2025].net_tangible_assets: net_tangible_assets exceeds total assets in FY2025",
+        "financials.fiscal_years[FY2025].monetary_assets: monetary_assets exceeds total assets in FY2025",
+        "financials.fiscal_years[FY2025].revenue: negative revenue",
+        "financials.fiscal_years[FY2024].net_tangible_assets: net_tangible_assets exceeds total assets in FY2024",
+        "financials.fiscal_years[FY2024].monetary_assets: monetary_assets exceeds total assets in FY2024",
+        "financials.fiscal_years[FY2024].revenue: negative revenue"
+      ],
+      "seconds": 58.5,
+      "split": "development"
+    },
+    {
+      "document_id": "jsw-one-platforms-limited-drhp",
+      "expected_route": "mainboard_reg6_2",
+      "suggested_route": "mainboard_reg6_2",
+      "route_correct": true,
+      "fields": [
+        {
+          "field_path": "financials.fiscal_years[FY2026].net_tangible_assets",
+          "expected": "558.574",
+          "original": "5,585.74",
+          "status": "extracted_needs_verification",
+          "got": "558.574",
+          "page": 457,
+          "expected_pages": [
+            457
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].net_tangible_assets",
+          "expected": "76.918",
+          "original": "769.18",
+          "status": "extracted_needs_verification",
+          "got": "76.918",
+          "page": 457,
+          "expected_pages": [
+            457
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].net_tangible_assets",
+          "expected": "234.723",
+          "original": "2,347.23",
+          "status": "extracted_needs_verification",
+          "got": "234.723",
+          "page": 457,
+          "expected_pages": [
+            457
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].monetary_assets",
+          "expected": "418.183",
+          "original": "4,181.83",
+          "status": "extracted_needs_verification",
+          "got": "418.183",
+          "page": 457,
+          "expected_pages": [
+            457
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].monetary_assets",
+          "expected": "101.837",
+          "original": "1,018.37",
+          "status": "extracted_needs_verification",
+          "got": "101.837",
+          "page": 457,
+          "expected_pages": [
+            457
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].monetary_assets",
+          "expected": "189.045",
+          "original": "1,890.45",
+          "status": "extracted_needs_verification",
+          "got": "189.045",
+          "page": 457,
+          "expected_pages": [
+            457
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].operating_profit",
+          "expected": "-121.241",
+          "original": "(1,212.41)",
+          "status": "extracted_high_confidence",
+          "got": "-121.241",
+          "page": 457,
+          "expected_pages": [
+            457
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].operating_profit",
+          "expected": "-217.572",
+          "original": "(2,175.72)",
+          "status": "extracted_high_confidence",
+          "got": "-217.572",
+          "page": 457,
+          "expected_pages": [
+            457
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].operating_profit",
+          "expected": "-241.188",
+          "original": "(2,411.88)",
+          "status": "extracted_high_confidence",
+          "got": "-241.188",
+          "page": 457,
+          "expected_pages": [
+            457
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].net_worth",
+          "expected": "556.488",
+          "original": "5,564.88",
+          "status": "extracted_high_confidence",
+          "got": "556.488",
+          "page": 457,
+          "expected_pages": [
+            383,
+            388,
+            411,
+            414,
+            457
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].net_worth",
+          "expected": "75.795",
+          "original": "757.95",
+          "status": "extracted_high_confidence",
+          "got": "75.795",
+          "page": 457,
+          "expected_pages": [
+            388,
+            411,
+            414,
+            457
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].net_worth",
+          "expected": "233.804",
+          "original": "2,338.04",
+          "status": "extracted_high_confidence",
+          "got": "233.804",
+          "page": 457,
+          "expected_pages": [
+            388,
+            411,
+            414,
+            457
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        }
+      ],
+      "metrics": {
+        "pages": 561,
+        "native_pages": 560,
+        "ocr_pages": 1,
+        "unreadable_pages": 0,
+        "tables": 157,
+        "candidates": 157,
+        "fields_high": 17,
+        "fields_needs_verification": 11,
+        "fields_conflicting": 7,
+        "fields_not_found": 15,
+        "seconds_pages": 40.134,
+        "seconds_tables": 30.896,
+        "seconds_total": 71.398
+      },
+      "warnings": [
+        "financials.fiscal_years[FY2026].net_tangible_assets: net_tangible_assets exceeds total assets in FY2026",
+        "financials.fiscal_years[FY2026].monetary_assets: monetary_assets exceeds total assets in FY2026",
+        "financials.fiscal_years[FY2025].net_tangible_assets: net_tangible_assets exceeds total assets in FY2025",
+        "financials.fiscal_years[FY2025].monetary_assets: monetary_assets exceeds total assets in FY2025",
+        "financials.fiscal_years[FY2024].net_tangible_assets: net_tangible_assets exceeds total assets in FY2024",
+        "financials.fiscal_years[FY2024].monetary_assets: monetary_assets exceeds total assets in FY2024"
+      ],
+      "seconds": 71.5,
+      "split": "development"
+    },
+    {
+      "document_id": "iris-global-services-limited-drhp",
+      "expected_route": "mainboard_reg6_1",
+      "suggested_route": "mainboard_reg6_1",
+      "route_correct": true,
+      "fields": [
+        {
+          "field_path": "financials.fiscal_years[FY2026].net_tangible_assets",
+          "expected": "296.278",
+          "original": "2,962.78",
+          "status": "extracted_high_confidence",
+          "got": "296.278",
+          "page": 353,
+          "expected_pages": [
+            353
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].net_tangible_assets",
+          "expected": "220.099",
+          "original": "2,200.99",
+          "status": "extracted_high_confidence",
+          "got": "220.099",
+          "page": 353,
+          "expected_pages": [
+            353
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].net_tangible_assets",
+          "expected": "158.115",
+          "original": "1,581.15",
+          "status": "extracted_high_confidence",
+          "got": "158.115",
+          "page": 353,
+          "expected_pages": [
+            353
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].monetary_assets",
+          "expected": "6.328",
+          "original": "63.28",
+          "status": "extracted_high_confidence",
+          "got": "6.328",
+          "page": 353,
+          "expected_pages": [
+            353
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].monetary_assets",
+          "expected": "0.097",
+          "original": "0.97",
+          "status": "extracted_high_confidence",
+          "got": "0.097",
+          "page": 353,
+          "expected_pages": [
+            353
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].monetary_assets",
+          "expected": "0.226",
+          "original": "2.26",
+          "status": "extracted_high_confidence",
+          "got": "0.226",
+          "page": 353,
+          "expected_pages": [
+            353
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].operating_profit",
+          "expected": "126.734",
+          "original": "1,267.34",
+          "status": "extracted_high_confidence",
+          "got": "126.734",
+          "page": 353,
+          "expected_pages": [
+            353
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].operating_profit",
+          "expected": "92.775",
+          "original": "927.75",
+          "status": "extracted_high_confidence",
+          "got": "92.775",
+          "page": 353,
+          "expected_pages": [
+            353
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].operating_profit",
+          "expected": "75.584",
+          "original": "755.84",
+          "status": "extracted_high_confidence",
+          "got": "75.584",
+          "page": 353,
+          "expected_pages": [
+            353
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].net_worth",
+          "expected": "298.655",
+          "original": "2,986.55",
+          "status": "extracted_high_confidence",
+          "got": "298.655",
+          "page": 353,
+          "expected_pages": [
+            353
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].net_worth",
+          "expected": "221.569",
+          "original": "2,215.69",
+          "status": "extracted_high_confidence",
+          "got": "221.569",
+          "page": 353,
+          "expected_pages": [
+            353
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].net_worth",
+          "expected": "159.348",
+          "original": "1,593.48",
+          "status": "extracted_high_confidence",
+          "got": "159.348",
+          "page": 353,
+          "expected_pages": [
+            353
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        }
+      ],
+      "metrics": {
+        "pages": 444,
+        "native_pages": 443,
+        "ocr_pages": 1,
+        "unreadable_pages": 0,
+        "tables": 72,
+        "candidates": 90,
+        "fields_high": 33,
+        "fields_needs_verification": 4,
+        "fields_conflicting": 0,
+        "fields_not_found": 0,
+        "seconds_pages": 18.124,
+        "seconds_tables": 17.909,
+        "seconds_total": 36.222
+      },
+      "warnings": [],
+      "seconds": 36.3,
+      "split": "development"
+    },
+    {
+      "document_id": "jagatjit-agri-engineering-limited-drhp",
+      "expected_route": "mainboard_reg6_2",
+      "suggested_route": "mainboard_reg6_2",
+      "route_correct": true,
+      "fields": [
+        {
+          "field_path": "financials.fiscal_years[FY2026].net_tangible_assets",
+          "expected": null,
+          "original": "704.75",
+          "status": "extracted_needs_verification",
+          "got": null,
+          "page": null,
+          "expected_pages": [
+            509
+          ],
+          "got_unit": null,
+          "got_basis": null,
+          "expected_basis": "consolidated",
+          "outcome": "correct_abstention",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].net_tangible_assets",
+          "expected": null,
+          "original": "70.78",
+          "status": "extracted_needs_verification",
+          "got": null,
+          "page": null,
+          "expected_pages": [
+            509
+          ],
+          "got_unit": null,
+          "got_basis": null,
+          "expected_basis": "standalone",
+          "outcome": "correct_abstention",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].net_tangible_assets",
+          "expected": null,
+          "original": "5.32",
+          "status": "extracted_needs_verification",
+          "got": null,
+          "page": null,
+          "expected_pages": [
+            509
+          ],
+          "got_unit": null,
+          "got_basis": null,
+          "expected_basis": "standalone",
+          "outcome": "correct_abstention",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].monetary_assets",
+          "expected": null,
+          "original": "161.59",
+          "status": "extracted_needs_verification",
+          "got": null,
+          "page": null,
+          "expected_pages": [
+            509
+          ],
+          "got_unit": null,
+          "got_basis": null,
+          "expected_basis": "consolidated",
+          "outcome": "correct_abstention",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].monetary_assets",
+          "expected": null,
+          "original": "39.14",
+          "status": "extracted_needs_verification",
+          "got": null,
+          "page": null,
+          "expected_pages": [
+            509
+          ],
+          "got_unit": null,
+          "got_basis": null,
+          "expected_basis": "standalone",
+          "outcome": "correct_abstention",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].monetary_assets",
+          "expected": null,
+          "original": "33.26",
+          "status": "extracted_needs_verification",
+          "got": null,
+          "page": null,
+          "expected_pages": [
+            509
+          ],
+          "got_unit": null,
+          "got_basis": null,
+          "expected_basis": "standalone",
+          "outcome": "correct_abstention",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].net_worth",
+          "expected": null,
+          "original": "709.29",
+          "status": "extracted_high_confidence",
+          "got": "70.929",
+          "page": 91,
+          "expected_pages": [
+            509
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "wrong_normalisation",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].net_worth",
+          "expected": null,
+          "original": "70.78",
+          "status": "extracted_needs_verification",
+          "got": "7.078",
+          "page": 402,
+          "expected_pages": [
+            509
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": "standalone",
+          "outcome": "wrong_normalisation",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].net_worth",
+          "expected": null,
+          "original": "5.32",
+          "status": "extracted_needs_verification",
+          "got": "0.532",
+          "page": 402,
+          "expected_pages": [
+            509
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": "standalone",
+          "outcome": "wrong_normalisation",
+          "high": false
+        }
+      ],
+      "metrics": {
+        "pages": 592,
+        "native_pages": 591,
+        "ocr_pages": 1,
+        "unreadable_pages": 0,
+        "tables": 214,
+        "candidates": 195,
+        "fields_high": 6,
+        "fields_needs_verification": 13,
+        "fields_conflicting": 13,
+        "fields_not_found": 6,
+        "seconds_pages": 37.837,
+        "seconds_tables": 23.942,
+        "seconds_total": 62.042
+      },
+      "warnings": [],
+      "seconds": 62.1,
+      "split": "development"
+    },
+    {
+      "document_id": "iberia-pharmaceuticals-india-limited-drhp",
+      "expected_route": "mainboard_reg6_1",
+      "suggested_route": "mainboard_reg6_1",
+      "route_correct": true,
+      "fields": [
+        {
+          "field_path": "financials.fiscal_years[FY2026].net_tangible_assets",
+          "expected": "50.9727",
+          "original": "5,097.27",
+          "status": "extracted_high_confidence",
+          "got": "50.9727",
+          "page": 374,
+          "expected_pages": [
+            374
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].net_tangible_assets",
+          "expected": "40.0310",
+          "original": "4,003.10",
+          "status": "extracted_high_confidence",
+          "got": "40.0310",
+          "page": 374,
+          "expected_pages": [
+            374
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].net_tangible_assets",
+          "expected": "13.9580",
+          "original": "1,395.80",
+          "status": "extracted_high_confidence",
+          "got": "13.9580",
+          "page": 374,
+          "expected_pages": [
+            374
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].monetary_assets",
+          "expected": "7.5996",
+          "original": "759.96",
+          "status": "extracted_high_confidence",
+          "got": "7.5996",
+          "page": 374,
+          "expected_pages": [
+            374
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].monetary_assets",
+          "expected": "1.0904",
+          "original": "109.04",
+          "status": "extracted_high_confidence",
+          "got": "1.0904",
+          "page": 374,
+          "expected_pages": [
+            374
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].monetary_assets",
+          "expected": "0.7232",
+          "original": "72.32",
+          "status": "extracted_high_confidence",
+          "got": "0.7232",
+          "page": 374,
+          "expected_pages": [
+            374
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].operating_profit",
+          "expected": "15.0892",
+          "original": "1,508.92",
+          "status": "extracted_high_confidence",
+          "got": "15.0892",
+          "page": 374,
+          "expected_pages": [
+            374
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].operating_profit",
+          "expected": "20.5418",
+          "original": "2,054.18",
+          "status": "extracted_high_confidence",
+          "got": "20.5418",
+          "page": 374,
+          "expected_pages": [
+            374
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].operating_profit",
+          "expected": "10.4324",
+          "original": "1,043.24",
+          "status": "extracted_high_confidence",
+          "got": "10.4324",
+          "page": 374,
+          "expected_pages": [
+            374
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].net_worth",
+          "expected": "51.6482",
+          "original": "5,164.82",
+          "status": "extracted_high_confidence",
+          "got": "51.6482",
+          "page": 374,
+          "expected_pages": [
+            374
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].net_worth",
+          "expected": "39.9518",
+          "original": "3,995.18",
+          "status": "extracted_high_confidence",
+          "got": "39.9518",
+          "page": 374,
+          "expected_pages": [
+            374
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].net_worth",
+          "expected": "14.6174",
+          "original": "1,461.74",
+          "status": "extracted_high_confidence",
+          "got": "14.6174",
+          "page": 374,
+          "expected_pages": [
+            374
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "consolidated",
+          "expected_basis": "consolidated",
+          "outcome": "correct",
+          "high": true
+        }
+      ],
+      "metrics": {
+        "pages": 487,
+        "native_pages": 486,
+        "ocr_pages": 1,
+        "unreadable_pages": 0,
+        "tables": 227,
+        "candidates": 155,
+        "fields_high": 30,
+        "fields_needs_verification": 3,
+        "fields_conflicting": 3,
+        "fields_not_found": 0,
+        "seconds_pages": 27.149,
+        "seconds_tables": 20.915,
+        "seconds_total": 48.295
+      },
+      "warnings": [],
+      "seconds": 48.4,
+      "split": "holdout"
+    },
+    {
+      "document_id": "vardaan-biotech-limited-drhp",
+      "expected_route": "mainboard_reg6_1",
+      "suggested_route": "mainboard_reg6_1",
+      "route_correct": true,
+      "fields": [
+        {
+          "field_path": "financials.fiscal_years[FY2026].net_tangible_assets",
+          "expected": "99.5475",
+          "original": "9,954.75",
+          "status": "extracted_needs_verification",
+          "got": null,
+          "page": null,
+          "expected_pages": [
+            354
+          ],
+          "got_unit": null,
+          "got_basis": null,
+          "expected_basis": null,
+          "outcome": "missing",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].net_tangible_assets",
+          "expected": "60.9993",
+          "original": "6,099.93",
+          "status": "not_found",
+          "got": null,
+          "page": null,
+          "expected_pages": [
+            354
+          ],
+          "got_unit": null,
+          "got_basis": null,
+          "expected_basis": null,
+          "outcome": "missing",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].net_tangible_assets",
+          "expected": "43.3670",
+          "original": "4,336.70",
+          "status": "extracted_needs_verification",
+          "got": null,
+          "page": null,
+          "expected_pages": [
+            354
+          ],
+          "got_unit": null,
+          "got_basis": null,
+          "expected_basis": null,
+          "outcome": "missing",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].monetary_assets",
+          "expected": "0.3130",
+          "original": "31.30",
+          "status": "extracted_needs_verification",
+          "got": null,
+          "page": null,
+          "expected_pages": [
+            354
+          ],
+          "got_unit": null,
+          "got_basis": null,
+          "expected_basis": null,
+          "outcome": "missing",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].monetary_assets",
+          "expected": "0.5579",
+          "original": "55.79",
+          "status": "not_found",
+          "got": null,
+          "page": null,
+          "expected_pages": [
+            354
+          ],
+          "got_unit": null,
+          "got_basis": null,
+          "expected_basis": null,
+          "outcome": "missing",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].monetary_assets",
+          "expected": "0.3444",
+          "original": "34.44",
+          "status": "extracted_needs_verification",
+          "got": null,
+          "page": null,
+          "expected_pages": [
+            354
+          ],
+          "got_unit": null,
+          "got_basis": null,
+          "expected_basis": null,
+          "outcome": "missing",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].operating_profit",
+          "expected": "28.2059",
+          "original": "2,820.59",
+          "status": "extracted_needs_verification",
+          "got": null,
+          "page": null,
+          "expected_pages": [
+            354
+          ],
+          "got_unit": null,
+          "got_basis": null,
+          "expected_basis": null,
+          "outcome": "missing",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].operating_profit",
+          "expected": "26.7299",
+          "original": "2,672.99",
+          "status": "not_found",
+          "got": null,
+          "page": null,
+          "expected_pages": [
+            354
+          ],
+          "got_unit": null,
+          "got_basis": null,
+          "expected_basis": null,
+          "outcome": "missing",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].operating_profit",
+          "expected": "23.7652",
+          "original": "2,376.52",
+          "status": "extracted_needs_verification",
+          "got": null,
+          "page": null,
+          "expected_pages": [
+            354
+          ],
+          "got_unit": null,
+          "got_basis": null,
+          "expected_basis": null,
+          "outcome": "missing",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].net_worth",
+          "expected": "99.5475",
+          "original": "9,954.75",
+          "status": "extracted_high_confidence",
+          "got": "99.5475",
+          "page": 320,
+          "expected_pages": [
+            354
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "wrong_page",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].net_worth",
+          "expected": "60.9993",
+          "original": "6,099.93",
+          "status": "extracted_high_confidence",
+          "got": "60.9993",
+          "page": 320,
+          "expected_pages": [
+            354
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "wrong_page",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].net_worth",
+          "expected": "43.3671",
+          "original": "4,336.71",
+          "status": "extracted_high_confidence",
+          "got": "43.3671",
+          "page": 320,
+          "expected_pages": [
+            354
+          ],
+          "got_unit": "INR_LAKH",
+          "got_basis": "unknown",
+          "expected_basis": null,
+          "outcome": "wrong_page",
+          "high": true
+        }
+      ],
+      "metrics": {
+        "pages": 444,
+        "native_pages": 443,
+        "ocr_pages": 1,
+        "unreadable_pages": 0,
+        "tables": 180,
+        "candidates": 93,
+        "fields_high": 15,
+        "fields_needs_verification": 12,
+        "fields_conflicting": 3,
+        "fields_not_found": 6,
+        "seconds_pages": 25.539,
+        "seconds_tables": 19.56,
+        "seconds_total": 45.308
+      },
+      "warnings": [],
+      "seconds": 45.4,
+      "split": "holdout"
+    },
+    {
+      "document_id": "anchor-offshore-services-limited-drhp",
+      "expected_route": "mainboard_reg6_2",
+      "suggested_route": "mainboard_reg6_2",
+      "route_correct": true,
+      "fields": [
+        {
+          "field_path": "financials.fiscal_years[FY2026].revenue",
+          "expected": "105.827",
+          "original": "1,058.27",
+          "status": "conflicting_candidates",
+          "got": "105.827",
+          "page": 80,
+          "expected_pages": [
+            80,
+            142,
+            144,
+            208,
+            209,
+            283,
+            334,
+            335,
+            340,
+            358,
+            359
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].revenue",
+          "expected": "139.989",
+          "original": "1,399.89",
+          "status": "conflicting_candidates",
+          "got": "139.989",
+          "page": 80,
+          "expected_pages": [
+            80,
+            142,
+            145,
+            209,
+            283,
+            334,
+            335,
+            340,
+            359,
+            361
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].revenue",
+          "expected": "117.904",
+          "original": "1,179.04",
+          "status": "conflicting_candidates",
+          "got": "117.904",
+          "page": 80,
+          "expected_pages": [
+            80,
+            142,
+            145,
+            209,
+            283,
+            334,
+            335,
+            340,
+            361
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].pat",
+          "expected": "8.035",
+          "original": "80.35",
+          "status": "conflicting_candidates",
+          "got": "8.035",
+          "page": 283,
+          "expected_pages": [
+            142,
+            144,
+            209,
+            340
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": null,
+          "outcome": "wrong_page",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].pat",
+          "expected": "12.886",
+          "original": "128.86",
+          "status": "conflicting_candidates",
+          "got": "12.886",
+          "page": 283,
+          "expected_pages": [
+            142,
+            145,
+            209,
+            340
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": null,
+          "outcome": "wrong_page",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].pat",
+          "expected": "-6.709",
+          "original": "(67.09)",
+          "status": "conflicting_candidates",
+          "got": "-6.709",
+          "page": 283,
+          "expected_pages": [
+            142,
+            145,
+            209,
+            340
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": null,
+          "outcome": "wrong_page",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].ebitda",
+          "expected": "12.033",
+          "original": "120.33",
+          "status": "extracted_high_confidence",
+          "got": "12.033",
+          "page": 142,
+          "expected_pages": [
+            142,
+            144,
+            209,
+            322,
+            334,
+            335,
+            340
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].ebitda",
+          "expected": "11.649",
+          "original": "116.49",
+          "status": "extracted_high_confidence",
+          "got": "11.649",
+          "page": 142,
+          "expected_pages": [
+            142,
+            145,
+            209,
+            322,
+            334,
+            335,
+            340
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].ebitda",
+          "expected": "3.650",
+          "original": "36.50",
+          "status": "extracted_high_confidence",
+          "got": "3.650",
+          "page": 142,
+          "expected_pages": [
+            142,
+            145,
+            209,
+            322,
+            334,
+            335,
+            340
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2026].net_worth",
+          "expected": "128.135",
+          "original": "1,281.35",
+          "status": "conflicting_candidates",
+          "got": "128.135",
+          "page": 142,
+          "expected_pages": [
+            142,
+            144,
+            209,
+            210,
+            322,
+            334,
+            340,
+            364
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": false
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2025].net_worth",
+          "expected": "91.336",
+          "original": "913.36",
+          "status": "extracted_high_confidence",
+          "got": "91.336",
+          "page": 142,
+          "expected_pages": [
+            142,
+            145,
+            209,
+            322,
+            334,
+            335,
+            340
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        },
+        {
+          "field_path": "financials.fiscal_years[FY2024].net_worth",
+          "expected": "78.595",
+          "original": "785.95",
+          "status": "extracted_high_confidence",
+          "got": "78.595",
+          "page": 142,
+          "expected_pages": [
+            142,
+            145,
+            209,
+            322,
+            334,
+            335,
+            340
+          ],
+          "got_unit": "INR_MILLION",
+          "got_basis": "consolidated",
+          "expected_basis": null,
+          "outcome": "correct",
+          "high": true
+        }
+      ],
+      "metrics": {
+        "pages": 463,
+        "native_pages": 463,
+        "ocr_pages": 0,
+        "unreadable_pages": 0,
+        "tables": 202,
+        "candidates": 132,
+        "fields_high": 14,
+        "fields_needs_verification": 4,
+        "fields_conflicting": 7,
+        "fields_not_found": 12,
+        "seconds_pages": 33.263,
+        "seconds_tables": 20.598,
+        "seconds_total": 54.087
+      },
+      "warnings": [],
+      "seconds": 54.2,
+      "split": "holdout"
+    }
+  ]
+}

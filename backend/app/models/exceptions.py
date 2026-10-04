@@ -11,7 +11,7 @@ responses. Rule implementations raise InsufficientDataError when required
 data is absent or unusable.
 
 This module MUST NOT import from:
-  - app.rules, app.parser, app.api, app.engine
+  - app.rules, app.intelligence, app.api, app.engine
 
 Error codes match the API error envelope documented in ARCHITECTURE.md §13.3.
 """

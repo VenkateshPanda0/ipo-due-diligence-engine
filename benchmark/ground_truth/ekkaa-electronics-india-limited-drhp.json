@@ -1,0 +1,154 @@
+{
+  "document_id": "ekkaa-electronics-india-limited-drhp",
+  "sha256": "be9e503ae7cd1dc3a4c0ea296ec44b51c0cb40fb0448f8530812cb5cc4123fb2",
+  "expected_route": "mainboard_reg6_2",
+  "table_note": "Reg 6(2) issuer. Mixed basis per column (FY2026 consolidated, earlier standalone); header text broken across cells.",
+  "reviewer": "Answer key prepared by an AI assistant reading poppler pdftotext output (independent of the pipeline's pdfplumber/OCR code). NOT yet verified by a human.",
+  "prepared_on": "2026-10-04",
+  "fields": [
+    {
+      "field_path": "financials.fiscal_years[FY2026].net_tangible_assets",
+      "original_text": "2,532.49",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "253.249",
+      "period": "FY2026",
+      "basis": "consolidated",
+      "pages": [
+        453
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].net_tangible_assets",
+      "original_text": "419.80",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "41.980",
+      "period": "FY2025",
+      "basis": "standalone",
+      "pages": [
+        453
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].net_tangible_assets",
+      "original_text": "167.11",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "16.711",
+      "period": "FY2024",
+      "basis": "standalone",
+      "pages": [
+        453
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].monetary_assets",
+      "original_text": "23.40",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "2.340",
+      "period": "FY2026",
+      "basis": "consolidated",
+      "pages": [
+        453
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].monetary_assets",
+      "original_text": "2.24",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "0.224",
+      "period": "FY2025",
+      "basis": "standalone",
+      "pages": [
+        453
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].monetary_assets",
+      "original_text": "2.92",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "0.292",
+      "period": "FY2024",
+      "basis": "standalone",
+      "pages": [
+        453
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].operating_profit",
+      "original_text": "1,008.69",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "100.869",
+      "period": "FY2026",
+      "basis": "consolidated",
+      "pages": [
+        453
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].operating_profit",
+      "original_text": "466.56",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "46.656",
+      "period": "FY2025",
+      "basis": "standalone",
+      "pages": [
+        453
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].operating_profit",
+      "original_text": "(11.96)",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "-1.196",
+      "period": "FY2024",
+      "basis": "standalone",
+      "pages": [
+        453
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2026].net_worth",
+      "original_text": "2,515.25",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "251.525",
+      "period": "FY2026",
+      "basis": "consolidated",
+      "pages": [
+        453
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2025].net_worth",
+      "original_text": "382.21",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "38.221",
+      "period": "FY2025",
+      "basis": "standalone",
+      "pages": [
+        453
+      ],
+      "notes": ""
+    },
+    {
+      "field_path": "financials.fiscal_years[FY2024].net_worth",
+      "original_text": "146.69",
+      "original_unit": "INR_MILLION",
+      "expected_crore": "14.669",
+      "period": "FY2024",
+      "basis": "standalone",
+      "pages": [
+        453
+      ],
+      "notes": ""
+    }
+  ]
+}

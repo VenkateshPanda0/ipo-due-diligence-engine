@@ -2,7 +2,7 @@
 Stage E — OCR fallback (Tesseract via pytesseract), page-level.
 
 Steps per page: render with pdfium at the configured DPI → detect orientation
-(Tesseract OSD) and rotate → optional deskew (OpenCV, if installed) → OCR with
+(Tesseract OSD) and rotate → deskew (projection-profile search, NumPy/Pillow) → OCR with
 word boxes and confidences. Word boxes are mapped back to PDF points so OCR words
 share the native-text layout model.
 

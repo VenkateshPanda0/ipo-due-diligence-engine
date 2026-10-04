@@ -8,7 +8,7 @@ specific pages and tables in the source document. This is the first link
 in the four-link evidence chain described in ARCHITECTURE.md §11.
 
 This module MUST NOT import from:
-  - app.rules, app.parser, app.api, app.engine
+  - app.rules, app.intelligence, app.api, app.engine
 """
 
 from __future__ import annotations

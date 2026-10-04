@@ -6,15 +6,15 @@ into [BENCHMARK_RESULTS.md](BENCHMARK_RESULTS.md) and `benchmark/results/latest.
 
 ## Corpus
 
-Eight public Draft Red Herring Prospectuses filed with SEBI (Filings → Public Issues),
+Thirteen public Draft Red Herring Prospectuses filed with SEBI (Filings → Public Issues),
 retrieved on 2026-10-04 and listed in `benchmark/manifest.json` with filing page, PDF
-URL and SHA-256. They are public documents. The PDFs (~90 MB) are not committed;
+URL and SHA-256. They are public documents. The PDFs (~140 MB) are not committed;
 `scripts/benchmark_extraction.py --download` fetches them and verifies the hashes.
 
 | Split | Documents | Use |
 |---|---|---|
-| development | Madhur Iron & Steel, Ekkaa Electronics, JSW One Platforms, Iris Global Services, Jagatjit Agri Engineering | Failure analysis and fixes. |
-| holdout | Iberia Pharmaceuticals, Vardaan Biotech, Anchor Offshore Services | **Measurement only.** These were not inspected while tuning. |
+| development | Madhur Iron & Steel, Ekkaa Electronics, JSW One Platforms, Iris Global Services, Jagatjit Agri Engineering, Iberia Pharmaceuticals, Vardaan Biotech, Anchor Offshore Services | Failure analysis and fixes. The last three were the first holdout; they were measured once (below) and then moved here. |
+| holdout | Royal Chain, Hi-Tech Flow Solutions, M K C Agro Fresh, Maharashtra Oil Extractions, Ultravibrant Integrated Energy | **Measurement only.** Added after the code freeze (commit `96169ca`); answer keys committed (`c68c412`) before the first run. |
 
 The documents cover lakh-denominated and million-denominated tables, Reg 6(1) and
 Reg 6(2) issuers, consolidated and standalone columns, header layouts split across
@@ -112,3 +112,36 @@ declares no unit, but the same net-worth figures appear elsewhere in the DRHP wi
 in million". So the extraction is defensible, and the key's "abstain" expectation
 applies only to the p.509 table. The key was left unchanged; a human reviewer should
 settle it.
+
+## Round 2: fresh holdout (2026-10-04)
+
+The first holdout's failures were diagnosed after it had been measured, and those
+documents then moved to development. The causes:
+
+* A header wrapped across two lines ("…ended March" / "31, 2025").
+* Right-aligned figures under left-anchored headers.
+* A prose sentence mistaken for a table header.
+* A minority-interest "PAT … NCI" line and an "as per audited" profit row creating
+  false conflicts.
+
+The code was frozen once these were fixed. Five new DRHPs were then downloaded and
+keyed, without running the pipeline on them.
+
+| | Development (8) | Fresh holdout (5) |
+|---|---|---|
+| Correct (value and page) | 81/84 | **57/60** |
+| Right value, unexpected page | 3 (Anchor PAT, see `benchmark/KEY_REVIEW_NOTES.md`) | 3 |
+| Wrong value | 0 | **0** |
+| Missing | 0 | **0** |
+| False-high (all right-value / other-page) | 3 | 3 |
+| Correct abstentions | 6/9 | — |
+| Route detected | 8/8 | 5/5 |
+
+The 3 holdout mismatches are Royal Chain's net-worth values. They are correct, but the
+pipeline cited p.338 instead of the eligibility table on p.379, with high confidence.
+Choosing the eligibility table is a scoring preference, not a correctness issue. It has
+not been tuned, because Royal Chain is a holdout document.
+
+Across both holdouts, no document has yet produced a **wrong value** for a scored field.
+That is consistent with the design rule that ambiguous rows are dropped rather than
+guessed. It is still based on 8 unseen documents and AI-prepared keys.

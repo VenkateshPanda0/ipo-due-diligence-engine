@@ -27,7 +27,7 @@ export default function DashboardPage() {
         <div className="stack">
           <div className="grid grid-4">
             <Stat label="Screening cases" value={d.cases_total} hint={`${d.cases_by_status.archived ?? 0} archived`} />
-            <Stat label="Awaiting review" value={d.cases_awaiting_review} hint={`${d.open_review_items} open review item(s)`} tone={d.open_review_items ? "attention" : undefined} />
+            <Stat label="Open review items" value={d.open_review_items} hint={`${d.cases_awaiting_review} case(s) awaiting review`} tone={d.open_review_items ? "attention" : undefined} />
             <Stat label="Reports generated" value={d.reports_total} hint={`Ruleset ${d.ruleset_version}`} />
             <Stat
               label="Document failures"

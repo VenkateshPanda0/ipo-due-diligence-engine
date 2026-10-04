@@ -38,6 +38,7 @@ describe("formatting", () => {
   });
   it("labels field paths", () => {
     expect(fieldLabel("financials.fiscal_years[FY2024].net_worth")).toBe("Net worth · FY2024");
+    expect(fieldLabel("financials.fiscal_years[FY2024].pat")).toBe("Profit after tax · FY2024");
     expect(humanize("awaiting_review")).toBe("Awaiting review");
   });
   it("never says 'eligible' for the best outcome", () => {

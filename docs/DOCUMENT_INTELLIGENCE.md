@@ -85,6 +85,9 @@ or because they were found on real DRHPs during benchmarking:
 | 0.10 | basis | consolidated 1.0; unknown 0.6; standalone 0.5 |
 | 0.10 | section | Reg 6 eligibility table 1.0; restated / summary 0.75; other 0.5 |
 
+A **field score** is the best candidate's score plus a corroboration bonus of +0.05 for
+each additional independent table that agrees (capped at +0.1), so it can exceed 1.0.
+
 Decision rules:
 
 * Consolidated candidates are preferred. Otherwise unknown-basis and standalone

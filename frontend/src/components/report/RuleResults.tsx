@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui";
-import { evidenceKindLabel, formatValue, humanize, legalCategoryLabel, verdictLabel, verdictTone, verificationLabel } from "@/lib/format";
+import { evidenceKindLabel, fieldLabel, formatValue, humanize, legalCategoryLabel, verdictLabel, verdictTone, verificationLabel } from "@/lib/format";
 import type { TEvidence, TRuleResult } from "@/lib/schemas";
 import { PagePreviewButton } from "./PagePreview";
 
@@ -9,7 +9,7 @@ export function EvidenceRow({ e, resolveDoc }: { e: TEvidence; resolveDoc?: DocR
   const docId = resolveDoc?.(e.document_id);
   return (
     <tr>
-      <td className="mono" style={{ fontSize: 12 }}>{e.field_path}</td>
+      <td title={e.field_path}>{fieldLabel(e.field_path)}</td>
       <td className="num">{formatValue(e.value, e.unit)}</td>
       <td>
         <Badge tone={e.kind === "calculated" ? "info" : e.kind === "reviewer" ? "positive" : e.kind === "manual" ? "neutral" : e.reliable === false ? "attention" : "positive"} plain>

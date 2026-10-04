@@ -65,7 +65,12 @@ export function DocumentUploader({ caseId, maxMb, disabled }: { caseId: string; 
         role="button"
         tabIndex={0}
         aria-disabled={disabled}
-        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && !disabled && input.current?.click()}
+        onKeyDown={(e) => {
+          if ((e.key === "Enter" || e.key === " ") && !disabled) {
+            e.preventDefault(); // Space would otherwise scroll the page
+            input.current?.click();
+          }
+        }}
       >
         <strong>{upload.isPending ? "Uploading…" : "Drop PDFs here or click to choose"}</strong>
         <p className="subtle" style={{ marginTop: 4 }}>
@@ -92,7 +97,10 @@ export function DocumentTable({ caseId }: { caseId: string }) {
   });
   const retry = useMutation({
     mutationFn: (id: string) => api.retryDocument(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["documents", caseId] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["documents", caseId] });
+      qc.invalidateQueries({ queryKey: ["case", caseId] });
+    },
   });
   if (docs.isLoading) return <LoadingBlock />;
   if (docs.isError) return <ErrorState error={docs.error} onRetry={() => docs.refetch()} />;

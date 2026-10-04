@@ -30,6 +30,7 @@ export function ReviewItemCard({ item, showCase = false }: { item: TReviewItem; 
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["review-items"] });
+      qc.invalidateQueries({ queryKey: ["dashboard"] }); // sidebar open-item count
       qc.invalidateQueries({ queryKey: ["case", item.case_id] });
       qc.invalidateQueries({ queryKey: ["case-data", item.case_id] });
       qc.invalidateQueries({ queryKey: ["documents", item.case_id] });

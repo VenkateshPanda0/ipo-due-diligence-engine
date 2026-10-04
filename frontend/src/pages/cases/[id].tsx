@@ -18,7 +18,13 @@ export default function CasePage() {
   const tab = (typeof router.query.tab === "string" ? router.query.tab : "overview") as TabId;
   const qc = useQueryClient();
   const enabled = !!id;
-  const kase = useQuery({ queryKey: ["case", id], queryFn: () => api.getCase(id), enabled, refetchInterval: 5000 });
+  // Poll only while documents are being processed; otherwise rely on focus / mutation refetches.
+  const kase = useQuery({
+    queryKey: ["case", id],
+    queryFn: () => api.getCase(id),
+    enabled,
+    refetchInterval: (q) => (q.state.data?.status === "processing_documents" ? 2000 : false),
+  });
   const caps = useQuery({ queryKey: ["capabilities"], queryFn: api.capabilities });
   // Keyed on the case's data version and open-item count so the list refreshes when
   // background extraction or another reviewer changes it.

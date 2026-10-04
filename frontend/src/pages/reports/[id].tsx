@@ -25,6 +25,7 @@ export default function ReportPage() {
   const id = typeof router.query.id === "string" ? router.query.id : "";
   const [tab, setTab] = useState<TabId>("rules");
   const [verdictFilter, setVerdictFilter] = useState<"all" | TVerdict>("all");
+  const [exportError, setExportError] = useState<unknown>(null);
   const report = useQuery({ queryKey: ["report", id], queryFn: () => api.getReport(id), enabled: !!id });
   const caseId = report.data?.case_id ?? null;
   const docs = useQuery({ queryKey: ["documents", caseId], queryFn: () => api.caseDocuments(caseId as string), enabled: !!caseId });
@@ -48,7 +49,14 @@ export default function ReportPage() {
   const r = report.data;
   const outcome = r.outcome ?? null;
   const mandatory = r.mandatory_results.filter((x) => verdictFilter === "all" || x.verdict === verdictFilter);
-  const exportAs = async (f: "html" | "json" | "text") => download(await api.exportReport(r.report_id, f), `screening-${r.report_id}.${f === "text" ? "txt" : f}`);
+  const exportAs = async (f: "html" | "json" | "text") => {
+    setExportError(null);
+    try {
+      download(await api.exportReport(r.report_id, f), `screening-${r.report_id}.${f === "text" ? "txt" : f}`);
+    } catch (e) {
+      setExportError(e);
+    }
+  };
 
   return (
     <AppShell title={`Report — ${r.company_name}`}>
@@ -73,6 +81,7 @@ export default function ReportPage() {
         }
       />
       <div className="stack">
+        {exportError ? <ErrorState error={exportError} /> : null}
         <Card>
           <div className="spread">
             <div>

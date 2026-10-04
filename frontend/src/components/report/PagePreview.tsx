@@ -6,8 +6,16 @@ import { api } from "@/lib/api";
 export function PagePreview({ documentId, page, snippet, onClose }: { documentId: string; page: number; snippet?: string; onClose: () => void }) {
   const [current, setCurrent] = useState(page);
   const doc = useQuery({ queryKey: ["document", documentId], queryFn: () => api.getDocument(documentId) });
+  // The query caches the Blob; the object URL is owned (created and revoked) by this
+  // component, so a cached image stays valid when the preview is reopened.
   const img = useQuery({ queryKey: ["page-image", documentId, current], queryFn: () => api.pageImage(documentId, current), staleTime: Infinity, retry: 0 });
-  useEffect(() => () => void (img.data && URL.revokeObjectURL(img.data)), [img.data]);
+  const [src, setSrc] = useState<string | null>(null);
+  useEffect(() => {
+    if (!img.data) return;
+    const url = URL.createObjectURL(img.data);
+    setSrc(url);
+    return () => URL.revokeObjectURL(url);
+  }, [img.data]);
   const pages = doc.data?.page_count ?? page;
   return (
     <Modal title={`${doc.data?.filename ?? "Document"} — page ${current} of ${pages}`} onClose={onClose}>
@@ -33,7 +41,7 @@ export function PagePreview({ documentId, page, snippet, onClose }: { documentId
         </div>
         {img.isLoading && <LoadingBlock rows={8} />}
         {img.isError && <ErrorState error={img.error} />}
-        {img.data && <img className="page-image" src={img.data} alt={`Page ${current} of ${doc.data?.filename ?? "document"}`} />}
+        {img.data && src && <img className="page-image" src={src} alt={`Page ${current} of ${doc.data?.filename ?? "document"}`} />}
       </div>
     </Modal>
   );

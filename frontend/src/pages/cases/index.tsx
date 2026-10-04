@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppShell, PageHead } from "@/components/layout/AppShell";
 import { Badge, Card, EmptyState, ErrorState, LoadingBlock } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -10,8 +10,17 @@ import { caseStatusLabel, caseStatusTone, formatDate, routeLabel } from "@/lib/f
 export default function CasesPage() {
   const router = useRouter();
   const [q, setQ] = useState("");
+  const [query, setQuery] = useState(""); // debounced search term sent to the API
   const [status, setStatus] = useState("");
-  const cases = useQuery({ queryKey: ["cases", q, status], queryFn: () => api.listCases({ q, status }) });
+  useEffect(() => {
+    const t = setTimeout(() => setQuery(q.trim()), 250);
+    return () => clearTimeout(t);
+  }, [q]);
+  const cases = useQuery({
+    queryKey: ["cases", query, status],
+    queryFn: () => api.listCases({ q: query, status }),
+    placeholderData: (prev) => prev, // keep the current rows while the next page loads
+  });
 
   return (
     <AppShell title="Screening cases">

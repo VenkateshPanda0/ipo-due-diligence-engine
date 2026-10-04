@@ -19,7 +19,10 @@ export function AppShell({ title, children }: { title: string; children: ReactNo
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const health = useQuery({ queryKey: ["health"], queryFn: api.health, refetchInterval: 60_000, retry: 0 });
-  const review = useQuery({ queryKey: ["review-items", "open-count"], queryFn: () => api.reviewItems({ status: "open" }), retry: 0 });
+  // The badge only needs a count: reuse the (cached) dashboard aggregate rather than
+  // downloading every open review item with its candidates and history.
+  const dash = useQuery({ queryKey: ["dashboard"], queryFn: api.dashboard, retry: 0 });
+  const openCount = dash.data?.open_review_items ?? 0;
   const active = (href: string) => (href === "/" ? router.pathname === "/" : router.pathname.startsWith(href));
 
   return (
@@ -39,7 +42,7 @@ export function AppShell({ title, children }: { title: string; children: ReactNo
           {NAV.map((n) => (
             <Link key={n.href} href={n.href} aria-current={active(n.href) ? "page" : undefined}>
               <span>{n.label}</span>
-              {n.href === "/review" && (review.data?.length ?? 0) > 0 && <Badge tone="attention" plain>{review.data?.length}</Badge>}
+              {n.href === "/review" && openCount > 0 && <Badge tone="attention" plain>{openCount}</Badge>}
             </Link>
           ))}
         </nav>

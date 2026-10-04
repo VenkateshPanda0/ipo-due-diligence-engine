@@ -17,15 +17,17 @@ function sourceTone(ev: EV): { tone: "positive" | "info" | "attention" | "neutra
   return { tone: "positive", label: "Extracted" };
 }
 
-function ValueCell({ ev, onEdit }: { ev: EV; onEdit: () => void }) {
+function ValueCell({ ev, onEdit }: { ev: EV; onEdit?: () => void }) {
   const s = sourceTone(ev);
   return (
     <div>
       <div className="row" style={{ justifyContent: "space-between" }}>
         <span className="num" style={{ fontWeight: 500 }}>{ev ? formatValue(ev.value, ev.unit) : <span className="subtle">—</span>}</span>
-        <button className="btn btn-sm btn-ghost" onClick={onEdit} aria-label="Edit value">
-          Edit
-        </button>
+        {onEdit && (
+          <button className="btn btn-sm btn-ghost" onClick={onEdit} aria-label="Edit value">
+            Edit
+          </button>
+        )}
       </div>
       <div className="row" style={{ gap: 4 }}>
         <Badge tone={s.tone} plain>{s.label}</Badge>
@@ -37,14 +39,15 @@ function ValueCell({ ev, onEdit }: { ev: EV; onEdit: () => void }) {
 
 export function FactsPanel({ caseId, editable }: { caseId: string; editable: boolean }) {
   const data = useQuery({ queryKey: ["case-data", caseId], queryFn: () => api.caseData(caseId) });
-  const [edit, setEdit] = useState<null | { path: string; label: string; kind: FieldKind; ev: EV; periodEnd?: string }>(null);
+  const [edit, setEdit] = useState<null | EditTarget>(null);
   const [newYear, setNewYear] = useState("");
   if (data.isLoading) return <LoadingBlock rows={8} />;
   if (data.isError) return <ErrorState error={data.error} onRetry={() => data.refetch()} />;
   const payload = data.data?.payload ?? {};
   const years = ((getPath(payload, "financials.fiscal_years") as Record<string, unknown>[] | undefined) ?? []).filter(Boolean);
   const basis = getPath(payload, "financials.statement_basis") as string | undefined;
-  const open = (path: string, label: string, kind: FieldKind, ev: EV, periodEnd?: string) => editable && setEdit({ path, label, kind, ev, periodEnd });
+  const open = (path: string, label: string, kind: FieldKind, ev: EV, unit?: string, periodEnd?: string) =>
+    editable && setEdit({ path, label, kind, ev, unit, periodEnd });
 
   return (
     <div className="stack">
@@ -62,7 +65,7 @@ export function FactsPanel({ caseId, editable }: { caseId: string; editable: boo
                 e.preventDefault();
                 const y = Number(newYear);
                 if (y >= 1990 && y <= 2100) {
-                  setEdit({ path: `financials.fiscal_years[FY${y}].net_worth`, label: `Net worth · FY${y}`, kind: "decimal", ev: null, periodEnd: `${y}-03-31` });
+                  setEdit({ path: `financials.fiscal_years[FY${y}].net_worth`, label: `Net worth · FY${y}`, kind: "decimal", ev: null, unit: "INR_CRORE", periodEnd: `${y}-03-31` });
                   setNewYear("");
                 }
               }}
@@ -104,7 +107,7 @@ export function FactsPanel({ caseId, editable }: { caseId: string; editable: boo
                       const ev = y[f.key] as EV;
                       return (
                         <td key={label} style={{ minWidth: 150 }}>
-                          <ValueCell ev={ev} onEdit={() => open(`financials.fiscal_years[${label}].${f.key}`, `${f.label} · ${label}`, "decimal", ev, y.period_end as string | undefined)} />
+                          <ValueCell ev={ev} onEdit={editable ? () => open(`financials.fiscal_years[${label}].${f.key}`, `${f.label} · ${label}`, "decimal", ev, "INR_CRORE", y.period_end as string | undefined) : undefined} />
                         </td>
                       );
                     })}
@@ -126,7 +129,7 @@ export function FactsPanel({ caseId, editable }: { caseId: string; editable: boo
                     <tr key={f.path}>
                       <td style={{ width: "50%" }}>{f.label}</td>
                       <td>
-                        <ValueCell ev={ev} onEdit={() => open(f.path, f.label, f.kind, ev)} />
+                        <ValueCell ev={ev} onEdit={editable ? () => open(f.path, f.label, f.kind, ev, f.unit) : undefined} />
                       </td>
                     </tr>
                   );
@@ -141,9 +144,20 @@ export function FactsPanel({ caseId, editable }: { caseId: string; editable: boo
   );
 }
 
-function EditDialog({ caseId, target, onClose }: { caseId: string; target: { path: string; label: string; kind: FieldKind; ev: EV; periodEnd?: string }; onClose: () => void }) {
+type EditTarget = { path: string; label: string; kind: FieldKind; ev: EV; unit?: string; periodEnd?: string };
+
+const UNIT_HINT: Record<string, string> = { INR_CRORE: "₹ crore", PERCENT: "% (0–100)", MONTHS: "months" };
+
+function initialValue(target: EditTarget): string {
+  const v = target.ev?.value;
+  if (v === null || v === undefined) return "";
+  if (target.kind === "bool") return v === true ? "yes" : v === false ? "no" : ""; // matches the select options
+  return String(v);
+}
+
+function EditDialog({ caseId, target, onClose }: { caseId: string; target: EditTarget; onClose: () => void }) {
   const qc = useQueryClient();
-  const [value, setValue] = useState(target.ev ? String(target.ev.value) : "");
+  const [value, setValue] = useState(initialValue(target));
   const [note, setNote] = useState("");
   const [touched, setTouched] = useState(false);
   const error = touched ? validateFieldValue(target.kind, value) : null;
@@ -183,7 +197,7 @@ function EditDialog({ caseId, target, onClose }: { caseId: string; target: { pat
         <label className="field">
           <span>
             Value <span className="req">*</span>{" "}
-            <span className="subtle">{target.kind === "bool" ? "yes / no" : target.kind === "int" ? "whole number" : target.path.startsWith("financials") || target.path.includes("size") || target.path.includes("capital") || target.path.includes("cap") || target.path.includes("value") || target.path.includes("exposure") ? "₹ crore" : "number"}</span>
+            <span className="subtle">{target.kind === "bool" ? "yes / no" : (target.unit && UNIT_HINT[target.unit]) ?? (target.kind === "int" ? "whole number" : "number")}</span>
           </span>
           {target.kind === "bool" ? (
             <select value={value} onChange={(e) => setValue(e.target.value)} aria-invalid={!!error}>

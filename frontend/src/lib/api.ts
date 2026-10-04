@@ -185,10 +185,9 @@ export const api = {
   deleteDocumentContent: (id: string): Promise<TDocument> =>
     json(`/api/v1/documents/${id}/content`, DocumentInfo, { method: "DELETE" }),
   extraction: (id: string) => json<Extraction>(`/api/v1/documents/${id}/extraction`, null),
-  pageImage: async (id: string, page: number): Promise<string> => {
-    const response = await raw(`/api/v1/documents/${id}/pages/${page}/image`);
-    return URL.createObjectURL(await response.blob());
-  },
+  /** Rendered page as a Blob (callers create and revoke their own object URLs). */
+  pageImage: async (id: string, page: number): Promise<Blob> =>
+    (await raw(`/api/v1/documents/${id}/pages/${page}/image`)).blob(),
 
   reviewItems: (params: { case_id?: string; status?: string } = {}): Promise<TReviewItem[]> => {
     const qs = new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined) as [string, string][]).toString();

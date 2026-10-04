@@ -81,6 +81,14 @@ test("full screening workflow: case → upload → review → screen → report"
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toBeHidden();
 
+  // Reopening the same page reuses the cached image; it must still render.
+  await page.locator("#rule-NTA_3CR").getByRole("button", { name: "View" }).first().click();
+  const reopened = page.getByRole("img", { name: /page 2/i });
+  await expect(reopened).toBeVisible();
+  await expect.poll(() => reopened.evaluate((el) => (el as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toBeHidden();
+
   // Evidence register, gap planner, limitations, sign-off validation
   await page.getByRole("tab", { name: /evidence register/i }).click();
   await expect(page.getByText(/calculated values are never/i)).toBeVisible();

@@ -22,7 +22,7 @@ const rule = RuleResult.parse({
   rule_name: "Net tangible assets of at least ₹3 crore",
   calculation: ["FY2022: ₹2.00 Cr ≥ ₹3.00 Cr → False"],
   evidence: [
-    { field_path: "financials.FY2022.net_tangible_assets", value: "2", unit: "INR_CRORE", kind: "extracted", source_document: "drhp.pdf", page_number: 12, original_text: "200.00", original_unit: "INR_LAKH" },
+    { field_path: "financials.fiscal_years[FY2022].net_tangible_assets", value: "2", unit: "INR_CRORE", kind: "extracted", source_document: "drhp.pdf", page_number: 12, original_text: "200.00", original_unit: "INR_LAKH" },
     { field_path: "x.ratio", value: "50", kind: "calculated" },
   ],
   missing_inputs: [],

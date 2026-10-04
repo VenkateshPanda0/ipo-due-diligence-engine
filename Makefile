@@ -49,10 +49,10 @@ benchmark:
 # ---------------------------------------------------------------------------
 
 lint:
-	ruff check backend/
+	ruff check backend/ scripts/
 
 format:
-	ruff format backend/
+	ruff format backend/ scripts/
 
 typecheck:
 	mypy backend/app/
@@ -89,4 +89,7 @@ help:
 	@echo "  format           Run ruff formatter"
 	@echo "  typecheck        Run mypy strict type checking"
 	@echo "  run              Start development server"
+	@echo "  test-frontend    Frontend typecheck + unit tests"
+	@echo "  test-e2e         Playwright end-to-end tests (servers must be running)"
+	@echo "  benchmark        Download the DRHP corpus and run the extraction benchmark"
 	@echo "  clean            Remove all generated artifacts"

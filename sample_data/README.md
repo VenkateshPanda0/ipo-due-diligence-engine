@@ -1,13 +1,20 @@
-# Sample Data
+# Sample data
 
-This directory contains demonstration inputs and generated report outputs for
-the IPO Due Diligence Engine.
+Synthetic demonstration inputs and the reports the engine produces for them. No real
+company is represented; see `DISCLAIMER.md`.
 
-The demo script can generate synthetic company inputs and reports:
+| Path | Contents |
+|---|---|
+| `companies/<scenario>/company_data.json` | Synthetic `CompanyData` inputs (manual-entry provenance). |
+| `reports/<scenario>.{json,txt,html}` | Reports from the current ruleset (2.0.0). |
+| `reports/ruleset-1.0.0/` | Historical reports from the superseded ruleset 1.0.0, kept so the change in outcomes can be compared. Do not rely on them. |
+| `benchmark_results.md` | Engine timing (not extraction accuracy — that is in `docs/BENCHMARK_RESULTS.md`). |
+
+Regenerate with:
 
 ```bash
-python scripts/demo.py --write-inputs --write-reports
+.venv/bin/python scripts/demo.py --write-inputs --write-reports
+.venv/bin/python scripts/benchmark.py
 ```
 
-Synthetic datasets are intentionally used here because the project must remain
-self-contained and should not depend on internet access during local evaluation.
+Real-document extraction is measured separately on public SEBI DRHPs (`benchmark/`).

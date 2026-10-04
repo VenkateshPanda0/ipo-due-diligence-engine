@@ -22,7 +22,7 @@ field status.
 | F. Semantic labels | `lexicon.py` | Positive patterns with strengths, plus negative patterns that veto a match (see the exclusions below). |
 | G. Candidates | `candidates.py` | One candidate per field × period × table cell, with a documented score (see below). |
 | H. Normalisation | `numbers.py`, `periods.py` | Handles Indian and international digit grouping, all common negative forms, and null markers (`–`, `NA`, `nil`, `[●]`), which are never treated as zero. Units are converted to ₹ crore **only when a unit is declared**. Periods are labelled `FY<yyyy>` for March year-ends, `YE<yyyy-mm>` for other year-ends, and `P<date>-<n>M` for stubs. |
-| I. Validation | `candidates.py` | Clusters candidates by value within the printed precision, detects conflicts, and runs cross-field sanity checks (for example, NTA or net worth greater than total assets downgrades confidence). |
+| I. Validation | `candidates.py` | Clusters candidates by value within the printed precision, detects conflicts, and runs cross-field sanity checks (NTA or monetary assets above total assets, negative monetary assets or revenue downgrade confidence). Monetary assets *above NTA* are not flagged: NTA is net of liabilities, and DRHPs print ratios above 600%. |
 | J. Assembly | `pipeline.py` | Builds the partial `CompanyData`. The period end and month count come from the selected column. |
 | K. Confidence | `candidates.py` | Assigns a field status: `EXTRACTED_HIGH_CONFIDENCE`, `EXTRACTED_NEEDS_VERIFICATION`, `CONFLICTING_CANDIDATES` or `NOT_FOUND`. |
 | L. Human review | `services/documents.py`, `services/cases.py` | Opens a review item for every value that is not high-confidence. Extraction **never overwrites** a value a human entered or confirmed. |
@@ -55,6 +55,12 @@ position. The following safety rules apply:
   annotations next to the header, otherwise from captions.
 * A table counts as an **eligibility table** when the ~40 lines above it, across a page
   break, discuss ICDR eligibility or Regulation 6.
+
+Performance: every period ends with a year, so header detection only parses word windows
+that end on a word containing digits, and skips lines with fewer than two such words.
+This is exact (identical output) and made table reconstruction about 20× faster.
+Day numbers are never taken from inside a longer number ("2026 March, 2025" is not
+26 March 2025).
 
 **Vector**: pdfplumber ruled tables with a period header row, interpreted by column
 index, borrowing caption context from the geometric view.

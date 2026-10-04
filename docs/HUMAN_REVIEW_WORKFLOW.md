@@ -20,6 +20,10 @@ Resolving an item requires the **reviewer** role (or admin).
 | Reject | The value is removed from the case data. | **required** |
 | Request more evidence | The item stays open, marked as needing evidence. | optional |
 
+Re-processing a document (retry or re-extraction) marks that document's unresolved items
+`superseded`, with an event, and opens fresh items from the new run, so a reviewer never
+sees duplicates. Superseded items cannot be resolved.
+
 Each action is an append-only `review_item_events` row with the actor and timestamp,
 and produces a new immutable case-data version. Extraction never overwrites a value a
 human entered, confirmed or corrected.

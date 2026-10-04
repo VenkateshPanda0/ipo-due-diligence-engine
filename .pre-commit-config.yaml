@@ -1,19 +1,26 @@
+# Hooks run the project's own tools (installed by `pip install -e ".[dev]"`), so the
+# versions and type-checking dependencies match CI and local runs exactly.
 repos:
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.10
+  - repo: local
     hooks:
       - id: ruff
-        args: [--fix]
+        name: ruff (lint)
+        entry: ruff check --fix backend scripts
+        language: system
+        types: [python]
+        pass_filenames: false
       - id: ruff-format
-
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.10.0
-    hooks:
+        name: ruff (format)
+        entry: ruff format backend scripts
+        language: system
+        types: [python]
+        pass_filenames: false
       - id: mypy
-        args: [--strict]
-        additional_dependencies:
-          - pydantic>=2.7
-          - pydantic-settings>=2.3
+        name: mypy (strict)
+        entry: mypy backend/app
+        language: system
+        types: [python]
+        pass_filenames: false
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
@@ -23,5 +30,3 @@ repos:
       - id: check-yaml
       - id: check-toml
       - id: check-merge-conflict
-      - id: no-commit-to-branch
-        args: [--branch, main]

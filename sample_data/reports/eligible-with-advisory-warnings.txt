@@ -3,7 +3,7 @@ Outcome: No failure identified within supported screening scope
 Legacy status: Eligible
 Listing route: mainboard_reg6_1
 Ruleset: 2.0.0
-Evaluated At: 2026-10-04T18:49:41+00:00
+Evaluated At: 2026-10-04T23:03:39+00:00
 Disclaimer: Decision-support screening only; not a legal opinion or a determination of IPO eligibility.
 
 Mandatory: 11 / 13 rules passed
@@ -29,9 +29,9 @@ Mandatory Requirements
   Calc: FY2022: ₹45.00 Cr ≥ ₹3.00 Cr → True
   Calc: FY2023: ₹45.00 Cr ≥ ₹3.00 Cr → True
   Calc: FY2024: ₹45.00 Cr ≥ ₹3.00 Cr → True
-  Evidence: financials.FY2022.net_tangible_assets = 45 [manual] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2023.net_tangible_assets = 45 [manual] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2024.net_tangible_assets = 45 [manual] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2022].net_tangible_assets = 45 [manual] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2023].net_tangible_assets = 45 [manual] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2024].net_tangible_assets = 45 [manual] Annual_Report_Test.pdf p.1
 - [PASS] MONETARY_ASSETS_50PCT: Monetary assets not more than 50% of net tangible assets
   Basis: SEBI (ICDR) Regulations, 2018, Regulation 6(1)(a) and its two provisos
   Required: Monetary assets ≤ 50.00% of NTA in each preceding full year (unless excess is committed, or the IPO is entirely an OFS)
@@ -41,24 +41,24 @@ Mandatory Requirements
   Calc: FY2023: ₹10.00 Cr / ₹45.00 Cr × 100 = 22.22% (limit 50.00%)
   Calc: FY2024: ₹10.00 Cr / ₹45.00 Cr × 100 = 22.22% (limit 50.00%)
   Evidence: issue_details.issue_type = fresh [manual]
-  Evidence: financials.FY2022.monetary_assets = 10 [manual] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2022.net_tangible_assets = 45 [manual] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2022.monetary_assets_pct_of_nta = 22.2222 [calculated]
-  Evidence: financials.FY2023.monetary_assets = 10 [manual] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2023.net_tangible_assets = 45 [manual] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2023.monetary_assets_pct_of_nta = 22.2222 [calculated]
-  Evidence: financials.FY2024.monetary_assets = 10 [manual] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2024.net_tangible_assets = 45 [manual] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2024.monetary_assets_pct_of_nta = 22.2222 [calculated]
+  Evidence: financials.fiscal_years[FY2022].monetary_assets = 10 [manual] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2022].net_tangible_assets = 45 [manual] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2022].monetary_assets_pct_of_nta = 22.2222 [calculated]
+  Evidence: financials.fiscal_years[FY2023].monetary_assets = 10 [manual] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2023].net_tangible_assets = 45 [manual] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2023].monetary_assets_pct_of_nta = 22.2222 [calculated]
+  Evidence: financials.fiscal_years[FY2024].monetary_assets = 10 [manual] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2024].net_tangible_assets = 45 [manual] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2024].monetary_assets_pct_of_nta = 22.2222 [calculated]
 - [PASS] AVG_OPERATING_PROFIT_15CR: Average operating profit of at least ₹15 crore with profit in each year
   Basis: SEBI (ICDR) Regulations, 2018, Regulation 6(1)(b)
   Required: Average operating profit ≥ ₹15.00 Cr over the preceding 3 years, with operating profit in each year
   Actual: Average ₹20.00 Cr (FY2022: ₹20.00 Cr; FY2023: ₹20.00 Cr; FY2024: ₹20.00 Cr)
   Explanation: Average operating profit ₹20.00 Cr meets ₹15.00 Cr, with operating profit in each year.
   Calc: Average = (20 + 20 + 20) / 3 = 20.0000 Cr
-  Evidence: financials.FY2022.operating_profit = 20 [manual] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2023.operating_profit = 20 [manual] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2024.operating_profit = 20 [manual] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2022].operating_profit = 20 [manual] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2023].operating_profit = 20 [manual] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2024].operating_profit = 20 [manual] Annual_Report_Test.pdf p.1
   Evidence: financials.average_operating_profit = 20.0000 [calculated]
 - [PASS] NET_WORTH_1CR: Net worth of at least ₹1 crore
   Basis: SEBI (ICDR) Regulations, 2018, Regulation 6(1)(c); definition in Regulation 2(1)(hh)
@@ -68,9 +68,9 @@ Mandatory Requirements
   Calc: FY2022: ₹50.00 Cr ≥ ₹1.00 Cr → True
   Calc: FY2023: ₹50.00 Cr ≥ ₹1.00 Cr → True
   Calc: FY2024: ₹50.00 Cr ≥ ₹1.00 Cr → True
-  Evidence: financials.FY2022.net_worth = 50 [manual] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2023.net_worth = 50 [manual] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2024.net_worth = 50 [manual] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2022].net_worth = 50 [manual] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2023].net_worth = 50 [manual] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2024].net_worth = 50 [manual] Annual_Report_Test.pdf p.1
 - [N/A] ICDR_REG6_1D_NAME_CHANGE: Revenue from new-name activity after a recent name change
   Basis: SEBI (ICDR) Regulations, 2018, Regulation 6(1)(d)
   Required: If the name changed within the last year, ≥ 50.00% of the preceding full year's revenue from the new-name activity
@@ -178,12 +178,12 @@ Advisory Checks
   Basis: Engineering heuristic (context: ICDR Schedule VI disclosure), Heuristic — no regulatory threshold
   Required: No pending criminal cases; total exposure ≤ 20% of latest net worth (heuristic)
   Actual: 0 case(s); exposure ₹15.00 Cr; criminal: True
-  Gap: criminal case(s) pending against the company, promoters or directors; exposure is 30.00% of net worth (above the 20% heuristic)
-  Explanation: Litigation diligence flags: criminal case(s) pending against the company, promoters or directors; exposure is 30.00% of net worth (above the 20% heuristic).
+  Gap: criminal case(s) pending against the company, promoters or directors; exposure is 30.00% of net worth (above the 20.00% heuristic)
+  Explanation: Litigation diligence flags: criminal case(s) pending against the company, promoters or directors; exposure is 30.00% of net worth (above the 20.00% heuristic).
   Calc: Exposure / net worth = ₹15.00 Cr / ₹50.00 Cr = 30.00%
   Evidence: litigation.has_criminal_cases = True [manual] Annual_Report_Test.pdf p.1
   Evidence: litigation.total_exposure = 15 [manual] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2024.net_worth = 50 [manual] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2024].net_worth = 50 [manual] Annual_Report_Test.pdf p.1
 
 Gap Analysis
 ------------

@@ -1,6 +1,6 @@
 # Real-document extraction benchmark — results
 
-Generated 2026-10-04T21:35:27+00:00 · split `all` · OCR on.
+Generated 2026-10-04T23:02:56+00:00 · split `all` · OCR on.
 Answer keys were prepared by an AI assistant from poppler text and have **not** been verified by a human.
 
 | Metric | All | Development | Holdout |
@@ -36,19 +36,19 @@ Answer keys were prepared by an AI assistant from poppler text and have **not** 
 
 | Document | Split | Correct | Wrong | Missing | Flagged | Route | Seconds |
 |---|---|---|---|---|---|---|---|
-| madhur-iron-and-steel-india-limited-drhp | development | 12/12 | 0 | 0 | 0 | ✓ | 49.3 |
-| ekkaa-electronics-india-limited-drhp | development | 12/12 | 0 | 0 | 4 | ✓ | 60.6 |
-| jsw-one-platforms-limited-drhp | development | 12/12 | 0 | 0 | 6 | ✓ | 74.2 |
-| iris-global-services-limited-drhp | development | 12/12 | 0 | 0 | 0 | ✓ | 37.2 |
-| jagatjit-agri-engineering-limited-drhp | development | 0/0 | 0 | 0 | 0 | ✓ | 66.5 |
-| iberia-pharmaceuticals-india-limited-drhp | development | 12/12 | 0 | 0 | 0 | ✓ | 127.7 |
-| vardaan-biotech-limited-drhp | development | 12/12 | 0 | 0 | 0 | ✓ | 46.5 |
-| anchor-offshore-services-limited-drhp | development | 9/12 | 3 | 0 | 4 | ✓ | 56.9 |
-| royal-chain-limited-drhp | holdout | 9/12 | 3 | 0 | 0 | ✓ | 56.1 |
-| hi-tech-flow-solutions-limited-drhp | holdout | 12/12 | 0 | 0 | 0 | ✓ | 78.3 |
-| m-k-c-agro-fresh-limited-drhp | holdout | 12/12 | 0 | 0 | 0 | ✓ | 48.7 |
-| maharashtra-oil-extractions-limited-drhp | holdout | 12/12 | 0 | 0 | 2 | ✓ | 63.5 |
-| ultravibrant-integrated-energy-limited-drhp | holdout | 12/12 | 0 | 0 | 0 | ✓ | 72.9 |
+| madhur-iron-and-steel-india-limited-drhp | development | 12/12 | 0 | 0 | 0 | ✓ | 25.8 |
+| ekkaa-electronics-india-limited-drhp | development | 12/12 | 0 | 0 | 4 | ✓ | 30.1 |
+| jsw-one-platforms-limited-drhp | development | 12/12 | 0 | 0 | 6 | ✓ | 37.9 |
+| iris-global-services-limited-drhp | development | 12/12 | 0 | 0 | 0 | ✓ | 17.0 |
+| jagatjit-agri-engineering-limited-drhp | development | 0/0 | 0 | 0 | 0 | ✓ | 36.5 |
+| iberia-pharmaceuticals-india-limited-drhp | development | 12/12 | 0 | 0 | 0 | ✓ | 25.7 |
+| vardaan-biotech-limited-drhp | development | 12/12 | 0 | 0 | 0 | ✓ | 24.2 |
+| anchor-offshore-services-limited-drhp | development | 9/12 | 3 | 0 | 4 | ✓ | 32.4 |
+| royal-chain-limited-drhp | holdout | 9/12 | 3 | 0 | 0 | ✓ | 29.1 |
+| hi-tech-flow-solutions-limited-drhp | holdout | 12/12 | 0 | 0 | 0 | ✓ | 27.4 |
+| m-k-c-agro-fresh-limited-drhp | holdout | 12/12 | 0 | 0 | 0 | ✓ | 24.8 |
+| maharashtra-oil-extractions-limited-drhp | holdout | 12/12 | 0 | 0 | 2 | ✓ | 36.4 |
+| ultravibrant-integrated-energy-limited-drhp | holdout | 12/12 | 0 | 0 | 0 | ✓ | 42.5 |
 
 ## Field-level detail
 

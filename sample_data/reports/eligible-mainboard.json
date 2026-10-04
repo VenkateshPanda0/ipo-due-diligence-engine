@@ -1,5 +1,5 @@
 {
-  "report_id": "a0fb6057-df9e-46cd-8dce-1386d52a0a57",
+  "report_id": "544a01bb-ff3b-4de6-84c0-231cde750562",
   "company_name": "Acme Industries Pvt Ltd",
   "status": "eligible",
   "mandatory_progress": {
@@ -34,7 +34,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "All Reg 5 conditions are evidenced as not applying.",
-      "evaluated_at": "2026-10-04T18:49:41.164632Z",
+      "evaluated_at": "2026-10-04T23:03:39.654747Z",
       "rule_name": "Entities not eligible to make an IPO",
       "rule_version": "2.0.0",
       "legal_category": "statutory_eligibility",
@@ -159,7 +159,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "NTA was at least \u20b93.00 Cr in each of FY2022, FY2023, FY2024.",
-      "evaluated_at": "2026-10-04T18:49:41.164732Z",
+      "evaluated_at": "2026-10-04T23:03:39.654852Z",
       "rule_name": "Net tangible assets of at least \u20b93 crore",
       "rule_version": "2.0.0",
       "legal_category": "statutory_eligibility",
@@ -173,7 +173,7 @@
       ],
       "evidence": [
         {
-          "field_path": "financials.FY2022.net_tangible_assets",
+          "field_path": "financials.fiscal_years[FY2022].net_tangible_assets",
           "value": "45",
           "unit": null,
           "kind": "manual",
@@ -192,7 +192,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2023.net_tangible_assets",
+          "field_path": "financials.fiscal_years[FY2023].net_tangible_assets",
           "value": "45",
           "unit": null,
           "kind": "manual",
@@ -211,7 +211,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2024.net_tangible_assets",
+          "field_path": "financials.fiscal_years[FY2024].net_tangible_assets",
           "value": "45",
           "unit": null,
           "kind": "manual",
@@ -249,7 +249,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Monetary assets were within 50% of NTA in each preceding full year.",
-      "evaluated_at": "2026-10-04T18:49:41.164831Z",
+      "evaluated_at": "2026-10-04T23:03:39.654960Z",
       "rule_name": "Monetary assets not more than 50% of net tangible assets",
       "rule_version": "2.0.0",
       "legal_category": "statutory_eligibility",
@@ -282,7 +282,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2022.monetary_assets",
+          "field_path": "financials.fiscal_years[FY2022].monetary_assets",
           "value": "10",
           "unit": null,
           "kind": "manual",
@@ -301,7 +301,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2022.net_tangible_assets",
+          "field_path": "financials.fiscal_years[FY2022].net_tangible_assets",
           "value": "45",
           "unit": null,
           "kind": "manual",
@@ -320,7 +320,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2022.monetary_assets_pct_of_nta",
+          "field_path": "financials.fiscal_years[FY2022].monetary_assets_pct_of_nta",
           "value": "22.2222",
           "unit": "PERCENT",
           "kind": "calculated",
@@ -339,7 +339,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2023.monetary_assets",
+          "field_path": "financials.fiscal_years[FY2023].monetary_assets",
           "value": "10",
           "unit": null,
           "kind": "manual",
@@ -358,7 +358,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2023.net_tangible_assets",
+          "field_path": "financials.fiscal_years[FY2023].net_tangible_assets",
           "value": "45",
           "unit": null,
           "kind": "manual",
@@ -377,7 +377,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2023.monetary_assets_pct_of_nta",
+          "field_path": "financials.fiscal_years[FY2023].monetary_assets_pct_of_nta",
           "value": "22.2222",
           "unit": "PERCENT",
           "kind": "calculated",
@@ -396,7 +396,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2024.monetary_assets",
+          "field_path": "financials.fiscal_years[FY2024].monetary_assets",
           "value": "10",
           "unit": null,
           "kind": "manual",
@@ -415,7 +415,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2024.net_tangible_assets",
+          "field_path": "financials.fiscal_years[FY2024].net_tangible_assets",
           "value": "45",
           "unit": null,
           "kind": "manual",
@@ -434,7 +434,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2024.monetary_assets_pct_of_nta",
+          "field_path": "financials.fiscal_years[FY2024].monetary_assets_pct_of_nta",
           "value": "22.2222",
           "unit": "PERCENT",
           "kind": "calculated",
@@ -472,7 +472,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Average operating profit \u20b920.00 Cr meets \u20b915.00 Cr, with operating profit in each year.",
-      "evaluated_at": "2026-10-04T18:49:41.164888Z",
+      "evaluated_at": "2026-10-04T23:03:39.655015Z",
       "rule_name": "Average operating profit of at least \u20b915 crore with profit in each year",
       "rule_version": "2.0.0",
       "legal_category": "statutory_eligibility",
@@ -484,7 +484,7 @@
       ],
       "evidence": [
         {
-          "field_path": "financials.FY2022.operating_profit",
+          "field_path": "financials.fiscal_years[FY2022].operating_profit",
           "value": "20",
           "unit": null,
           "kind": "manual",
@@ -503,7 +503,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2023.operating_profit",
+          "field_path": "financials.fiscal_years[FY2023].operating_profit",
           "value": "20",
           "unit": null,
           "kind": "manual",
@@ -522,7 +522,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2024.operating_profit",
+          "field_path": "financials.fiscal_years[FY2024].operating_profit",
           "value": "20",
           "unit": null,
           "kind": "manual",
@@ -580,7 +580,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Net worth was at least \u20b91.00 Cr in each preceding full year.",
-      "evaluated_at": "2026-10-04T18:49:41.164933Z",
+      "evaluated_at": "2026-10-04T23:03:39.655061Z",
       "rule_name": "Net worth of at least \u20b91 crore",
       "rule_version": "2.0.0",
       "legal_category": "statutory_eligibility",
@@ -594,7 +594,7 @@
       ],
       "evidence": [
         {
-          "field_path": "financials.FY2022.net_worth",
+          "field_path": "financials.fiscal_years[FY2022].net_worth",
           "value": "50",
           "unit": null,
           "kind": "manual",
@@ -613,7 +613,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2023.net_worth",
+          "field_path": "financials.fiscal_years[FY2023].net_worth",
           "value": "50",
           "unit": null,
           "kind": "manual",
@@ -632,7 +632,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2024.net_worth",
+          "field_path": "financials.fiscal_years[FY2024].net_worth",
           "value": "50",
           "unit": null,
           "kind": "manual",
@@ -668,7 +668,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "The issuer has not changed its name within the last one year.",
-      "evaluated_at": "2026-10-04T18:49:41.164953Z",
+      "evaluated_at": "2026-10-04T23:03:39.655118Z",
       "rule_name": "Revenue from new-name activity after a recent name change",
       "rule_version": "2.0.0",
       "legal_category": "statutory_eligibility",
@@ -714,7 +714,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Not applicable to the declared listing route 'mainboard_reg6_1'. Applicability: Only when the case declares the Reg 6(2) route. NOT_APPLICABLE for Reg 6(1).",
-      "evaluated_at": "2026-10-04T18:49:41.164968Z",
+      "evaluated_at": "2026-10-04T23:03:39.655140Z",
       "rule_name": "Alternative eligibility route: book building with \u226575% of net offer to QIBs",
       "rule_version": "2.0.0",
       "legal_category": "statutory_eligibility",
@@ -740,9 +740,9 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Promoters hold 75.00% of post-issue capital.",
-      "evaluated_at": "2026-10-04T18:49:41.164991Z",
+      "evaluated_at": "2026-10-04T23:03:39.655165Z",
       "rule_name": "Minimum promoters' contribution of 20% of post-issue capital",
-      "rule_version": "2.0.0",
+      "rule_version": "2.0.1",
       "legal_category": "statutory_issue_condition",
       "verification_status": "primary_text_checked",
       "source_url": "https://www.sebi.gov.in/legal/regulations/mar-2026/securities-and-exchange-board-of-india-issue-of-capital-and-disclosure-requirements-regulations-2018-last-amended-on-march-21-2026-_100581.html",
@@ -790,9 +790,9 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Committed lock-in of 18 months meets the 18-month requirement.",
-      "evaluated_at": "2026-10-04T18:49:41.165019Z",
+      "evaluated_at": "2026-10-04T23:03:39.655200Z",
       "rule_name": "Lock-in of minimum promoters' contribution",
-      "rule_version": "2.0.0",
+      "rule_version": "2.0.1",
       "legal_category": "statutory_issue_condition",
       "verification_status": "primary_text_checked",
       "source_url": "https://www.sebi.gov.in/legal/regulations/mar-2026/securities-and-exchange-board-of-india-issue-of-capital-and-disclosure-requirements-regulations-2018-last-amended-on-march-21-2026-_100581.html",
@@ -859,9 +859,9 @@
       "gap": null,
       "source_citation": null,
       "explanation": "The proposed public offer meets the tier 1 minimum (offer \u2265 25.00%).",
-      "evaluated_at": "2026-10-04T18:49:41.165064Z",
+      "evaluated_at": "2026-10-04T23:03:39.655242Z",
       "rule_name": "Minimum public offer (SCRR Rule 19(2)(b), 2026 tiers)",
-      "rule_version": "2.0.0",
+      "rule_version": "2.0.1",
       "legal_category": "statutory_issue_condition",
       "verification_status": "secondary_sources_only",
       "source_url": null,
@@ -936,7 +936,7 @@
       "remediation": [],
       "limitations": [
         "Primary gazette text not retrieved; tier content corroborated by two secondary sources only.",
-        "Tier 6 contains both a 1% and a 2.5% condition in secondary summaries; the stricter 2.5% is applied and flagged for review.",
+        "Tier 6 contains both a 1% and a 2.5% condition in secondary summaries; an offer between them is sent for human review rather than failed.",
         "Post-listing minimum public shareholding timelines are not evaluated.",
         "Changed in 2.0.0: v1 used a two-tier 25% / 10% split at Rs 1,600 crore."
       ]
@@ -952,7 +952,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Post-issue paid-up capital of \u20b915.00 Cr meets the exchange minimum of \u20b910.00 Cr.",
-      "evaluated_at": "2026-10-04T18:49:41.165096Z",
+      "evaluated_at": "2026-10-04T23:03:39.655271Z",
       "rule_name": "Minimum post-issue paid-up capital of \u20b910 crore (exchange criterion)",
       "rule_version": "2.0.0",
       "legal_category": "exchange_listing_criterion",
@@ -1003,7 +1003,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Market capitalisation at issue price of \u20b9800.00 Cr meets the exchange minimum of \u20b925.00 Cr.",
-      "evaluated_at": "2026-10-04T18:49:41.165121Z",
+      "evaluated_at": "2026-10-04T23:03:39.655294Z",
       "rule_name": "Minimum market capitalisation of \u20b925 crore (exchange criterion)",
       "rule_version": "2.0.0",
       "legal_category": "exchange_listing_criterion",
@@ -1053,7 +1053,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Issue size of \u20b9100.00 Cr meets the exchange minimum of \u20b910.00 Cr.",
-      "evaluated_at": "2026-10-04T18:49:41.165143Z",
+      "evaluated_at": "2026-10-04T23:03:39.655316Z",
       "rule_name": "Minimum issue size of \u20b910 crore (exchange criterion)",
       "rule_version": "2.0.0",
       "legal_category": "exchange_listing_criterion",
@@ -1106,7 +1106,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "The company has 5 years of operation.",
-      "evaluated_at": "2026-10-04T18:49:41.165162Z",
+      "evaluated_at": "2026-10-04T23:03:39.655332Z",
       "rule_name": "Three-year operating track record (exchange criterion)",
       "rule_version": "2.0.0",
       "legal_category": "exchange_listing_criterion",
@@ -1156,7 +1156,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "3 of 6 independent; meets the 1/3 requirement under LODR Reg 17(1)(b).",
-      "evaluated_at": "2026-10-04T18:49:41.165243Z",
+      "evaluated_at": "2026-10-04T23:03:39.655423Z",
       "rule_name": "Board independence (LODR Reg 17(1)(b))",
       "rule_version": "2.0.0",
       "legal_category": "post_listing_obligation",
@@ -1264,7 +1264,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Audit committee composition meets LODR Reg 18(1)(a), (b) and (d).",
-      "evaluated_at": "2026-10-04T18:49:41.165299Z",
+      "evaluated_at": "2026-10-04T23:03:39.655475Z",
       "rule_name": "Audit committee composition (LODR Reg 18(1))",
       "rule_version": "2.0.0",
       "legal_category": "post_listing_obligation",
@@ -1352,7 +1352,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Related party transactions are certified at arm's length.",
-      "evaluated_at": "2026-10-04T18:49:41.165340Z",
+      "evaluated_at": "2026-10-04T23:03:39.655517Z",
       "rule_name": "Related party transaction concentration (diligence heuristic)",
       "rule_version": "2.0.0",
       "legal_category": "diligence_indicator",
@@ -1402,7 +1402,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2024.revenue",
+          "field_path": "financials.fiscal_years[FY2024].revenue",
           "value": "100",
           "unit": null,
           "kind": "manual",
@@ -1440,7 +1440,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "No auditor qualification or modified opinion is evidenced.",
-      "evaluated_at": "2026-10-04T18:49:41.165362Z",
+      "evaluated_at": "2026-10-04T23:03:39.655540Z",
       "rule_name": "Auditor qualifications or modified opinion (diligence indicator)",
       "rule_version": "2.0.0",
       "legal_category": "diligence_indicator",
@@ -1505,7 +1505,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "No litigation flag raised.",
-      "evaluated_at": "2026-10-04T18:49:41.165442Z",
+      "evaluated_at": "2026-10-04T23:03:39.655563Z",
       "rule_name": "Litigation exposure (diligence heuristic)",
       "rule_version": "2.0.0",
       "legal_category": "diligence_indicator",
@@ -1580,12 +1580,12 @@
       "Stock exchange main-board listing criteria"
     ]
   },
-  "evaluated_at": "2026-10-04T18:49:41.165555Z",
+  "evaluated_at": "2026-10-04T23:03:39.655685Z",
   "outcome": "no_failure_identified",
   "listing_route": "mainboard_reg6_1",
-  "engine_version": "2.0.0",
+  "engine_version": "2.0.1",
   "case_id": null,
-  "input_sha256": "ba6b3dc4244624a1c28f91abe49f8d5d0c53c8e5867ff4cb24802670f4c0c290",
+  "input_sha256": "950e1bb911b598e82c432d12109e6b15222d5cae0df468d97faf20991b346669",
   "document_ids": [],
   "extraction_run_ids": [],
   "unresolved_issues": [

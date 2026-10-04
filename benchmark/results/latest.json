@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T21:35:27+00:00",
+  "generated_at": "2026-10-04T23:02:56+00:00",
   "split": "all",
   "ocr": true,
   "summary": {
@@ -398,15 +398,15 @@
         "tables": 178,
         "candidates": 89,
         "fields_high": 23,
-        "fields_needs_verification": 9,
+        "fields_needs_verification": 10,
         "fields_conflicting": 4,
         "fields_not_found": 0,
-        "seconds_pages": 28.34,
-        "seconds_tables": 20.617,
-        "seconds_total": 49.195
+        "seconds_pages": 24.653,
+        "seconds_tables": 0.918,
+        "seconds_total": 25.776
       },
       "warnings": [],
-      "seconds": 49.3,
+      "seconds": 25.8,
       "split": "development"
     },
     {
@@ -619,9 +619,9 @@
         "fields_needs_verification": 19,
         "fields_conflicting": 0,
         "fields_not_found": 3,
-        "seconds_pages": 33.456,
-        "seconds_tables": 26.644,
-        "seconds_total": 60.411
+        "seconds_pages": 28.77,
+        "seconds_tables": 0.948,
+        "seconds_total": 29.984
       },
       "warnings": [
         "financials.fiscal_years[FY2025].net_tangible_assets: net_tangible_assets exceeds total assets in FY2025",
@@ -631,7 +631,7 @@
         "financials.fiscal_years[FY2024].monetary_assets: monetary_assets exceeds total assets in FY2024",
         "financials.fiscal_years[FY2024].revenue: negative revenue"
       ],
-      "seconds": 60.6,
+      "seconds": 30.1,
       "split": "development"
     },
     {
@@ -854,9 +854,9 @@
         "fields_needs_verification": 11,
         "fields_conflicting": 7,
         "fields_not_found": 15,
-        "seconds_pages": 41.468,
-        "seconds_tables": 32.295,
-        "seconds_total": 74.129
+        "seconds_pages": 36.084,
+        "seconds_tables": 1.36,
+        "seconds_total": 37.777
       },
       "warnings": [
         "financials.fiscal_years[FY2026].net_tangible_assets: net_tangible_assets exceeds total assets in FY2026",
@@ -866,7 +866,7 @@
         "financials.fiscal_years[FY2024].net_tangible_assets: net_tangible_assets exceeds total assets in FY2024",
         "financials.fiscal_years[FY2024].monetary_assets: monetary_assets exceeds total assets in FY2024"
       ],
-      "seconds": 74.2,
+      "seconds": 37.9,
       "split": "development"
     },
     {
@@ -1079,12 +1079,12 @@
         "fields_needs_verification": 4,
         "fields_conflicting": 0,
         "fields_not_found": 0,
-        "seconds_pages": 18.955,
-        "seconds_tables": 17.934,
-        "seconds_total": 37.07
+        "seconds_pages": 16.161,
+        "seconds_tables": 0.616,
+        "seconds_total": 16.947
       },
       "warnings": [],
-      "seconds": 37.2,
+      "seconds": 17.0,
       "split": "development"
     },
     {
@@ -1249,12 +1249,12 @@
         "fields_needs_verification": 13,
         "fields_conflicting": 13,
         "fields_not_found": 6,
-        "seconds_pages": 40.007,
-        "seconds_tables": 26.144,
-        "seconds_total": 66.444
+        "seconds_pages": 34.913,
+        "seconds_tables": 1.186,
+        "seconds_total": 36.367
       },
       "warnings": [],
-      "seconds": 66.5,
+      "seconds": 36.5,
       "split": "development"
     },
     {
@@ -1461,18 +1461,18 @@
         "native_pages": 486,
         "ocr_pages": 1,
         "unreadable_pages": 0,
-        "tables": 205,
+        "tables": 204,
         "candidates": 155,
         "fields_high": 30,
-        "fields_needs_verification": 3,
+        "fields_needs_verification": 4,
         "fields_conflicting": 3,
         "fields_not_found": 0,
-        "seconds_pages": 105.986,
-        "seconds_tables": 21.448,
-        "seconds_total": 127.641
+        "seconds_pages": 24.666,
+        "seconds_tables": 0.785,
+        "seconds_total": 25.655
       },
       "warnings": [],
-      "seconds": 127.7,
+      "seconds": 25.7,
       "split": "development"
     },
     {
@@ -1682,15 +1682,15 @@
         "tables": 174,
         "candidates": 111,
         "fields_high": 24,
-        "fields_needs_verification": 6,
+        "fields_needs_verification": 7,
         "fields_conflicting": 3,
         "fields_not_found": 3,
-        "seconds_pages": 25.692,
-        "seconds_tables": 20.495,
-        "seconds_total": 46.405
+        "seconds_pages": 23.166,
+        "seconds_tables": 0.804,
+        "seconds_total": 24.189
       },
       "warnings": [],
-      "seconds": 46.5,
+      "seconds": 24.2,
       "split": "development"
     },
     {
@@ -1976,12 +1976,12 @@
         "fields_needs_verification": 4,
         "fields_conflicting": 4,
         "fields_not_found": 12,
-        "seconds_pages": 35.18,
-        "seconds_tables": 21.458,
-        "seconds_total": 56.875
+        "seconds_pages": 31.262,
+        "seconds_tables": 0.849,
+        "seconds_total": 32.332
       },
       "warnings": [],
-      "seconds": 56.9,
+      "seconds": 32.4,
       "split": "development"
     },
     {
@@ -2194,12 +2194,12 @@
         "fields_needs_verification": 4,
         "fields_conflicting": 2,
         "fields_not_found": 0,
-        "seconds_pages": 31.161,
-        "seconds_tables": 24.553,
-        "seconds_total": 56.031
+        "seconds_pages": 27.464,
+        "seconds_tables": 1.292,
+        "seconds_total": 29.023
       },
       "warnings": [],
-      "seconds": 56.1,
+      "seconds": 29.1,
       "split": "holdout"
     },
     {
@@ -2412,12 +2412,12 @@
         "fields_needs_verification": 6,
         "fields_conflicting": 0,
         "fields_not_found": 7,
-        "seconds_pages": 55.482,
-        "seconds_tables": 22.431,
-        "seconds_total": 78.17
+        "seconds_pages": 26.054,
+        "seconds_tables": 1.039,
+        "seconds_total": 27.314
       },
       "warnings": [],
-      "seconds": 78.3,
+      "seconds": 27.4,
       "split": "holdout"
     },
     {
@@ -2630,12 +2630,12 @@
         "fields_needs_verification": 4,
         "fields_conflicting": 0,
         "fields_not_found": 3,
-        "seconds_pages": 27.418,
-        "seconds_tables": 21.003,
-        "seconds_total": 48.648
+        "seconds_pages": 23.741,
+        "seconds_tables": 0.79,
+        "seconds_total": 24.746
       },
       "warnings": [],
-      "seconds": 48.7,
+      "seconds": 24.8,
       "split": "holdout"
     },
     {
@@ -2848,12 +2848,12 @@
         "fields_needs_verification": 4,
         "fields_conflicting": 4,
         "fields_not_found": 3,
-        "seconds_pages": 38.773,
-        "seconds_tables": 24.317,
-        "seconds_total": 63.458
+        "seconds_pages": 34.868,
+        "seconds_tables": 1.206,
+        "seconds_total": 36.33
       },
       "warnings": [],
-      "seconds": 63.5,
+      "seconds": 36.4,
       "split": "holdout"
     },
     {
@@ -3066,14 +3066,14 @@
         "fields_needs_verification": 5,
         "fields_conflicting": 3,
         "fields_not_found": 9,
-        "seconds_pages": 45.461,
-        "seconds_tables": 27.089,
-        "seconds_total": 72.797
+        "seconds_pages": 41.029,
+        "seconds_tables": 1.162,
+        "seconds_total": 42.427
       },
       "warnings": [
         "low OCR confidence"
       ],
-      "seconds": 72.9,
+      "seconds": 42.5,
       "split": "holdout"
     }
   ]

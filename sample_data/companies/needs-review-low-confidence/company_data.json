@@ -1170,15 +1170,14 @@
     ]
   },
   "ruleset_version": {
-    "description": "Implemented subset of SEBI (ICDR) Regulations, 2018, NSE/BSE listing requirements, LODR 2015, and Companies Act 2013; requires legal validation before production use",
-    "effective_date": "2026-01-01",
+    "description": "Main-board screening subset of SEBI (ICDR) Regulations, 2018, SEBI (LODR) Regulations, 2015 and SCRR Rule 19(2)(b); not legally reviewed",
+    "effective_date": "2026-10-04",
     "regulations": [
       "SEBI (ICDR) Regulations, 2018",
       "SEBI (LODR) Regulations, 2015",
-      "Companies Act, 2013",
-      "NSE Listing Requirements",
-      "BSE Listing Requirements"
+      "Securities Contracts (Regulation) Rules, 1957",
+      "BSE / NSE main-board listing criteria"
     ],
-    "version": "1.0.0"
+    "version": "2.0.0"
   }
 }

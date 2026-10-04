@@ -43,9 +43,9 @@ Advisory rules are shown in reports but never change the outcome.
 | `NET_WORTH_1CR` | M | statutory eligibility | 6(1) | ICDR 2018 Reg 6(1)(c); def. Reg 2(1)(hh) | primary_text_checked | ≥ ₹1 Cr in each of 3 preceding full years | `rules.mandatory.net_worth.NetWorthRule` |
 | `ICDR_REG6_1D_NAME_CHANGE` | M | statutory eligibility | 6(1) | ICDR 2018 Reg 6(1)(d) | primary_text_checked | ≥ 50% revenue from activity indicated by new name | `rules.mandatory.eligibility.NameChangeRule` |
 | `ICDR_REG6_2_QIB_ROUTE` | M | statutory eligibility | 6(2) | ICDR 2018 Reg 6(2) | primary_text_checked | book-built; ≥ 75% of net offer to QIBs; refund undertaking | `rules.mandatory.eligibility.QIBRouteRule` |
-| `PROMOTER_CONTRIBUTION_20` | M | statutory issue condition | 6(1), 6(2) | ICDR 2018 Reg 14(1) + provisos | primary_text_checked | ≥ 20% post-issue; non-promoter shortfall cover ≤ 10% | `rules.mandatory.promoter.PromoterContributionRule` |
-| `PROMOTER_LOCK_IN` | M | statutory issue condition | 6(1), 6(2) | ICDR 2018 Reg 16(1)(a) + proviso (w.e.f. 13-08-2021) | primary_text_checked | 18 months; 36 months where proceeds fund capex | `rules.mandatory.promoter.PromoterLockInRule` |
-| `PUBLIC_OFFER_MIN` | M | statutory issue condition | 6(1), 6(2) | SCRR 1957 Rule 19(2)(b) as substituted by G.S.R. 184(E), 13-03-2026 | **secondary_sources_only** | six market-cap tiers (25% … 1% with 2.5% floor) | `rules.mandatory.float_requirements.FloatRequirementsRule` |
+| `PROMOTER_CONTRIBUTION_20` | M | statutory issue condition | 6(1), 6(2) | ICDR 2018 Reg 14(1) + provisos | primary_text_checked | ≥ 20% post-issue; non-promoter shortfall cover ≤ 10% (a shortfall ≤ 10% without evidence of eligible contributors is *inconclusive*, not a failure) | `rules.mandatory.promoter.PromoterContributionRule` |
+| `PROMOTER_LOCK_IN` | M | statutory issue condition | 6(1), 6(2) | ICDR 2018 Reg 16(1)(a) + proviso (w.e.f. 13-08-2021) | primary_text_checked | 18 months; 36 months where proceeds fund capex (< 18 fails under either reading) | `rules.mandatory.promoter.PromoterLockInRule` |
+| `PUBLIC_OFFER_MIN` | M | statutory issue condition | 6(1), 6(2) | SCRR 1957 Rule 19(2)(b) as substituted by G.S.R. 184(E), 13-03-2026 | **secondary_sources_only** | six market-cap tiers (25% … 1%); a tier-6 offer between 1% and the 2.5% also cited goes to human review | `rules.mandatory.float_requirements.FloatRequirementsRule` |
 | `MIN_POST_ISSUE_CAPITAL` | M | exchange listing criterion | 6(1), 6(2) | BSE / NSE main-board criteria | **unverified** | ≥ ₹10 Cr post-issue paid-up | `rules.mandatory.minimum_capital.MinPostIssueCapitalRule` |
 | `MIN_MARKET_CAP` | M | exchange listing criterion | 6(1), 6(2) | BSE main-board criteria | **unverified** | ≥ ₹25 Cr | `rules.mandatory.minimum_capital.MinMarketCapRule` |
 | `EXCHANGE_MIN_ISSUE_SIZE` | M | exchange listing criterion | 6(1), 6(2) | BSE main-board criteria | **unverified** | issue ≥ ₹10 Cr | `rules.mandatory.issue_size.IssueSizeRule` |
@@ -118,6 +118,17 @@ Full SHA-256 digests, URLs and notes are in `sources.json`.
 - `PROMOTER_CONTRIBUTION_20`: Reg 14(1) provisos modelled.
 - `TRACK_RECORD_3Y` reclassified as an advisory exchange criterion.
 - New verdicts `NOT_APPLICABLE` and `REQUIRES_HUMAN_REVIEW`; new case outcomes.
+
+### 2.0.0 corrections before deployment (rule_version 2.0.1)
+
+- `PROMOTER_CONTRIBUTION_20`: a shortfall of up to 10% with no evidence about eligible
+  non-promoter contributors is INCONCLUSIVE (the Reg 14(1) proviso could still cover it);
+  a shortfall above 10% still fails.
+- `PROMOTER_LOCK_IN`: a committed lock-in shorter than 18 months fails even when it is
+  unknown whether the issue funds capex (it is short under either reading).
+- `PUBLIC_OFFER_MIN`: in tier 6, an offer meeting the 1% / ₹15,000 Cr conditions but
+  below the 2.5% also cited in secondary summaries is REQUIRES_HUMAN_REVIEW, not FAIL —
+  the stricter reading is an interpretation.
 
 ### 1.0.0 (superseded)
 

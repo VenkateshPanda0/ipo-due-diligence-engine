@@ -1,5 +1,5 @@
 {
-  "report_id": "04819458-6aa1-470b-9147-2d350f8e86c9",
+  "report_id": "d2540967-33bf-48f4-bebf-0a3a8d55a012",
   "company_name": "Acme Industries Pvt Ltd",
   "status": "needs_review",
   "mandatory_progress": {
@@ -34,7 +34,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "All Reg 5 conditions are evidenced as not applying.",
-      "evaluated_at": "2026-10-04T18:49:41.201069Z",
+      "evaluated_at": "2026-10-04T23:03:39.693117Z",
       "rule_name": "Entities not eligible to make an IPO",
       "rule_version": "2.0.0",
       "legal_category": "statutory_eligibility",
@@ -159,7 +159,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Evidence is present but not reliable enough for an automated determination; a reviewer must confirm or correct it.",
-      "evaluated_at": "2026-10-04T18:49:41.201151Z",
+      "evaluated_at": "2026-10-04T23:03:39.693213Z",
       "rule_name": "Net tangible assets of at least \u20b93 crore",
       "rule_version": "2.0.0",
       "legal_category": "statutory_eligibility",
@@ -173,7 +173,7 @@
       ],
       "evidence": [
         {
-          "field_path": "financials.FY2022.net_tangible_assets",
+          "field_path": "financials.fiscal_years[FY2022].net_tangible_assets",
           "value": "45",
           "unit": null,
           "kind": "extracted",
@@ -192,7 +192,7 @@
           "reliable": false
         },
         {
-          "field_path": "financials.FY2023.net_tangible_assets",
+          "field_path": "financials.fiscal_years[FY2023].net_tangible_assets",
           "value": "45",
           "unit": null,
           "kind": "extracted",
@@ -211,7 +211,7 @@
           "reliable": false
         },
         {
-          "field_path": "financials.FY2024.net_tangible_assets",
+          "field_path": "financials.fiscal_years[FY2024].net_tangible_assets",
           "value": "45",
           "unit": null,
           "kind": "extracted",
@@ -233,9 +233,9 @@
       "missing_inputs": [],
       "requires_human_review": true,
       "review_reasons": [
-        "financials.FY2022.net_tangible_assets: low extraction confidence without human confirmation",
-        "financials.FY2023.net_tangible_assets: low extraction confidence without human confirmation",
-        "financials.FY2024.net_tangible_assets: low extraction confidence without human confirmation"
+        "financials.fiscal_years[FY2022].net_tangible_assets: low extraction confidence without human confirmation",
+        "financials.fiscal_years[FY2023].net_tangible_assets: low extraction confidence without human confirmation",
+        "financials.fiscal_years[FY2024].net_tangible_assets: low extraction confidence without human confirmation"
       ],
       "remediation": [
         "Confirm or correct the flagged values in the review workspace."
@@ -255,7 +255,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Evidence is present but not reliable enough for an automated determination; a reviewer must confirm or correct it.",
-      "evaluated_at": "2026-10-04T18:49:41.201237Z",
+      "evaluated_at": "2026-10-04T23:03:39.693305Z",
       "rule_name": "Monetary assets not more than 50% of net tangible assets",
       "rule_version": "2.0.0",
       "legal_category": "statutory_eligibility",
@@ -288,7 +288,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2022.monetary_assets",
+          "field_path": "financials.fiscal_years[FY2022].monetary_assets",
           "value": "10",
           "unit": null,
           "kind": "extracted",
@@ -307,7 +307,7 @@
           "reliable": false
         },
         {
-          "field_path": "financials.FY2022.net_tangible_assets",
+          "field_path": "financials.fiscal_years[FY2022].net_tangible_assets",
           "value": "45",
           "unit": null,
           "kind": "extracted",
@@ -326,7 +326,7 @@
           "reliable": false
         },
         {
-          "field_path": "financials.FY2022.monetary_assets_pct_of_nta",
+          "field_path": "financials.fiscal_years[FY2022].monetary_assets_pct_of_nta",
           "value": "22.2222",
           "unit": "PERCENT",
           "kind": "calculated",
@@ -345,7 +345,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2023.monetary_assets",
+          "field_path": "financials.fiscal_years[FY2023].monetary_assets",
           "value": "10",
           "unit": null,
           "kind": "extracted",
@@ -364,7 +364,7 @@
           "reliable": false
         },
         {
-          "field_path": "financials.FY2023.net_tangible_assets",
+          "field_path": "financials.fiscal_years[FY2023].net_tangible_assets",
           "value": "45",
           "unit": null,
           "kind": "extracted",
@@ -383,7 +383,7 @@
           "reliable": false
         },
         {
-          "field_path": "financials.FY2023.monetary_assets_pct_of_nta",
+          "field_path": "financials.fiscal_years[FY2023].monetary_assets_pct_of_nta",
           "value": "22.2222",
           "unit": "PERCENT",
           "kind": "calculated",
@@ -402,7 +402,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2024.monetary_assets",
+          "field_path": "financials.fiscal_years[FY2024].monetary_assets",
           "value": "10",
           "unit": null,
           "kind": "extracted",
@@ -421,7 +421,7 @@
           "reliable": false
         },
         {
-          "field_path": "financials.FY2024.net_tangible_assets",
+          "field_path": "financials.fiscal_years[FY2024].net_tangible_assets",
           "value": "45",
           "unit": null,
           "kind": "extracted",
@@ -440,7 +440,7 @@
           "reliable": false
         },
         {
-          "field_path": "financials.FY2024.monetary_assets_pct_of_nta",
+          "field_path": "financials.fiscal_years[FY2024].monetary_assets_pct_of_nta",
           "value": "22.2222",
           "unit": "PERCENT",
           "kind": "calculated",
@@ -462,12 +462,12 @@
       "missing_inputs": [],
       "requires_human_review": true,
       "review_reasons": [
-        "financials.FY2022.monetary_assets: low extraction confidence without human confirmation",
-        "financials.FY2022.net_tangible_assets: low extraction confidence without human confirmation",
-        "financials.FY2023.monetary_assets: low extraction confidence without human confirmation",
-        "financials.FY2023.net_tangible_assets: low extraction confidence without human confirmation",
-        "financials.FY2024.monetary_assets: low extraction confidence without human confirmation",
-        "financials.FY2024.net_tangible_assets: low extraction confidence without human confirmation"
+        "financials.fiscal_years[FY2022].monetary_assets: low extraction confidence without human confirmation",
+        "financials.fiscal_years[FY2022].net_tangible_assets: low extraction confidence without human confirmation",
+        "financials.fiscal_years[FY2023].monetary_assets: low extraction confidence without human confirmation",
+        "financials.fiscal_years[FY2023].net_tangible_assets: low extraction confidence without human confirmation",
+        "financials.fiscal_years[FY2024].monetary_assets: low extraction confidence without human confirmation",
+        "financials.fiscal_years[FY2024].net_tangible_assets: low extraction confidence without human confirmation"
       ],
       "remediation": [
         "Confirm or correct the flagged values in the review workspace."
@@ -487,7 +487,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Evidence is present but not reliable enough for an automated determination; a reviewer must confirm or correct it.",
-      "evaluated_at": "2026-10-04T18:49:41.201277Z",
+      "evaluated_at": "2026-10-04T23:03:39.693347Z",
       "rule_name": "Average operating profit of at least \u20b915 crore with profit in each year",
       "rule_version": "2.0.0",
       "legal_category": "statutory_eligibility",
@@ -497,7 +497,7 @@
       "calculation": [],
       "evidence": [
         {
-          "field_path": "financials.FY2022.operating_profit",
+          "field_path": "financials.fiscal_years[FY2022].operating_profit",
           "value": "20",
           "unit": null,
           "kind": "extracted",
@@ -516,7 +516,7 @@
           "reliable": false
         },
         {
-          "field_path": "financials.FY2023.operating_profit",
+          "field_path": "financials.fiscal_years[FY2023].operating_profit",
           "value": "20",
           "unit": null,
           "kind": "extracted",
@@ -535,7 +535,7 @@
           "reliable": false
         },
         {
-          "field_path": "financials.FY2024.operating_profit",
+          "field_path": "financials.fiscal_years[FY2024].operating_profit",
           "value": "20",
           "unit": null,
           "kind": "extracted",
@@ -557,9 +557,9 @@
       "missing_inputs": [],
       "requires_human_review": true,
       "review_reasons": [
-        "financials.FY2022.operating_profit: low extraction confidence without human confirmation",
-        "financials.FY2023.operating_profit: low extraction confidence without human confirmation",
-        "financials.FY2024.operating_profit: low extraction confidence without human confirmation"
+        "financials.fiscal_years[FY2022].operating_profit: low extraction confidence without human confirmation",
+        "financials.fiscal_years[FY2023].operating_profit: low extraction confidence without human confirmation",
+        "financials.fiscal_years[FY2024].operating_profit: low extraction confidence without human confirmation"
       ],
       "remediation": [
         "Confirm or correct the flagged values in the review workspace."
@@ -580,7 +580,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Evidence is present but not reliable enough for an automated determination; a reviewer must confirm or correct it.",
-      "evaluated_at": "2026-10-04T18:49:41.201325Z",
+      "evaluated_at": "2026-10-04T23:03:39.693388Z",
       "rule_name": "Net worth of at least \u20b91 crore",
       "rule_version": "2.0.0",
       "legal_category": "statutory_eligibility",
@@ -594,7 +594,7 @@
       ],
       "evidence": [
         {
-          "field_path": "financials.FY2022.net_worth",
+          "field_path": "financials.fiscal_years[FY2022].net_worth",
           "value": "50",
           "unit": null,
           "kind": "extracted",
@@ -613,7 +613,7 @@
           "reliable": false
         },
         {
-          "field_path": "financials.FY2023.net_worth",
+          "field_path": "financials.fiscal_years[FY2023].net_worth",
           "value": "50",
           "unit": null,
           "kind": "extracted",
@@ -632,7 +632,7 @@
           "reliable": false
         },
         {
-          "field_path": "financials.FY2024.net_worth",
+          "field_path": "financials.fiscal_years[FY2024].net_worth",
           "value": "50",
           "unit": null,
           "kind": "extracted",
@@ -654,9 +654,9 @@
       "missing_inputs": [],
       "requires_human_review": true,
       "review_reasons": [
-        "financials.FY2022.net_worth: low extraction confidence without human confirmation",
-        "financials.FY2023.net_worth: low extraction confidence without human confirmation",
-        "financials.FY2024.net_worth: low extraction confidence without human confirmation"
+        "financials.fiscal_years[FY2022].net_worth: low extraction confidence without human confirmation",
+        "financials.fiscal_years[FY2023].net_worth: low extraction confidence without human confirmation",
+        "financials.fiscal_years[FY2024].net_worth: low extraction confidence without human confirmation"
       ],
       "remediation": [
         "Confirm or correct the flagged values in the review workspace."
@@ -674,7 +674,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "The issuer has not changed its name within the last one year.",
-      "evaluated_at": "2026-10-04T18:49:41.201344Z",
+      "evaluated_at": "2026-10-04T23:03:39.693408Z",
       "rule_name": "Revenue from new-name activity after a recent name change",
       "rule_version": "2.0.0",
       "legal_category": "statutory_eligibility",
@@ -720,7 +720,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Not applicable to the declared listing route 'mainboard_reg6_1'. Applicability: Only when the case declares the Reg 6(2) route. NOT_APPLICABLE for Reg 6(1).",
-      "evaluated_at": "2026-10-04T18:49:41.201359Z",
+      "evaluated_at": "2026-10-04T23:03:39.693423Z",
       "rule_name": "Alternative eligibility route: book building with \u226575% of net offer to QIBs",
       "rule_version": "2.0.0",
       "legal_category": "statutory_eligibility",
@@ -746,9 +746,9 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Promoters hold 75.00% of post-issue capital.",
-      "evaluated_at": "2026-10-04T18:49:41.201412Z",
+      "evaluated_at": "2026-10-04T23:03:39.693444Z",
       "rule_name": "Minimum promoters' contribution of 20% of post-issue capital",
-      "rule_version": "2.0.0",
+      "rule_version": "2.0.1",
       "legal_category": "statutory_issue_condition",
       "verification_status": "primary_text_checked",
       "source_url": "https://www.sebi.gov.in/legal/regulations/mar-2026/securities-and-exchange-board-of-india-issue-of-capital-and-disclosure-requirements-regulations-2018-last-amended-on-march-21-2026-_100581.html",
@@ -796,9 +796,9 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Committed lock-in of 18 months meets the 18-month requirement.",
-      "evaluated_at": "2026-10-04T18:49:41.201441Z",
+      "evaluated_at": "2026-10-04T23:03:39.693470Z",
       "rule_name": "Lock-in of minimum promoters' contribution",
-      "rule_version": "2.0.0",
+      "rule_version": "2.0.1",
       "legal_category": "statutory_issue_condition",
       "verification_status": "primary_text_checked",
       "source_url": "https://www.sebi.gov.in/legal/regulations/mar-2026/securities-and-exchange-board-of-india-issue-of-capital-and-disclosure-requirements-regulations-2018-last-amended-on-march-21-2026-_100581.html",
@@ -865,9 +865,9 @@
       "gap": null,
       "source_citation": null,
       "explanation": "The proposed public offer meets the tier 1 minimum (offer \u2265 25.00%).",
-      "evaluated_at": "2026-10-04T18:49:41.201479Z",
+      "evaluated_at": "2026-10-04T23:03:39.693507Z",
       "rule_name": "Minimum public offer (SCRR Rule 19(2)(b), 2026 tiers)",
-      "rule_version": "2.0.0",
+      "rule_version": "2.0.1",
       "legal_category": "statutory_issue_condition",
       "verification_status": "secondary_sources_only",
       "source_url": null,
@@ -942,7 +942,7 @@
       "remediation": [],
       "limitations": [
         "Primary gazette text not retrieved; tier content corroborated by two secondary sources only.",
-        "Tier 6 contains both a 1% and a 2.5% condition in secondary summaries; the stricter 2.5% is applied and flagged for review.",
+        "Tier 6 contains both a 1% and a 2.5% condition in secondary summaries; an offer between them is sent for human review rather than failed.",
         "Post-listing minimum public shareholding timelines are not evaluated.",
         "Changed in 2.0.0: v1 used a two-tier 25% / 10% split at Rs 1,600 crore."
       ]
@@ -958,7 +958,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Post-issue paid-up capital of \u20b915.00 Cr meets the exchange minimum of \u20b910.00 Cr.",
-      "evaluated_at": "2026-10-04T18:49:41.201504Z",
+      "evaluated_at": "2026-10-04T23:03:39.693535Z",
       "rule_name": "Minimum post-issue paid-up capital of \u20b910 crore (exchange criterion)",
       "rule_version": "2.0.0",
       "legal_category": "exchange_listing_criterion",
@@ -1009,7 +1009,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Market capitalisation at issue price of \u20b9800.00 Cr meets the exchange minimum of \u20b925.00 Cr.",
-      "evaluated_at": "2026-10-04T18:49:41.201524Z",
+      "evaluated_at": "2026-10-04T23:03:39.693555Z",
       "rule_name": "Minimum market capitalisation of \u20b925 crore (exchange criterion)",
       "rule_version": "2.0.0",
       "legal_category": "exchange_listing_criterion",
@@ -1059,7 +1059,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Issue size of \u20b9100.00 Cr meets the exchange minimum of \u20b910.00 Cr.",
-      "evaluated_at": "2026-10-04T18:49:41.201543Z",
+      "evaluated_at": "2026-10-04T23:03:39.693574Z",
       "rule_name": "Minimum issue size of \u20b910 crore (exchange criterion)",
       "rule_version": "2.0.0",
       "legal_category": "exchange_listing_criterion",
@@ -1112,7 +1112,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "The company has 5 years of operation.",
-      "evaluated_at": "2026-10-04T18:49:41.201557Z",
+      "evaluated_at": "2026-10-04T23:03:39.693589Z",
       "rule_name": "Three-year operating track record (exchange criterion)",
       "rule_version": "2.0.0",
       "legal_category": "exchange_listing_criterion",
@@ -1162,7 +1162,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "3 of 6 independent; meets the 1/3 requirement under LODR Reg 17(1)(b).",
-      "evaluated_at": "2026-10-04T18:49:41.201615Z",
+      "evaluated_at": "2026-10-04T23:03:39.693659Z",
       "rule_name": "Board independence (LODR Reg 17(1)(b))",
       "rule_version": "2.0.0",
       "legal_category": "post_listing_obligation",
@@ -1270,7 +1270,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Audit committee composition meets LODR Reg 18(1)(a), (b) and (d).",
-      "evaluated_at": "2026-10-04T18:49:41.201650Z",
+      "evaluated_at": "2026-10-04T23:03:39.693696Z",
       "rule_name": "Audit committee composition (LODR Reg 18(1))",
       "rule_version": "2.0.0",
       "legal_category": "post_listing_obligation",
@@ -1358,7 +1358,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "Related party transactions are certified at arm's length.",
-      "evaluated_at": "2026-10-04T18:49:41.201680Z",
+      "evaluated_at": "2026-10-04T23:03:39.693729Z",
       "rule_name": "Related party transaction concentration (diligence heuristic)",
       "rule_version": "2.0.0",
       "legal_category": "diligence_indicator",
@@ -1406,7 +1406,7 @@
           "reliable": true
         },
         {
-          "field_path": "financials.FY2024.revenue",
+          "field_path": "financials.fiscal_years[FY2024].revenue",
           "value": "100",
           "unit": null,
           "kind": "extracted",
@@ -1444,7 +1444,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "No auditor qualification or modified opinion is evidenced.",
-      "evaluated_at": "2026-10-04T18:49:41.201700Z",
+      "evaluated_at": "2026-10-04T23:03:39.693751Z",
       "rule_name": "Auditor qualifications or modified opinion (diligence indicator)",
       "rule_version": "2.0.0",
       "legal_category": "diligence_indicator",
@@ -1509,7 +1509,7 @@
       "gap": null,
       "source_citation": null,
       "explanation": "No litigation flag raised.",
-      "evaluated_at": "2026-10-04T18:49:41.201723Z",
+      "evaluated_at": "2026-10-04T23:03:39.693773Z",
       "rule_name": "Litigation exposure (diligence heuristic)",
       "rule_version": "2.0.0",
       "legal_category": "diligence_indicator",
@@ -1573,7 +1573,7 @@
       "earliest_eligible_fy": "Not applicable \u2014 evidence gap, not a regulatory failure",
       "remediation_steps": [
         "Confirm or correct the flagged values in the review workspace.",
-        "Review required: financials.FY2022.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2023.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2024.net_tangible_assets: low extraction confidence without human confirmation"
+        "Review required: financials.fiscal_years[FY2022].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].net_tangible_assets: low extraction confidence without human confirmation"
       ],
       "current_value": "FY2022: \u20b945.00 Cr; FY2023: \u20b945.00 Cr; FY2024: \u20b945.00 Cr",
       "required_value": "\u2265 \u20b93.00 Cr NTA in each of the 3 preceding full years",
@@ -1586,7 +1586,7 @@
       "earliest_eligible_fy": "Not applicable \u2014 evidence gap, not a regulatory failure",
       "remediation_steps": [
         "Confirm or correct the flagged values in the review workspace.",
-        "Review required: financials.FY2022.monetary_assets: low extraction confidence without human confirmation; financials.FY2022.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2023.monetary_assets: low extraction confidence without human confirmation; financials.FY2023.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2024.monetary_assets: low extraction confidence without human confirmation; financials.FY2024.net_tangible_assets: low extraction confidence without human confirmation"
+        "Review required: financials.fiscal_years[FY2022].monetary_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2022].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].monetary_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].monetary_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].net_tangible_assets: low extraction confidence without human confirmation"
       ],
       "current_value": "FY2022: 22.22%; FY2023: 22.22%; FY2024: 22.22%",
       "required_value": "Monetary assets \u2264 50.00% of NTA in each preceding full year (unless excess is committed, or the IPO is entirely an OFS)",
@@ -1599,7 +1599,7 @@
       "earliest_eligible_fy": "Not applicable \u2014 evidence gap, not a regulatory failure",
       "remediation_steps": [
         "Confirm or correct the flagged values in the review workspace.",
-        "Review required: financials.FY2022.operating_profit: low extraction confidence without human confirmation; financials.FY2023.operating_profit: low extraction confidence without human confirmation; financials.FY2024.operating_profit: low extraction confidence without human confirmation"
+        "Review required: financials.fiscal_years[FY2022].operating_profit: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].operating_profit: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].operating_profit: low extraction confidence without human confirmation"
       ],
       "current_value": "FY2022: \u20b920.00 Cr; FY2023: \u20b920.00 Cr; FY2024: \u20b920.00 Cr",
       "required_value": "Average operating profit \u2265 \u20b915.00 Cr over the preceding 3 years, with operating profit in each year",
@@ -1612,7 +1612,7 @@
       "earliest_eligible_fy": "Not applicable \u2014 evidence gap, not a regulatory failure",
       "remediation_steps": [
         "Confirm or correct the flagged values in the review workspace.",
-        "Review required: financials.FY2022.net_worth: low extraction confidence without human confirmation; financials.FY2023.net_worth: low extraction confidence without human confirmation; financials.FY2024.net_worth: low extraction confidence without human confirmation"
+        "Review required: financials.fiscal_years[FY2022].net_worth: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].net_worth: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].net_worth: low extraction confidence without human confirmation"
       ],
       "current_value": "FY2022: \u20b950.00 Cr; FY2023: \u20b950.00 Cr; FY2024: \u20b950.00 Cr",
       "required_value": "\u2265 \u20b91.00 Cr net worth in each of the 3 preceding full years",
@@ -1635,19 +1635,19 @@
       "Stock exchange main-board listing criteria"
     ]
   },
-  "evaluated_at": "2026-10-04T18:49:41.201826Z",
+  "evaluated_at": "2026-10-04T23:03:39.693884Z",
   "outcome": "awaiting_human_review",
   "listing_route": "mainboard_reg6_1",
-  "engine_version": "2.0.0",
+  "engine_version": "2.0.1",
   "case_id": null,
-  "input_sha256": "c28a8d5c956c6cb41c46a02ab4aa8ca7710bf4b484f6fd631b53c693cc7bb67a",
+  "input_sha256": "8a7268cde140eac75cb3f9c343b236b5cdf67ec892ccf6541e650266d9a4342e",
   "document_ids": [],
   "extraction_run_ids": [],
   "unresolved_issues": [
-    "NTA_3CR: review required \u2014 financials.FY2022.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2023.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2024.net_tangible_assets: low extraction confidence without human confirmation",
-    "MONETARY_ASSETS_50PCT: review required \u2014 financials.FY2022.monetary_assets: low extraction confidence without human confirmation; financials.FY2022.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2023.monetary_assets: low extraction confidence without human confirmation; financials.FY2023.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2024.monetary_assets: low extraction confidence without human confirmation; financials.FY2024.net_tangible_assets: low extraction confidence without human confirmation",
-    "AVG_OPERATING_PROFIT_15CR: review required \u2014 financials.FY2022.operating_profit: low extraction confidence without human confirmation; financials.FY2023.operating_profit: low extraction confidence without human confirmation; financials.FY2024.operating_profit: low extraction confidence without human confirmation",
-    "NET_WORTH_1CR: review required \u2014 financials.FY2022.net_worth: low extraction confidence without human confirmation; financials.FY2023.net_worth: low extraction confidence without human confirmation; financials.FY2024.net_worth: low extraction confidence without human confirmation",
+    "NTA_3CR: review required \u2014 financials.fiscal_years[FY2022].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].net_tangible_assets: low extraction confidence without human confirmation",
+    "MONETARY_ASSETS_50PCT: review required \u2014 financials.fiscal_years[FY2022].monetary_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2022].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].monetary_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].monetary_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].net_tangible_assets: low extraction confidence without human confirmation",
+    "AVG_OPERATING_PROFIT_15CR: review required \u2014 financials.fiscal_years[FY2022].operating_profit: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].operating_profit: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].operating_profit: low extraction confidence without human confirmation",
+    "NET_WORTH_1CR: review required \u2014 financials.fiscal_years[FY2022].net_worth: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].net_worth: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].net_worth: low extraction confidence without human confirmation",
     "Mandatory rules whose legal source is not verified against a primary text: EXCHANGE_MIN_ISSUE_SIZE, MIN_MARKET_CAP, MIN_POST_ISSUE_CAPITAL, PUBLIC_OFFER_MIN"
   ],
   "limitations": [

@@ -86,6 +86,11 @@ create case (route: Reg 6(1) | Reg 6(2) | SME → unsupported)
   a clear message.
 * **Idempotency**: a second upload with the same SHA-256 to the same case returns the
   existing document.
+* **Re-extraction** supersedes the document's unresolved review items before opening new
+  ones. Stored PDFs are content-addressed and may be shared by several documents; the
+  retention purge deletes a file only when every document using it has expired.
+* **Case status** is derived from state: processing → awaiting review (open items) →
+  screened (a report exists for the *current* data version) or ready for screening.
 * **Reports** record the case data version, ruleset version, input hash, documents and
   extraction runs used. Re-running on unchanged inputs gives an identical result,
   apart from the timestamp and IDs (`tests/regression/test_reproducibility.py`).
@@ -154,6 +159,17 @@ preview), review queue, reports (list and detail with outcome, mandatory assessm
 evidence register, unresolved issues, limitations, exports and sign-off), rule
 explorer, and settings / system health. The frontend never computes a regulatory
 outcome. It only displays what the backend returns.
+
+## Performance notes
+
+* Extraction is dominated by native text (pdfium character boxes, ~25–40 ms/page) and,
+  for scanned pages, Tesseract. Table reconstruction is pre-filtered so that only text
+  that could hold a period header is date-parsed.
+* OCR renders from the already-open document; pdfplumber is opened only for pages that
+  look tabular.
+* List endpoints use grouped/batched queries (no per-row queries) and never load stored
+  report payloads; rendered page previews are cached in memory (32 MB LRU).
+* The UI polls only while documents are processing.
 
 ## Configuration
 

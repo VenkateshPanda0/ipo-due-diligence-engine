@@ -3,6 +3,59 @@
 All notable project changes are tracked here. Regulation-impacting changes must
 include the affected ruleset version and the source regulation or circular.
 
+## [2.0.1] - 2026-10-05
+
+Full code review: correctness fixes, performance work and documentation.
+
+### Fixed — rules (rule_version 2.0.1; see `docs/REGULATIONS.md`)
+
+- Promoter contribution: a shortfall the Reg 14(1) proviso could still cover is no longer
+  reported as a failure when contributors are not evidenced.
+- Promoter lock-in: under 18 months now fails even when capex status is unknown.
+- Public offer tier 6: the ambiguous 1%–2.5% band goes to human review instead of failing.
+
+### Fixed — extraction
+
+- Dates: a day number is no longer taken from the tail of a year ("2026 March, 2025" was
+  read as 26 March 2025); month names must start a word.
+- Lock-in stated in years ("locked-in for a period of three years") is now recognised.
+- Removed a validation rule that wrongly downgraded monetary assets above 5× NTA (DRHPs
+  legitimately print ratios above 600%).
+- Rule evidence uses canonical field paths (`financials.fiscal_years[FY2024]…`).
+
+### Fixed — backend
+
+- Re-processing a document supersedes its unresolved review items (no duplicates).
+- Retention purge no longer deletes a stored PDF still used by an unexpired document.
+- Case status: "screened" only while a report exists for the current data version;
+  un-archiving restores the state-derived status; archived cases reject field edits.
+- Case search treats `%` and `_` literally; fiscal years are ordered by date, not label.
+- Merge and field edits no longer mutate the stored (append-only) version in memory.
+- Startup validation of `API_KEYS` (role and digest format); `Bearer` is case-insensitive.
+- Unknown review IDs return `NOT_FOUND`; the legacy PDF endpoint is rate-limited.
+
+### Fixed — frontend
+
+- Reopening a page preview no longer shows a broken (revoked) image.
+- Report export errors are shown; yes/no fields open with their current value; Edit is
+  hidden on archived cases; evidence shows readable field labels.
+
+### Performance
+
+- Table header detection: ~20× faster (≈23 s → ≈1.2 s per 500-page DRHP) with
+  identical output; only windows that can complete a period are parsed.
+- Native text extraction loop and OCR rendering (no PDF re-parse per OCR page).
+- Review-item and case listings: batched queries instead of per-row N+1 queries.
+- Report listings skip the stored JSON payload; page images are cached in memory.
+- The UI polls only while documents are processing; case search is debounced; the
+  sidebar count reuses the dashboard query.
+
+### Changed
+
+- `numpy` declared as a dependency (it was only present transitively); removed dead
+  code (unused exceptions, constants and helpers) and an unused npm package.
+- Pre-commit hooks use the project's own ruff/mypy and no longer block commits to `main`.
+
 ## [2.0.0] - 2026-10-04
 
 Audit-driven rebuild. Defects D1–D18 are listed in `docs/audit/BASELINE.md`.

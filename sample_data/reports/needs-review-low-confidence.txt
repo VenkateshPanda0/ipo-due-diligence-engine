@@ -3,7 +3,7 @@ Outcome: Awaiting human review
 Legacy status: Needs Review
 Listing route: mainboard_reg6_1
 Ruleset: 2.0.0
-Evaluated At: 2026-10-04T18:49:41+00:00
+Evaluated At: 2026-10-04T23:03:39+00:00
 Disclaimer: Decision-support screening only; not a legal opinion or a determination of IPO eligibility.
 
 Mandatory: 7 / 13 rules passed
@@ -29,10 +29,10 @@ Mandatory Requirements
   Calc: FY2022: ₹45.00 Cr ≥ ₹3.00 Cr → True
   Calc: FY2023: ₹45.00 Cr ≥ ₹3.00 Cr → True
   Calc: FY2024: ₹45.00 Cr ≥ ₹3.00 Cr → True
-  Evidence: financials.FY2022.net_tangible_assets = 45 [extracted] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2023.net_tangible_assets = 45 [extracted] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2024.net_tangible_assets = 45 [extracted] Annual_Report_Test.pdf p.1
-  Review: financials.FY2022.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2023.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2024.net_tangible_assets: low extraction confidence without human confirmation
+  Evidence: financials.fiscal_years[FY2022].net_tangible_assets = 45 [extracted] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2023].net_tangible_assets = 45 [extracted] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2024].net_tangible_assets = 45 [extracted] Annual_Report_Test.pdf p.1
+  Review: financials.fiscal_years[FY2022].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].net_tangible_assets: low extraction confidence without human confirmation
 - [HUMAN REVIEW] MONETARY_ASSETS_50PCT: Monetary assets not more than 50% of net tangible assets
   Basis: SEBI (ICDR) Regulations, 2018, Regulation 6(1)(a) and its two provisos
   Required: Monetary assets ≤ 50.00% of NTA in each preceding full year (unless excess is committed, or the IPO is entirely an OFS)
@@ -42,25 +42,25 @@ Mandatory Requirements
   Calc: FY2023: ₹10.00 Cr / ₹45.00 Cr × 100 = 22.22% (limit 50.00%)
   Calc: FY2024: ₹10.00 Cr / ₹45.00 Cr × 100 = 22.22% (limit 50.00%)
   Evidence: issue_details.issue_type = fresh [manual]
-  Evidence: financials.FY2022.monetary_assets = 10 [extracted] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2022.net_tangible_assets = 45 [extracted] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2022.monetary_assets_pct_of_nta = 22.2222 [calculated]
-  Evidence: financials.FY2023.monetary_assets = 10 [extracted] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2023.net_tangible_assets = 45 [extracted] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2023.monetary_assets_pct_of_nta = 22.2222 [calculated]
-  Evidence: financials.FY2024.monetary_assets = 10 [extracted] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2024.net_tangible_assets = 45 [extracted] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2024.monetary_assets_pct_of_nta = 22.2222 [calculated]
-  Review: financials.FY2022.monetary_assets: low extraction confidence without human confirmation; financials.FY2022.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2023.monetary_assets: low extraction confidence without human confirmation; financials.FY2023.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2024.monetary_assets: low extraction confidence without human confirmation; financials.FY2024.net_tangible_assets: low extraction confidence without human confirmation
+  Evidence: financials.fiscal_years[FY2022].monetary_assets = 10 [extracted] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2022].net_tangible_assets = 45 [extracted] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2022].monetary_assets_pct_of_nta = 22.2222 [calculated]
+  Evidence: financials.fiscal_years[FY2023].monetary_assets = 10 [extracted] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2023].net_tangible_assets = 45 [extracted] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2023].monetary_assets_pct_of_nta = 22.2222 [calculated]
+  Evidence: financials.fiscal_years[FY2024].monetary_assets = 10 [extracted] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2024].net_tangible_assets = 45 [extracted] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2024].monetary_assets_pct_of_nta = 22.2222 [calculated]
+  Review: financials.fiscal_years[FY2022].monetary_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2022].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].monetary_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].monetary_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].net_tangible_assets: low extraction confidence without human confirmation
 - [HUMAN REVIEW] AVG_OPERATING_PROFIT_15CR: Average operating profit of at least ₹15 crore with profit in each year
   Basis: SEBI (ICDR) Regulations, 2018, Regulation 6(1)(b)
   Required: Average operating profit ≥ ₹15.00 Cr over the preceding 3 years, with operating profit in each year
   Actual: FY2022: ₹20.00 Cr; FY2023: ₹20.00 Cr; FY2024: ₹20.00 Cr
   Explanation: Evidence is present but not reliable enough for an automated determination; a reviewer must confirm or correct it.
-  Evidence: financials.FY2022.operating_profit = 20 [extracted] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2023.operating_profit = 20 [extracted] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2024.operating_profit = 20 [extracted] Annual_Report_Test.pdf p.1
-  Review: financials.FY2022.operating_profit: low extraction confidence without human confirmation; financials.FY2023.operating_profit: low extraction confidence without human confirmation; financials.FY2024.operating_profit: low extraction confidence without human confirmation
+  Evidence: financials.fiscal_years[FY2022].operating_profit = 20 [extracted] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2023].operating_profit = 20 [extracted] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2024].operating_profit = 20 [extracted] Annual_Report_Test.pdf p.1
+  Review: financials.fiscal_years[FY2022].operating_profit: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].operating_profit: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].operating_profit: low extraction confidence without human confirmation
 - [HUMAN REVIEW] NET_WORTH_1CR: Net worth of at least ₹1 crore
   Basis: SEBI (ICDR) Regulations, 2018, Regulation 6(1)(c); definition in Regulation 2(1)(hh)
   Required: ≥ ₹1.00 Cr net worth in each of the 3 preceding full years
@@ -69,10 +69,10 @@ Mandatory Requirements
   Calc: FY2022: ₹50.00 Cr ≥ ₹1.00 Cr → True
   Calc: FY2023: ₹50.00 Cr ≥ ₹1.00 Cr → True
   Calc: FY2024: ₹50.00 Cr ≥ ₹1.00 Cr → True
-  Evidence: financials.FY2022.net_worth = 50 [extracted] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2023.net_worth = 50 [extracted] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2024.net_worth = 50 [extracted] Annual_Report_Test.pdf p.1
-  Review: financials.FY2022.net_worth: low extraction confidence without human confirmation; financials.FY2023.net_worth: low extraction confidence without human confirmation; financials.FY2024.net_worth: low extraction confidence without human confirmation
+  Evidence: financials.fiscal_years[FY2022].net_worth = 50 [extracted] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2023].net_worth = 50 [extracted] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2024].net_worth = 50 [extracted] Annual_Report_Test.pdf p.1
+  Review: financials.fiscal_years[FY2022].net_worth: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].net_worth: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].net_worth: low extraction confidence without human confirmation
 - [N/A] ICDR_REG6_1D_NAME_CHANGE: Revenue from new-name activity after a recent name change
   Basis: SEBI (ICDR) Regulations, 2018, Regulation 6(1)(d)
   Required: If the name changed within the last year, ≥ 50.00% of the preceding full year's revenue from the new-name activity
@@ -165,7 +165,7 @@ Advisory Checks
   Explanation: Related party transactions are certified at arm's length.
   Evidence: rpt.arm_length_certified = True [manual] Annual_Report_Test.pdf p.1
   Evidence: rpt.total_rpt_value = 2 [manual] Annual_Report_Test.pdf p.1
-  Evidence: financials.FY2024.revenue = 100 [extracted] Annual_Report_Test.pdf p.1
+  Evidence: financials.fiscal_years[FY2024].revenue = 100 [extracted] Annual_Report_Test.pdf p.1
 - [PASS] AUDITOR_QUALIFICATION: Auditor qualifications or modified opinion (diligence indicator)
   Basis: Engineering heuristic (context: Companies Act, 2013 s.143), Heuristic
   Required: No qualifications and an unmodified audit opinion
@@ -189,35 +189,35 @@ Gap Analysis
   Earliest Eligibility: Not applicable — evidence gap, not a regulatory failure
   Remediation:
     - Confirm or correct the flagged values in the review workspace.
-    - Review required: financials.FY2022.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2023.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2024.net_tangible_assets: low extraction confidence without human confirmation
+    - Review required: financials.fiscal_years[FY2022].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].net_tangible_assets: low extraction confidence without human confirmation
 - MONETARY_ASSETS_50PCT: Not determinable on current evidence
   Current: FY2022: 22.22%; FY2023: 22.22%; FY2024: 22.22%
   Required: Monetary assets ≤ 50.00% of NTA in each preceding full year (unless excess is committed, or the IPO is entirely an OFS)
   Earliest Eligibility: Not applicable — evidence gap, not a regulatory failure
   Remediation:
     - Confirm or correct the flagged values in the review workspace.
-    - Review required: financials.FY2022.monetary_assets: low extraction confidence without human confirmation; financials.FY2022.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2023.monetary_assets: low extraction confidence without human confirmation; financials.FY2023.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2024.monetary_assets: low extraction confidence without human confirmation; financials.FY2024.net_tangible_assets: low extraction confidence without human confirmation
+    - Review required: financials.fiscal_years[FY2022].monetary_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2022].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].monetary_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].monetary_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].net_tangible_assets: low extraction confidence without human confirmation
 - AVG_OPERATING_PROFIT_15CR: Not determinable on current evidence
   Current: FY2022: ₹20.00 Cr; FY2023: ₹20.00 Cr; FY2024: ₹20.00 Cr
   Required: Average operating profit ≥ ₹15.00 Cr over the preceding 3 years, with operating profit in each year
   Earliest Eligibility: Not applicable — evidence gap, not a regulatory failure
   Remediation:
     - Confirm or correct the flagged values in the review workspace.
-    - Review required: financials.FY2022.operating_profit: low extraction confidence without human confirmation; financials.FY2023.operating_profit: low extraction confidence without human confirmation; financials.FY2024.operating_profit: low extraction confidence without human confirmation
+    - Review required: financials.fiscal_years[FY2022].operating_profit: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].operating_profit: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].operating_profit: low extraction confidence without human confirmation
 - NET_WORTH_1CR: Not determinable on current evidence
   Current: FY2022: ₹50.00 Cr; FY2023: ₹50.00 Cr; FY2024: ₹50.00 Cr
   Required: ≥ ₹1.00 Cr net worth in each of the 3 preceding full years
   Earliest Eligibility: Not applicable — evidence gap, not a regulatory failure
   Remediation:
     - Confirm or correct the flagged values in the review workspace.
-    - Review required: financials.FY2022.net_worth: low extraction confidence without human confirmation; financials.FY2023.net_worth: low extraction confidence without human confirmation; financials.FY2024.net_worth: low extraction confidence without human confirmation
+    - Review required: financials.fiscal_years[FY2022].net_worth: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].net_worth: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].net_worth: low extraction confidence without human confirmation
 
 Unresolved Issues
 -----------------
-- NTA_3CR: review required — financials.FY2022.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2023.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2024.net_tangible_assets: low extraction confidence without human confirmation
-- MONETARY_ASSETS_50PCT: review required — financials.FY2022.monetary_assets: low extraction confidence without human confirmation; financials.FY2022.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2023.monetary_assets: low extraction confidence without human confirmation; financials.FY2023.net_tangible_assets: low extraction confidence without human confirmation; financials.FY2024.monetary_assets: low extraction confidence without human confirmation; financials.FY2024.net_tangible_assets: low extraction confidence without human confirmation
-- AVG_OPERATING_PROFIT_15CR: review required — financials.FY2022.operating_profit: low extraction confidence without human confirmation; financials.FY2023.operating_profit: low extraction confidence without human confirmation; financials.FY2024.operating_profit: low extraction confidence without human confirmation
-- NET_WORTH_1CR: review required — financials.FY2022.net_worth: low extraction confidence without human confirmation; financials.FY2023.net_worth: low extraction confidence without human confirmation; financials.FY2024.net_worth: low extraction confidence without human confirmation
+- NTA_3CR: review required — financials.fiscal_years[FY2022].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].net_tangible_assets: low extraction confidence without human confirmation
+- MONETARY_ASSETS_50PCT: review required — financials.fiscal_years[FY2022].monetary_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2022].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].monetary_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].net_tangible_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].monetary_assets: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].net_tangible_assets: low extraction confidence without human confirmation
+- AVG_OPERATING_PROFIT_15CR: review required — financials.fiscal_years[FY2022].operating_profit: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].operating_profit: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].operating_profit: low extraction confidence without human confirmation
+- NET_WORTH_1CR: review required — financials.fiscal_years[FY2022].net_worth: low extraction confidence without human confirmation; financials.fiscal_years[FY2023].net_worth: low extraction confidence without human confirmation; financials.fiscal_years[FY2024].net_worth: low extraction confidence without human confirmation
 - Mandatory rules whose legal source is not verified against a primary text: EXCHANGE_MIN_ISSUE_SIZE, MIN_MARKET_CAP, MIN_POST_ISSUE_CAPITAL, PUBLIC_OFFER_MIN
 
 Observations

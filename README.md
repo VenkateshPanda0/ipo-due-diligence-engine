@@ -8,6 +8,8 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-backend-009688?logo=fastapi&logoColor=white)
 ![Next.js](https://img.shields.io/badge/Next.js-15-000000?logo=nextdotjs&logoColor=white)
 ![Runs locally](https://img.shields.io/badge/runs-100%25%20local-2ea44f)
+![Version](https://img.shields.io/badge/version-2.0.1-blue)
+![Tests](https://img.shields.io/badge/tests-473%20passing-2ea44f)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 <img src="docs/images/report.png" alt="Screening report for a real DRHP" width="900">
@@ -55,7 +57,8 @@ be checked in seconds.
 <td valign="top">
 <img src="docs/images/review.png" alt="Review queue">
 <b>Never guesses.</b> Conflicting or uncertain values go to a review queue. A reviewer
-confirms, corrects or rejects each one, and correcting or rejecting needs a reason.
+confirms, corrects or rejects each one (with a reason), and a value a person entered is
+never overwritten by a later extraction.
 </td>
 <td valign="top">
 <img src="docs/images/rule-detail.png" alt="Rule detail">
@@ -78,7 +81,8 @@ with a verification status. Superseded rulesets are kept for audit.
 </table>
 
 Reports can be exported as HTML, JSON or text, and a reviewer can sign them off. Every
-edit and decision is recorded in a permanent audit trail.
+edit and decision is recorded in a permanent audit trail, and every report records the
+exact data version, ruleset and documents it was based on.
 
 ## What it checks
 
@@ -95,9 +99,11 @@ as unsupported.
 | Post-issue capital, market cap, issue size | BSE / NSE ⚠️ unverified |
 | Advisory: board, audit committee, track record, RPT, auditor, litigation | LODR 17–18, heuristics |
 
-A case gets one of these outcomes: `NO_FAILURE_IDENTIFIED` (which does **not** mean the
-company is eligible), `SCREENING_FAILURE`, `AWAITING_HUMAN_REVIEW`,
-`INSUFFICIENT_EVIDENCE` or `UNSUPPORTED_SCOPE`. Full details:
+A rule can only **fail** on reliable evidence. Missing evidence is reported as
+*insufficient*, and uncertain evidence or legally ambiguous readings go to *human
+review*, never to a failure. A case gets one of these outcomes: `NO_FAILURE_IDENTIFIED`
+(which does **not** mean the company is eligible), `SCREENING_FAILURE`,
+`AWAITING_HUMAN_REVIEW`, `INSUFFICIENT_EVIDENCE` or `UNSUPPORTED_SCOPE`. Full details:
 [docs/REGULATIONS.md](docs/REGULATIONS.md).
 
 ## Accuracy
@@ -113,9 +119,14 @@ never used for tuning.
 | Wrong value | 0 | **0** |
 | Missed | 0 | 0 |
 
-The answer keys have not yet been verified by a human, so treat these figures as
-indicative. Method and full history, including an earlier, weaker holdout (21/36), are
-in [docs/BENCHMARK.md](docs/BENCHMARK.md).
+No document has produced a wrong value for a scored field. The six mismatches are correct
+values cited from a different page than the answer key expects. The answer keys have not
+yet been verified by a human, so treat these figures as indicative. Method and full
+history, including an earlier, weaker holdout (21/36), are in
+[docs/BENCHMARK.md](docs/BENCHMARK.md).
+
+**Speed:** a 450–560-page DRHP is processed in about **30 seconds** on average (17–43 s
+across the 13 documents, single process, OCR enabled), 2× faster than the previous release.
 
 ## Run it locally
 
@@ -183,7 +194,8 @@ No database or API key is needed. Data is stored in `backend/data/`.
 | | |
 |---|---|
 | OCR for scanned PDFs | macOS `brew install tesseract` · Ubuntu `sudo apt install tesseract-ocr` · Windows: UB-Mannheim installer, added to PATH |
-| Tests | `cd backend && ../.venv/bin/pytest -q tests/` · `cd frontend && npm test` |
+| Tests | `make test` (backend) · `make test-frontend` · `make test-e2e` (with both servers running) |
+| Lint & types | `make lint` · `make typecheck` |
 | Docker (backend) | `docker build -t ipo-dd . && docker run -p 8000:8000 -v ipo-data:/data ipo-dd` |
 | Settings | Copy `.env.example` to `.env`. Every setting has a safe default. |
 | Benchmark | `.venv/bin/python scripts/benchmark_extraction.py --download --run` |
@@ -192,6 +204,16 @@ No database or API key is needed. Data is stored in `backend/data/`.
 **Troubleshooting:** most setup failures come from a Python version other than 3.12
 (`python3.12 --version`). If the UI shows "Cannot reach the API", check that the backend
 is running on port 8000.
+
+## Quality
+
+| Check | Result |
+|---|---|
+| Backend tests (unit, integration, regression) | 453 passing |
+| Frontend unit tests · end-to-end (Playwright, desktop + mobile) | 15 · 5 passing |
+| Lint (ruff) · types (mypy `--strict`, TypeScript `strict`) | clean |
+| Dependency audit (pip-audit, npm production) | no known vulnerabilities |
+| Real-DRHP benchmark | 138 / 144 values correct with page; 0 wrong values |
 
 ## Built with
 
@@ -215,7 +237,7 @@ docs/          architecture, regulations, benchmark, guides, ADRs, screenshots
 [Human review](docs/HUMAN_REVIEW_WORKFLOW.md) ·
 [Developer guide](docs/DEVELOPER_GUIDE.md) ·
 [Roadmap](docs/ROADMAP.md) ·
-[Changelog](docs/CHANGELOG.md)
+[Changelog](docs/CHANGELOG.md) (what changed in 2.0.1)
 
 ## License
 

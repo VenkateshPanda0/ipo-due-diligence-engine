@@ -31,9 +31,25 @@ class DomainError(Exception):
 
     error_code: str = "DOMAIN_ERROR"
 
+    #: Attribute names that are safe to expose to API clients.
+    public_fields: tuple[str, ...] = ()
+
     def __init__(self, message: str) -> None:
         super().__init__(message)
         self.message = message
+
+    def public_details(self) -> dict[str, object]:
+        """Whitelisted, primitive details safe to return to API clients."""
+        out: dict[str, object] = {}
+        for name in self.public_fields:
+            value = getattr(self, name, None)
+            if isinstance(value, (str, int, float, bool)) or value is None:
+                out[name] = value
+            elif isinstance(value, (list, tuple)):
+                out[name] = [str(v) for v in value]
+            else:
+                out[name] = str(value)
+        return out
 
 
 class InsufficientDataError(DomainError):
@@ -57,6 +73,7 @@ class InsufficientDataError(DomainError):
     """
 
     error_code: str = "INSUFFICIENT_DATA"
+    public_fields = ("rule_id", "fields")
 
     def __init__(self, rule_id: str, missing_fields: list[str]) -> None:
         self.rule_id = rule_id
@@ -99,6 +116,7 @@ class ExtractionError(DomainError):
     """
 
     error_code: str = "EXTRACTION_FAILED"
+    public_fields = ("field_name",)
 
     def __init__(self, field_name: str, reason: str) -> None:
         self.field_name = field_name
@@ -139,6 +157,7 @@ class ReportNotFoundError(DomainError):
     """
 
     error_code: str = "REPORT_NOT_FOUND"
+    public_fields = ("report_id",)
 
     def __init__(self, report_id: object) -> None:
         self.report_id = report_id
@@ -162,3 +181,41 @@ class RulesetNotFoundError(DomainError):
             f"Ruleset version '{version}' is not available. "
             "Use GET /rules to see available versions."
         )
+
+
+class NotFoundError(DomainError):
+    """A requested entity does not exist."""
+
+    error_code: str = "NOT_FOUND"
+    public_fields = ("entity", "entity_id")
+
+    def __init__(self, entity: str, entity_id: object) -> None:
+        self.entity = entity
+        self.entity_id = str(entity_id)
+        super().__init__(f"{entity} '{entity_id}' not found.")
+
+
+class InvalidStateError(DomainError):
+    """An operation is not allowed in the entity's current state."""
+
+    error_code: str = "INVALID_STATE"
+    public_fields = ("entity", "state")
+
+    def __init__(self, entity: str, state: str, message: str) -> None:
+        self.entity = entity
+        self.state = state
+        super().__init__(message)
+
+
+class DocumentRejectedError(DomainError):
+    """An uploaded file failed validation and was not stored."""
+
+    error_code: str = "DOCUMENT_REJECTED"
+    public_fields = ("reason",)
+
+    _HTTP_STATUS = {"not_pdf": 415, "too_large": 413}
+
+    def __init__(self, reason: str, message: str) -> None:
+        self.reason = reason
+        self.http_status = self._HTTP_STATUS.get(reason, 422)
+        super().__init__(message)

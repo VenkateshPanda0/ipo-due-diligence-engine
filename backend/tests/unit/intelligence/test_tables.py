@@ -233,3 +233,118 @@ def test_bare_rupee_in_row_label_does_not_override_scaled_caption() -> None:
     ]
     c = candidates([page(rows)])[("net_worth", "FY2025")]
     assert c.original_unit == "INR_LAKH"  # type: ignore[attr-defined]
+
+
+def test_header_wrapped_across_two_lines_with_right_aligned_figures() -> None:
+    # Vardaan: "...ended March" / "31, 2025"; figures right-aligned in wide columns.
+    rows: list[Row] = [
+        [("(₹", 40), ("in", 52), ("lakhs)", 64)],
+        [
+            ("Particulars", 40),
+            ("Year", 215),
+            ("ended", 240),
+            ("Year", 322),
+            ("ended", 347),
+            ("March", 380),
+        ],
+        [
+            ("March", 215),
+            ("31,", 250),
+            ("2026", 270),
+            ("31,", 322),
+            ("2025", 342),
+            ("March", 437),
+            ("31,", 472),
+            ("2024", 492),
+        ],
+        [("Net", 40), ("worth", 60), ("9,954.75", 289), ("6,099.93", 404), ("4,336.71", 506)],
+    ]
+    got = candidates([page(rows)])
+    assert [got[("net_worth", y)].original_text for y in ("FY2026", "FY2025", "FY2024")] == [  # type: ignore[attr-defined]
+        "9,954.75",
+        "6,099.93",
+        "4,336.71",
+    ]
+
+
+def test_wrapped_fragment_needs_the_month_printed_above() -> None:
+    rows: list[Row] = [
+        [("Particulars", 40), ("Year", 215), ("ended", 240), ("Year", 322), ("ended", 347)],
+        [
+            ("March", 215),
+            ("31,", 250),
+            ("2026", 270),
+            ("31,", 322),
+            ("2025", 342),
+            ("March", 437),
+            ("31,", 472),
+            ("2024", 492),
+        ],
+    ]
+    p = page(rows)
+    cols = find_period_columns(p.lines[1], p.lines[:1])
+    assert [c.period.label for c in cols] == ["FY2026", "FY2024"]  # no "March" above: not invented
+
+
+def test_partial_row_is_not_band_assigned() -> None:
+    # One figure under three left-anchored headers stays unplaced rather than guessed.
+    rows: list[Row] = [
+        [("(₹", 40), ("in", 52), ("lakhs)", 64)],
+        [
+            ("Particulars", 40),
+            ("Year", 215),
+            ("ended", 240),
+            ("Year", 322),
+            ("ended", 347),
+            ("March", 380),
+        ],
+        [
+            ("March", 215),
+            ("31,", 250),
+            ("2026", 270),
+            ("31,", 322),
+            ("2025", 342),
+            ("March", 437),
+            ("31,", 472),
+            ("2024", 492),
+        ],
+        [("Net", 40), ("worth", 60), ("6,099.93", 404), ("4,336.71", 506)],
+    ]
+    got = candidates([page(rows)])
+    assert ("net_worth", "FY2025") not in got
+
+
+def test_prose_sentence_with_dates_is_not_a_header() -> None:
+    rows: list[Row] = [
+        [
+            ("31,", 40),
+            ("2025", 60),
+            ("and", 90),
+            ("March", 110),
+            ("31,", 140),
+            ("2024", 160),
+            ("with", 190),
+            ("operating", 215),
+            ("profit", 260),
+            ("in", 290),
+            ("each", 305),
+            ("of", 330),
+        ],
+    ]
+    assert find_period_columns(page(rows).lines[0], None) == []
+    header = [
+        [
+            ("Particulars", 40),
+            ("As", 200),
+            ("at", 212),
+            ("March", 225),
+            ("31,", 255),
+            ("2026", 270),
+            ("As", 330),
+            ("at", 342),
+            ("March", 355),
+            ("31,", 385),
+            ("2025", 400),
+        ]
+    ]
+    assert len(find_period_columns(page(header).lines[0], None)) == 2

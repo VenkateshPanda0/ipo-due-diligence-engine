@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+from datetime import date
 
 from app.intelligence.layout import Cell, Line, Word
 from app.intelligence.numbers import ParsedNumber, detect_unit, parse_number
@@ -27,6 +28,39 @@ _YEAR_RE = re.compile(r"^(?:19|20)\d{2}$")
 _NOTE_SUFFIX_RE = re.compile(r"\s+(?:\d{1,2}(?:\.\d{1,2})?|[ivx]{1,4}|\([a-z0-9]{1,3}\))$", re.I)
 _LEADING_ENUM_RE = re.compile(r"^(?:\(?[a-z0-9ivx]{1,4}[).]\s+)", re.I)
 _MAX_BLANK_LINES = 6
+_DAY_YEAR_RE = re.compile(r"^(\d{1,2}),?\s*((?:19|20)\d{2})$")
+_MAX_HEADER_PROSE_WORDS = 4
+# words that legitimately appear in period headers and do not indicate running text
+_HEADER_VOCAB = frozenset(
+    {
+        "as",
+        "at",
+        "on",
+        "of",
+        "ended",
+        "ending",
+        "year",
+        "years",
+        "financial",
+        "fiscal",
+        "fiscals",
+        "period",
+        "particulars",
+        "for",
+        "the",
+        "and",
+        "months",
+        "month",
+        "restated",
+        "consolidated",
+        "standalone",
+        "audited",
+        "unaudited",
+        "description",
+        "amount",
+        "amounts",
+    }
+)
 _ELIGIBILITY_RE = re.compile(r"eligib|regulation\s*6\s*\(|reg\.\s*6\s*\(", re.I)
 
 
@@ -152,12 +186,51 @@ def find_period_columns(line: Line, previous: Line | list[Line] | None) -> list[
                 )
                 for w in years
             ]
-    labels = [c.period.label for c in cols]
-    if len(cols) < 2 or len(set(labels)) != len(labels):
-        return []
-    if any(b.x0 < a.x1 - 1 for a, b in zip(cols, cols[1:], strict=False)):
+    if above_lines and len(cols) >= 2:
+        cols = _complete_wrapped_fragments(line, cols, above_lines)
+    if not _valid(cols) or _prose_words(line, cols) > _MAX_HEADER_PROSE_WORDS:
         return []
     return cols
+
+
+def _prose_words(line: Line, cols: list[PeriodColumn]) -> int:
+    """Alphabetic words outside the period columns: many means running text, not a header."""
+    return sum(
+        1
+        for w in line.words
+        if any(ch.isalpha() for ch in w.text)
+        and w.text.lower().strip("(),.:") not in _HEADER_VOCAB
+        and not any(c.x0 - 1 <= w.xc <= c.x1 + 1 for c in cols)
+    )
+
+
+def _complete_wrapped_fragments(
+    line: Line, cols: list[PeriodColumn], above_lines: list[Line]
+) -> list[PeriodColumn]:
+    """Recover a header wrapped as "... ended March" / "31, 2025".
+
+    A "DD, YYYY" fragment between detected columns takes the month of its
+    neighbours only when every detected column ends on that same month and day, and
+    the line above actually prints that month name.
+    """
+    ends = {(c.period.end.month, c.period.end.day) for c in cols if c.period.end}
+    if len(ends) != 1 or any(c.period.end is None for c in cols):
+        return cols
+    month, day = ends.pop()
+    month_name = date(2000, month, 1).strftime("%B")
+    if month_name.lower() not in " ".join(a.text for a in above_lines).lower():
+        return cols
+    out = list(cols)
+    for cell in line.cells:
+        m = _DAY_YEAR_RE.match(cell.text.strip())
+        if not m or int(m.group(1)) != day:
+            continue
+        if any(c.x0 - 1 <= cell.xc <= c.x1 + 1 for c in out):
+            continue
+        period = parse_period(f"{month_name} {day}, {m.group(2)}")
+        if period is not None:
+            out.append(PeriodColumn(period, cell.x0, cell.x1, f"{month_name} {cell.text}"))
+    return sorted(out, key=lambda c: c.x0)
 
 
 def _clean_label(text: str) -> str:
@@ -315,6 +388,7 @@ def _parse_row(line: Line, columns: list[PeriodColumn]) -> tuple[str, dict[str, 
     ambiguous = False
     numbers = 0
     prose_words = 0
+    numeric: list[tuple[Word, ParsedNumber]] = []
     for w in _merge_numeric_words(line.words):
         parsed = _numeric_word(w) if w.xc >= left_edge else None
         if parsed is None:
@@ -324,6 +398,7 @@ def _parse_row(line: Line, columns: list[PeriodColumn]) -> tuple[str, dict[str, 
                 prose_words += 1
             continue
         numbers += 1
+        numeric.append((w, parsed))
         col = _assign(w, columns)
         if col is None or col.period.label in values:
             ambiguous = True
@@ -333,9 +408,32 @@ def _parse_row(line: Line, columns: list[PeriodColumn]) -> tuple[str, dict[str, 
     if prose_words >= 3:
         # running text across the value columns (notes, narrative): not a table row
         return label, {}
-    if ambiguous or numbers > len(columns):
+    if numbers > len(columns):
         return label, None
+    if ambiguous:
+        banded = _assign_by_band(numeric, columns)
+        return label, banded
     return label, values
+
+
+def _assign_by_band(
+    numeric: list[tuple[Word, ParsedNumber]], columns: list[PeriodColumn]
+) -> dict[str, CellValue] | None:
+    """Fallback for right-aligned figures under left-anchored (wrapped) headers.
+
+    Column *k* owns the band from its header's left edge to the next header's left
+    edge. Accepted only for a complete row with exactly one figure per band;
+    anything else stays unplaceable (None).
+    """
+    if len(numeric) != len(columns):
+        return None
+    out: dict[str, CellValue] = {}
+    for w, parsed in numeric:
+        k = sum(1 for c in columns if c.x0 - 2 <= w.xc) - 1
+        if k < 0 or columns[k].period.label in out:
+            return None
+        out[columns[k].period.label] = CellValue(parsed, w.text, w.conf)
+    return out
 
 
 def geometric_tables(

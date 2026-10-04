@@ -226,6 +226,8 @@ def test_label_matches(label: str, field: str) -> None:
         "Average Operating Profit",  # an average is not a per-year value
         "Operating profit before working capital changes",  # cash-flow line
         "Tangible Net Worth (Rs. million)",  # industry / peer metric
+        "profit after tax and OCI added in NCI",  # minority-interest adjustment
+        "Profit for the year (as per the audited consolidated financial statements)",
         "Profit before tax",
     ],
 )

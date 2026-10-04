@@ -96,6 +96,7 @@ FIELDS: tuple[FieldDef, ...] = (
         (
             re.compile(
                 r"non[- ]controlling|other comprehensive|attributable to non|discontinued|before"
+                r"|\bnci\b|\boci\b"
             ),
         ),
     ),
@@ -120,6 +121,9 @@ FIELDS: tuple[FieldDef, ...] = (
 
 
 _AVERAGE = re.compile(r"\baverage\b|\bavg\b")
+# Reg 6 uses restated figures; a row explicitly labelled as the audited figure is a
+# reconciliation line and a different fact, not a competing candidate.
+_AUDITED = re.compile(r"\bas per (?:the )?audited\b|\(audited\)")
 
 
 def normalise_label(text: str) -> str:
@@ -162,6 +166,8 @@ def match_label(raw_label: str) -> LabelMatch | None:
             continue
         if _AVERAGE.search(label):
             continue  # an average spans periods; never a single-period value
+        if _AUDITED.search(label):
+            continue
         if best is None or strength > best.strength:
             best = LabelMatch(fd.field, strength, label)
     return best

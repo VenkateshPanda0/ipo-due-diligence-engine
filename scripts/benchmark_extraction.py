@@ -43,18 +43,20 @@ from app.intelligence.pipeline import PipelineConfig, run_pipeline  # noqa: E402
 BENCH = ROOT / "benchmark"
 DOCS = BENCH / "documents"
 SPLITS = {
+    # The 2026-10-04 holdout (iberia, vardaan, anchor) was measured once (21/36) and then
+    # moved here for failure analysis; see docs/BENCHMARK.md.
     "development": [
         "madhur-iron-and-steel-india-limited-drhp",
         "ekkaa-electronics-india-limited-drhp",
         "jsw-one-platforms-limited-drhp",
         "iris-global-services-limited-drhp",
         "jagatjit-agri-engineering-limited-drhp",
-    ],
-    "holdout": [
         "iberia-pharmaceuticals-india-limited-drhp",
         "vardaan-biotech-limited-drhp",
         "anchor-offshore-services-limited-drhp",
     ],
+    # Fresh holdout: added after the code freeze, never used for tuning.
+    "holdout": [],
 }
 
 

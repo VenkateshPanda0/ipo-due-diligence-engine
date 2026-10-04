@@ -1,18 +1,20 @@
 """Self-contained structured extraction boundary.
 
-The extractor is deliberately local and deterministic. It supports the
-embedded JSON block used by tests and demos, then falls back to label/table
-pattern extraction from pdfplumber text and table context. It never calls a
-cloud LLM or external network service.
+The extractor is deliberately local and deterministic: label/table pattern
+extraction from pdfplumber text and table context. It never calls a cloud LLM or
+external network service.
+
+Security: structured payloads embedded in document text (e.g. a JSON block) are
+NOT trusted. Ruleset 1.0.0 accepted a ``BEGIN_COMPANY_DATA_JSON`` block, which let
+any uploaded PDF dictate its own values, confidence and human-confirmation flags
+(baseline defect D8). That path has been removed.
 """
 
 from __future__ import annotations
 
-import json
 import re
 from datetime import date
 from decimal import Decimal, InvalidOperation
-from typing import Any
 
 from app.models.company_data import (
     AuditCommittee,
@@ -32,9 +34,6 @@ from app.models.enums import ConfidenceLevel, ExtractionMethod
 from app.models.exceptions import ExtractionError
 from app.models.extracted_value import ExtractedValue
 from app.models.ruleset_version import DEFAULT_RULESET_VERSION
-
-_BEGIN_MARKER = "BEGIN_COMPANY_DATA_JSON"
-_END_MARKER = "END_COMPANY_DATA_JSON"
 
 _NUMBER_PATTERN = r"[-+]?\d[\d,]*(?:\.\d+)?"
 
@@ -57,25 +56,8 @@ class AIExtractor:
     """Extract CompanyData from document text without cloud dependencies."""
 
     def extract_company_data(self, text: str) -> CompanyData:
-        """Extract CompanyData from embedded JSON or local label patterns."""
-        payload_text = self._extract_embedded_json(text)
-        if payload_text is not None:
-            return self._validate_company_data(payload_text)
+        """Extract CompanyData from local label patterns."""
         return _LocalPatternExtractor(text).extract()
-
-    def _extract_embedded_json(self, text: str) -> str | None:
-        begin = text.find(_BEGIN_MARKER)
-        end = text.find(_END_MARKER)
-        if begin == -1 or end == -1 or end <= begin:
-            return None
-        return text[begin + len(_BEGIN_MARKER):end].strip()
-
-    def _validate_company_data(self, payload_text: str) -> CompanyData:
-        try:
-            payload: Any = json.loads(payload_text)
-            return CompanyData.model_validate(payload)
-        except (json.JSONDecodeError, ValueError) as exc:
-            raise ExtractionError("company_data", str(exc)) from exc
 
 
 class _LocalPatternExtractor:
@@ -87,7 +69,6 @@ class _LocalPatternExtractor:
 
     def extract(self) -> CompanyData:
         fiscal_years = self._extract_fiscal_years()
-        latest_net_worth = fiscal_years[-1].net_worth.value
         issue_size = self._decimal_label("issue_size", ("issue size", "fresh issue size"))
         public_offer = self._decimal_label(
             "public_offer_percentage",
@@ -205,7 +186,7 @@ class _LocalPatternExtractor:
             ),
             issue_details=IssueDetails(
                 issue_size=self._ev_decimal(issue_size, "issue size"),
-                pre_issue_net_worth=self._ev_decimal(latest_net_worth, "pre issue net worth"),
+                pre_issue_net_worth=None,  # never derived; v1 copied latest net worth (fabrication)
                 post_issue_paid_up_capital=self._ev_decimal(
                     self._decimal_label(
                         "post_issue_paid_up_capital",
@@ -242,7 +223,7 @@ class _LocalPatternExtractor:
             raise ExtractionError("financials", "No financial table with fiscal-year rows found")
         header = [self._clean_cell(cell).lower() for cell in rows[header_index]]
         fiscal_years: list[FiscalYear] = []
-        for row in rows[header_index + 1:]:
+        for row in rows[header_index + 1 :]:
             if not row or not re.search(r"fy\s*\d{4}|\d{4}\s*-\s*\d{2}", row[0], re.I):
                 continue
             values = self._row_values(header, row)

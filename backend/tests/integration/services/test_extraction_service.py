@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from app.models.exceptions import UnsupportedDocumentError
+from app.models.exceptions import ExtractionError, UnsupportedDocumentError
 from app.services.extraction_service import ExtractionService
 from tests.fixtures.company_data_factory import CompanyDataFactory
 
@@ -18,9 +18,9 @@ def test_extraction_service_builds_company_data_from_document_bytes() -> None:
         "END_COMPANY_DATA_JSON"
     ).encode()
 
-    company = ExtractionService().extract_company_data("annual_report.pdf", content)
-
-    assert company.identification.company_name == "Acme Industries Pvt Ltd"
+    # Regression (D8): embedded structured payloads are never trusted.
+    with pytest.raises(ExtractionError):
+        ExtractionService().extract_company_data("annual_report.pdf", content)
 
 
 def test_extraction_service_rejects_unknown_document() -> None:

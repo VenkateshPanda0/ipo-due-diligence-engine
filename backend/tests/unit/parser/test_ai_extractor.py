@@ -9,13 +9,13 @@ from app.parser.ai_extractor import AIExtractor
 from tests.fixtures.company_data_factory import CompanyDataFactory
 
 
-def test_ai_extractor_extracts_company_data_json_block() -> None:
+def test_ai_extractor_does_not_trust_embedded_json_block() -> None:
+    """Regression (D8): a document must not be able to inject its own CompanyData."""
     payload = json.dumps(CompanyDataFactory.create().model_dump(mode="json"))
     text = f"DRHP\nBEGIN_COMPANY_DATA_JSON\n{payload}\nEND_COMPANY_DATA_JSON"
 
-    company = AIExtractor().extract_company_data(text)
-
-    assert company.identification.company_name == "Acme Industries Pvt Ltd"
+    with pytest.raises(ExtractionError):
+        AIExtractor().extract_company_data(text)
 
 
 def test_ai_extractor_rejects_missing_json_block() -> None:

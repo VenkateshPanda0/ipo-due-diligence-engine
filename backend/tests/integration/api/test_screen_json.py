@@ -19,9 +19,9 @@ def test_screen_json_accepts_raw_company_data() -> None:
     assert response.status_code == 200
     body = response.json()
     assert body["status"] == "eligible"
-    assert body["mandatory_progress"]["total_rules"] == 11
-    assert len(body["mandatory_results"]) == 11
-    assert body["ruleset_version"] == "1.0.0"
+    assert body["mandatory_progress"]["total_rules"] == 13
+    assert len(body["mandatory_results"]) == 13
+    assert body["ruleset_version"] == "2.0.0"
     assert response.headers["X-Request-ID"]
 
 
@@ -62,7 +62,8 @@ def test_screen_json_requires_api_key_when_configured() -> None:
     assert valid_key_response.status_code == 200
 
 
-def test_screen_pdf_extracts_embedded_company_data() -> None:
+def test_screen_pdf_ignores_embedded_company_data() -> None:
+    """Regression (D8): a PDF cannot dictate its own screening outcome."""
     client = TestClient(app)
     company_json = json.dumps(CompanyDataFactory.create().model_dump(mode="json"))
     content = (
@@ -77,8 +78,8 @@ def test_screen_pdf_extracts_embedded_company_data() -> None:
         files={"file": ("sample.pdf", content, "application/pdf")},
     )
 
-    assert response.status_code == 200
-    assert response.json()["status"] == "eligible"
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "EXTRACTION_FAILED"
 
 
 def test_screen_pdf_unknown_document_returns_error_envelope() -> None:

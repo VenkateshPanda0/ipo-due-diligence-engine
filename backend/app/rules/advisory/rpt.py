@@ -11,6 +11,7 @@ from decimal import Decimal
 
 from app.models.company_data import CompanyData
 from app.models.enums import Verdict
+from app.models.field_paths import fiscal_year_path
 from app.models.rule_result import RuleResult
 from app.rules.base_rule import BaseRule, Inputs, fmt_crore, fmt_pct
 
@@ -49,17 +50,18 @@ class RPTDisclosureRule(BaseRule):
         fys = company.financials.fiscal_years
         if fys and total > 0:
             latest = fys[-1]
-            revenue = inputs.get(f"financials.{latest.year_label}.revenue", latest.revenue)
+            revenue = inputs.get(fiscal_year_path(latest.year_label, "revenue"), latest.revenue)
             if revenue is not None and revenue > 0 and inputs.is_reliable(latest.revenue):
                 ratio = total / revenue
                 inputs.calc(
                     f"RPT / revenue = {fmt_crore(total)} / {fmt_crore(revenue)} = "
                     f"{fmt_pct(ratio * 100)}"
                 )
-                if ratio > self.spec.decimal("max_rpt_revenue_ratio"):
+                limit = self.spec.decimal("max_rpt_revenue_ratio")
+                if ratio > limit:
                     notes.append(
                         f"RPT value is {fmt_pct(ratio * Decimal(100))} of latest-year revenue "
-                        "(above the 20% heuristic)."
+                        f"(above the {fmt_pct(limit * Decimal(100))} heuristic)."
                     )
         return self._result(
             Verdict.PASS,

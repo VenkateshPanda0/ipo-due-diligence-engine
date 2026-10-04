@@ -25,7 +25,8 @@
     "MONETARY_ASSETS_50PCT: both provisos modelled.",
     "PROMOTER_CONTRIBUTION_20: Reg 14(1) provisos modelled.",
     "TRACK_RECORD_3Y reclassified as advisory exchange criterion.",
-    "New outcomes NOT_APPLICABLE and REQUIRES_HUMAN_REVIEW."
+    "New outcomes NOT_APPLICABLE and REQUIRES_HUMAN_REVIEW.",
+    "Rule corrections before deployment (rule_version 2.0.1): PROMOTER_CONTRIBUTION_20 no longer fails a shortfall the Reg 14(1) proviso could still cover; PROMOTER_LOCK_IN fails a lock-in shorter than 18 months even when capex status is unknown; PUBLIC_OFFER_MIN sends the ambiguous tier-6 1%-2.5% band to human review instead of failing it."
   ],
   "rules": [
     {
@@ -262,7 +263,7 @@
       "verification_status": "primary_text_checked"
     },
     {
-      "rule_version": "2.0.0",
+      "rule_version": "2.0.1",
       "effective_to": null,
       "limitations": [
         "Reg 14(2) form-of-contribution and Reg 15 eligibility-of-securities conditions are not evaluated."
@@ -293,12 +294,12 @@
         "promoter.eligible_non_promoter_contribution",
         "promoter.has_identifiable_promoter"
       ],
-      "decision_procedure": "PASS if post-issue promoter holding >= 20%. Otherwise PASS if holding + min(eligible non-promoter contribution, 10) >= 20 (first proviso). FAIL otherwise. Computed on post-issue expanded capital per Explanation (I).",
+      "decision_procedure": "PASS if post-issue promoter holding >= 20%. Otherwise PASS if holding + min(eligible non-promoter contribution, 10) >= 20 (first proviso). FAIL if the shortfall exceeds 10% (cannot be met under the proviso) or if eligible contributions are evidenced and insufficient. INCONCLUSIVE if the shortfall is <= 10% and eligible non-promoter contributions are not evidenced. Computed on post-issue expanded capital per Explanation (I).",
       "evidence_requirements": "Capital structure and promoters' contribution sections of the offer document.",
       "verification_status": "primary_text_checked"
     },
     {
-      "rule_version": "2.0.0",
+      "rule_version": "2.0.1",
       "effective_to": null,
       "limitations": [
         "Lock-in of promoter holding in excess of the minimum contribution (Reg 16(1)(b): 6 months / 1 year) is not evaluated."
@@ -328,16 +329,16 @@
         "promoter.lock_in_months",
         "promoter.is_capex_issue"
       ],
-      "decision_procedure": "Required lock-in is 36 months if the majority of issue proceeds (excluding OFS) is for capital expenditure, else 18 months. PASS if committed lock-in >= required. If the capex status is unknown: PASS if committed >= 36, else INCONCLUSIVE.",
+      "decision_procedure": "Required lock-in is 36 months if the majority of issue proceeds (excluding OFS) is for capital expenditure, else 18 months. PASS if committed lock-in >= required. If the capex status is unknown: PASS if committed >= 36, FAIL if committed < 18 (short under either reading), else INCONCLUSIVE.",
       "evidence_requirements": "Lock-in disclosures and objects of the issue.",
       "verification_status": "primary_text_checked"
     },
     {
-      "rule_version": "2.0.0",
+      "rule_version": "2.0.1",
       "effective_to": null,
       "limitations": [
         "Primary gazette text not retrieved; tier content corroborated by two secondary sources only.",
-        "Tier 6 contains both a 1% and a 2.5% condition in secondary summaries; the stricter 2.5% is applied and flagged for review.",
+        "Tier 6 contains both a 1% and a 2.5% condition in secondary summaries; an offer between them is sent for human review rather than failed.",
         "Post-listing minimum public shareholding timelines are not evaluated.",
         "Changed in 2.0.0: v1 used a two-tier 25% / 10% split at Rs 1,600 crore."
       ],
@@ -381,7 +382,7 @@
         "issue_details.expected_market_cap",
         "issue_details.public_offer_percentage"
       ],
-      "decision_procedure": "Select tier by post-issue capital at offer price M (upper bounds inclusive). Offer value V = M x p / 100. Tier1: p >= 25. Tier2: V >= 400. Tier3: p >= 10. Tier4: V >= 1,000 and p >= 8. Tier5: V >= 6,250 and p >= 2.75. Tier6: V >= 15,000 and p >= 1 and p >= 2.5. Tiers 4-6 always carry a human-review flag.",
+      "decision_procedure": "Select tier by post-issue capital at offer price M (upper bounds inclusive). Offer value V = M x p / 100. Tier1: p >= 25. Tier2: V >= 400. Tier3: p >= 10. Tier4: V >= 1,000 and p >= 8. Tier5: V >= 6,250 and p >= 2.75. Tier6: V >= 15,000 and p >= 1 (FAIL otherwise); an offer meeting those but below the 2.5% also cited for tier 6 is REQUIRES_HUMAN_REVIEW, not FAIL. Tiers 4-6 always carry a human-review flag.",
       "evidence_requirements": "Post-issue capital at offer price and offer size from the offer document.",
       "verification_status": "secondary_sources_only"
     },

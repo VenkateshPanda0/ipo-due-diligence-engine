@@ -12,6 +12,7 @@ from decimal import Decimal
 
 from app.models.company_data import CompanyData
 from app.models.enums import Verdict
+from app.models.field_paths import fiscal_year_path
 from app.models.rule_result import RuleResult
 from app.rules.base_rule import BaseRule, Inputs, fmt_crore, preceding_full_years
 
@@ -42,7 +43,7 @@ class NetWorthRule(BaseRule):
         summaries: list[str] = []
         failures: list[tuple[str, Decimal]] = []
         for fy in period:
-            value = inputs.get(f"financials.{fy.year_label}.net_worth", fy.net_worth)
+            value = inputs.get(fiscal_year_path(fy.year_label, "net_worth"), fy.net_worth)
             if value is None:
                 continue
             summaries.append(f"{fy.year_label}: {fmt_crore(value)}")

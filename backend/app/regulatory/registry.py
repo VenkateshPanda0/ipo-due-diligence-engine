@@ -14,6 +14,7 @@ This module MUST NOT import from app.rules, app.intelligence, app.api, app.engin
 from __future__ import annotations
 
 import json
+import re
 from datetime import date
 from decimal import Decimal
 from fractions import Fraction
@@ -25,7 +26,17 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.models.enums import LegalCategory, ListingRoute, RuleCategory, VerificationStatus
 
 _DATA_DIR = Path(__file__).parent / "data"
+_VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
 CURRENT_RULESET_VERSION = "2.0.0"
+
+
+def _ruleset_path(version: str) -> Path:
+    if not _VERSION_RE.match(version):
+        raise KeyError(f"Invalid ruleset version {version!r} (expected MAJOR.MINOR.PATCH).")
+    path = _DATA_DIR / "rulesets" / f"{version}.json"
+    if not path.is_file():
+        raise KeyError(f"Ruleset {version} not found.")
+    return path
 
 
 class RegulatorySource(BaseModel):
@@ -133,24 +144,25 @@ def _load_json(path: Path) -> dict[str, object]:
 def load_sources() -> dict[str, RegulatorySource]:
     """Load the regulatory source register keyed by source_id."""
     raw = _load_json(_DATA_DIR / "sources.json")
-    items = raw["sources"]
-    assert isinstance(items, list)
+    items = raw.get("sources")
+    if not isinstance(items, list):
+        raise ValueError("sources.json must contain a 'sources' list.")
     sources = [RegulatorySource.model_validate(item) for item in items]
     return {s.source_id: s for s in sources}
 
 
 def available_ruleset_versions() -> list[str]:
     """Return all ruleset versions present on disk."""
-    return sorted(p.stem for p in (_DATA_DIR / "rulesets").glob("*.json"))
+    versions = [
+        p.stem for p in (_DATA_DIR / "rulesets").glob("*.json") if _VERSION_RE.match(p.stem)
+    ]
+    return sorted(versions, key=lambda v: tuple(int(x) for x in v.split(".")))
 
 
 @lru_cache(maxsize=8)
 def load_ruleset(version: str = CURRENT_RULESET_VERSION) -> Ruleset:
     """Load an executable ruleset. Superseded rulesets without specs are rejected."""
-    path = _DATA_DIR / "rulesets" / f"{version}.json"
-    if not path.is_file():
-        raise KeyError(f"Ruleset {version} not found.")
-    raw = _load_json(path)
+    raw = _load_json(_ruleset_path(version))
     if raw.get("status") == "superseded":
         raise KeyError(f"Ruleset {version} is superseded and not executable.")
     ruleset = Ruleset.model_validate(raw)
@@ -164,7 +176,4 @@ def load_ruleset(version: str = CURRENT_RULESET_VERSION) -> Ruleset:
 
 def load_ruleset_summary(version: str) -> dict[str, object]:
     """Load raw metadata for any ruleset (including superseded ones)."""
-    path = _DATA_DIR / "rulesets" / f"{version}.json"
-    if not path.is_file():
-        raise KeyError(f"Ruleset {version} not found.")
-    return _load_json(path)
+    return _load_json(_ruleset_path(version))

@@ -79,6 +79,13 @@ class PromoterContributionRule(BaseRule):
                         "Verify that contributing entities qualify under the Reg 14(1) proviso."
                     ],
                 )
+        elif shortfall <= cap:
+            # The proviso could still cover this shortfall; absence of evidence is not a breach.
+            inputs.calc(
+                f"Shortfall {fmt_pct(shortfall)} ≤ {fmt_pct(cap)}: could be met under the "
+                "Reg 14(1) proviso, but eligible non-promoter contributions are not evidenced."
+            )
+            return self._undetermined(inputs, fmt_pct(holding))
         return self._result(
             Verdict.FAIL,
             inputs,
@@ -129,6 +136,24 @@ class PromoterLockInRule(BaseRule):
         is_capex = inputs.require_flag("promoter.is_capex_issue", promoter.is_capex_issue)
         if months is None or inputs.unreliable:
             return self._undetermined(inputs)
+        if is_capex is None and months < standard:
+            # Shorter than even the standard period: fails whichever lock-in applies.
+            inputs.missing.clear()
+            inputs.calc(f"{months} months < {standard} (standard period) → short in either case")
+            return self._result(
+                Verdict.FAIL,
+                inputs,
+                actual_value=f"{months} months",
+                gap=f"{standard - months} months short of the {standard}-month minimum",
+                explanation=(
+                    f"Committed lock-in of {months} months is shorter than even the "
+                    f"{standard}-month standard requirement."
+                ),
+                remediation=[
+                    f"Extend the promoter lock-in undertaking to at least {standard} months "
+                    f"({capex} if the majority of proceeds funds capital expenditure)."
+                ],
+            )
         if is_capex is None:
             if months >= capex:
                 # satisfied whichever lock-in applies

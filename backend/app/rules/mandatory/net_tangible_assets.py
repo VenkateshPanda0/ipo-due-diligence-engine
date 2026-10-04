@@ -17,6 +17,7 @@ from decimal import Decimal
 
 from app.models.company_data import CompanyData
 from app.models.enums import Verdict
+from app.models.field_paths import fiscal_year_path
 from app.models.rule_result import RuleResult
 from app.rules.base_rule import BaseRule, Inputs, fmt_crore, fmt_pct, preceding_full_years
 
@@ -48,7 +49,7 @@ class NTARule(BaseRule):
         reliable_failures: list[tuple[str, Decimal]] = []
         for fy in period:
             value = inputs.get(
-                f"financials.{fy.year_label}.net_tangible_assets", fy.net_tangible_assets
+                fiscal_year_path(fy.year_label, "net_tangible_assets"), fy.net_tangible_assets
             )
             if value is None:
                 continue
@@ -131,9 +132,9 @@ class MonetaryAssetsRule(BaseRule):
         summaries: list[str] = []
         all_reliable = True
         for fy in period:
-            mon = inputs.get(f"financials.{fy.year_label}.monetary_assets", fy.monetary_assets)
+            mon = inputs.get(fiscal_year_path(fy.year_label, "monetary_assets"), fy.monetary_assets)
             nta = inputs.get(
-                f"financials.{fy.year_label}.net_tangible_assets", fy.net_tangible_assets
+                fiscal_year_path(fy.year_label, "net_tangible_assets"), fy.net_tangible_assets
             )
             if mon is None or nta is None:
                 continue
@@ -156,7 +157,9 @@ class MonetaryAssetsRule(BaseRule):
                 f"(limit {fmt_pct(limit)})"
             )
             inputs.calculated(
-                f"financials.{fy.year_label}.monetary_assets_pct_of_nta", f"{pct:.4f}", "PERCENT"
+                fiscal_year_path(fy.year_label, "monetary_assets_pct_of_nta"),
+                f"{pct:.4f}",
+                "PERCENT",
             )
             summaries.append(f"{fy.year_label}: {fmt_pct(pct)}")
             if pct > limit and reliable:

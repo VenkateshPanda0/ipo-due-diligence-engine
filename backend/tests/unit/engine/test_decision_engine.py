@@ -158,3 +158,21 @@ def test_empty_company_never_fails() -> None:
     )
     assert r.outcome == ScreeningOutcome.INSUFFICIENT_EVIDENCE
     assert all(x.verdict != Verdict.FAIL for x in r.mandatory_results + r.advisory_results)
+
+
+def test_fingerprint_ignores_legacy_ruleset_label() -> None:
+    from datetime import date
+
+    from app.engine.decision_engine import company_fingerprint
+    from app.models.ruleset_version import RulesetVersion
+    from tests.fixtures.company_data_factory import CompanyDataFactory
+
+    company = CompanyDataFactory.create()
+    relabelled = company.model_copy(
+        update={
+            "ruleset_version": RulesetVersion(
+                version="9.9.9", effective_date=date(2000, 1, 1), description="x", regulations=[]
+            )
+        }
+    )
+    assert company_fingerprint(company) == company_fingerprint(relabelled)

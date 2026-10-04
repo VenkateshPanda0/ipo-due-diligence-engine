@@ -15,7 +15,9 @@ bounds are inclusive. Offer value ``V = M × p / 100``.
   6. M > 5,00,000         V ≥ 15,000 and p ≥ 1 %, and p ≥ 2.5 %
 
 Primary gazette text was not retrieved (see sources register); tiers 4-6 are
-flagged for human review.
+flagged for human review. Secondary summaries of tier 6 mention both 1 % and
+2.5 %: an offer below 1 % fails, but one between 1 % and 2.5 % is sent for human
+review rather than failed, because the stricter reading is an interpretation.
 """
 
 from __future__ import annotations
@@ -53,8 +55,7 @@ class FloatRequirementsRule(BaseRule):
             return 4, s.decimal("tier4_min_value_crore"), s.decimal("tier4_min_pct")
         if market_cap <= s.decimal("tier5_max_crore"):
             return 5, s.decimal("tier5_min_value_crore"), s.decimal("tier5_min_pct")
-        floor = max(s.decimal("tier6_min_pct"), s.decimal("tier6_floor_pct"))
-        return 6, s.decimal("tier6_min_value_crore"), floor
+        return 6, s.decimal("tier6_min_value_crore"), s.decimal("tier6_min_pct")
 
     def _evaluate(self, company: CompanyData) -> RuleResult:
         inputs = Inputs()
@@ -91,6 +92,15 @@ class FloatRequirementsRule(BaseRule):
             required_parts.append(f"offer ≥ {fmt_pct(min_pct)}")
             if pct < min_pct:
                 shortfalls.append(f"offer {fmt_pct(pct)} < {fmt_pct(min_pct)}")
+        interpretive: list[str] = []
+        if tier == 6:
+            floor = self.spec.decimal("tier6_floor_pct")
+            required_parts.append(f"offer ≥ {fmt_pct(floor)} (stricter reading)")
+            if pct < floor and not shortfalls:
+                interpretive.append(
+                    f"offer {fmt_pct(pct)} meets the {fmt_pct(min_pct or Decimal(0))} condition "
+                    f"but not the {fmt_pct(floor)} condition also cited for tier 6"
+                )
         inputs.calc("Requirement: " + " and ".join(required_parts))
 
         review = []
@@ -116,6 +126,18 @@ class FloatRequirementsRule(BaseRule):
                     "tier minimum."
                 ],
                 review_reasons=review,
+            )
+        if interpretive:
+            return self._result(
+                Verdict.REQUIRES_HUMAN_REVIEW,
+                inputs,
+                actual_value=actual,
+                explanation=(
+                    "Tier 6 is ambiguous in the available sources: "
+                    + "; ".join(interpretive)
+                    + ". A reviewer must confirm which condition applies."
+                ),
+                review_reasons=review + interpretive,
             )
         return self._result(
             Verdict.PASS,

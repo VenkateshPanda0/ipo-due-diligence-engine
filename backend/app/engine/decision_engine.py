@@ -55,8 +55,13 @@ def ruleset_version_model(ruleset: Ruleset) -> RulesetVersion:
 
 
 def company_fingerprint(company: CompanyData) -> str:
-    """SHA-256 of the canonical JSON of the evaluated input snapshot."""
-    payload = json.dumps(company.model_dump(mode="json"), sort_keys=True, separators=(",", ":"))
+    """SHA-256 of the canonical JSON of the evaluated input snapshot.
+
+    The legacy ``ruleset_version`` label is excluded: it is not case data, and the
+    applied ruleset is recorded separately on the report.
+    """
+    data = company.model_dump(mode="json", exclude={"ruleset_version"})
+    payload = json.dumps(data, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 

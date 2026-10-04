@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from app.models.company_data import CompanyData
 from app.models.enums import Verdict
+from app.models.field_paths import fiscal_year_path
 from app.models.rule_result import RuleResult
 from app.rules.base_rule import BaseRule, Inputs, fmt_crore, fmt_pct
 
@@ -34,17 +35,18 @@ class LitigationRiskRule(BaseRule):
             fys = company.financials.fiscal_years
             if fys:
                 latest = fys[-1]
-                nw = inputs.get(f"financials.{latest.year_label}.net_worth", latest.net_worth)
+                nw = inputs.get(fiscal_year_path(latest.year_label, "net_worth"), latest.net_worth)
                 if nw is not None and nw > 0 and inputs.is_reliable(latest.net_worth):
                     ratio = exposure / nw
                     inputs.calc(
                         f"Exposure / net worth = {fmt_crore(exposure)} / {fmt_crore(nw)} = "
                         f"{fmt_pct(ratio * 100)}"
                     )
-                    if ratio > self.spec.decimal("max_exposure_net_worth_ratio"):
+                    limit = self.spec.decimal("max_exposure_net_worth_ratio")
+                    if ratio > limit:
                         issues.append(
-                            f"exposure is {fmt_pct(ratio * 100)} of net worth (above the 20% "
-                            "heuristic)"
+                            f"exposure is {fmt_pct(ratio * 100)} of net worth (above the "
+                            f"{fmt_pct(limit * 100)} heuristic)"
                         )
         actual = (
             f"{len(lit.pending_cases)} case(s); exposure "

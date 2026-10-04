@@ -140,8 +140,24 @@ class TestPromoterContribution:
         [("20", Verdict.PASS), ("19.99", Verdict.FAIL), ("75", Verdict.PASS)],
     )
     def test_threshold(self, holding: str, verdict: Verdict) -> None:
-        c = update(base(), "promoter", post_issue_holding=ev(D(holding)))
+        c = update(
+            base(),
+            "promoter",
+            post_issue_holding=ev(D(holding)),
+            eligible_non_promoter_contribution=ev(D(0)),
+        )
         assert self.rule.evaluate(c).verdict == verdict
+
+    def test_small_shortfall_without_proviso_evidence_is_not_a_failure(self) -> None:
+        # A 5% shortfall could be met under the Reg 14(1) proviso (max 10%).
+        c = update(base(), "promoter", post_issue_holding=ev(D(15)))
+        r = self.rule.evaluate(c)
+        assert r.verdict == Verdict.INCONCLUSIVE
+        assert "promoter.eligible_non_promoter_contribution" in r.missing_inputs
+
+    def test_shortfall_beyond_proviso_cap_fails_without_more_evidence(self) -> None:
+        c = update(base(), "promoter", post_issue_holding=ev(D("9.5")))
+        assert self.rule.evaluate(c).verdict == Verdict.FAIL
 
     def test_proviso_shortfall_met_by_eligible_investors(self) -> None:
         c = update(
@@ -196,6 +212,7 @@ class TestLockIn:
             (18, True, Verdict.FAIL),
             (36, None, Verdict.PASS),  # satisfies either requirement
             (18, None, Verdict.INCONCLUSIVE),
+            (12, None, Verdict.FAIL),  # short of even the standard 18 months
         ],
     )
     def test_matrix(self, months: int, capex: bool | None, verdict: Verdict) -> None:
@@ -234,7 +251,10 @@ class TestPublicOffer:
             ("200000", "3.125", Verdict.PASS, 5),  # 6,250 Cr and >= 2.75%
             ("200000", "3", Verdict.FAIL, 5),  # 6,000 Cr < 6,250
             ("500000.01", "3", Verdict.PASS, 6),  # 15,000 Cr and >= 2.5%
-            ("1000000", "1.6", Verdict.FAIL, 6),  # 16,000 Cr but < 2.5% floor
+            # 16,000 Cr and >= 1%, but < the 2.5% also cited: interpretive -> review, not FAIL
+            ("1000000", "1.6", Verdict.REQUIRES_HUMAN_REVIEW, 6),
+            ("2000000", "0.9", Verdict.FAIL, 6),  # 18,000 Cr but < 1%
+            ("1000000", "1.4", Verdict.FAIL, 6),  # 14,000 Cr < 15,000
         ],
     )
     def test_tiers(self, mcap: str, pct: str, verdict: Verdict, tier: int) -> None:

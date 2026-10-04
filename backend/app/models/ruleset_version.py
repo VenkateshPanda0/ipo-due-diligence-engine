@@ -66,23 +66,20 @@ class RulesetVersion(BaseModel):
         return self.version
 
 
-#: The default ruleset version used when no version is explicitly specified.
-#: Encodes the implemented SEBI (ICDR), LODR, Companies Act, and exchange
-#: listing subset. It is not a legal certification of complete regulatory
-#: coverage.
+#: Ruleset label carried on ``CompanyData`` payloads for v1 compatibility. The ruleset
+#: actually applied is recorded on each report by the decision engine; this default
+#: only mirrors the current version so payloads are not mislabelled as 1.0.0.
 DEFAULT_RULESET_VERSION = RulesetVersion(
-    version="1.0.0",
-    effective_date=date(2026, 1, 1),
+    version="2.0.0",
+    effective_date=date(2026, 10, 4),
     description=(
-        "Implemented subset of SEBI (ICDR) Regulations, 2018, NSE/BSE listing "
-        "requirements, LODR 2015, and Companies Act 2013; requires legal "
-        "validation before production use"
+        "Main-board screening subset of SEBI (ICDR) Regulations, 2018, SEBI (LODR) "
+        "Regulations, 2015 and SCRR Rule 19(2)(b); not legally reviewed"
     ),
     regulations=[
         "SEBI (ICDR) Regulations, 2018",
         "SEBI (LODR) Regulations, 2015",
-        "Companies Act, 2013",
-        "NSE Listing Requirements",
-        "BSE Listing Requirements",
+        "Securities Contracts (Regulation) Rules, 1957",
+        "BSE / NSE main-board listing criteria",
     ],
 )

@@ -16,6 +16,7 @@ import hashlib
 import hmac
 from dataclasses import dataclass
 from enum import Enum
+from functools import lru_cache
 
 from fastapi import Depends, Header, HTTPException, Request, status
 
@@ -58,29 +59,45 @@ def _digest(key: str) -> bytes:
     return hashlib.sha256(key.encode("utf-8")).digest()
 
 
-def parse_api_keys(settings: Settings) -> list[_KeyEntry]:
-    """Parse API_KEYS / API_KEY into key entries (keys are held only as digests)."""
+def parse_api_keys(settings: Settings) -> tuple[_KeyEntry, ...]:
+    """Parse API_KEYS / API_KEY into key entries (keys are held only as digests).
+
+    Raises ``ValueError`` for malformed configuration; ``create_app`` calls this at
+    startup so a bad value fails fast instead of on the first request.
+    """
+    return _parse(settings.api_keys or "", settings.api_key or "")
+
+
+@lru_cache(maxsize=8)
+def _parse(api_keys: str, api_key: str) -> tuple[_KeyEntry, ...]:
     entries: list[_KeyEntry] = []
-    if settings.api_keys:
-        for raw in settings.api_keys.split(","):
-            raw = raw.strip()
-            if not raw:
-                continue
-            parts = raw.split("|")
-            if len(parts) != 3:
-                raise ValueError("API_KEYS entries must be '<user_id>|<role>|<key or sha256=hex>'.")
-            user_id, role, secret = (p.strip() for p in parts)
-            digest = (
-                bytes.fromhex(secret.removeprefix("sha256="))
-                if secret.startswith("sha256=")
-                else _digest(secret)
-            )
-            entries.append(_KeyEntry(user_id=user_id, role=Role(role), digest=digest))
-    if settings.api_key:
-        entries.append(
-            _KeyEntry(user_id="api-user", role=Role.ANALYST, digest=_digest(settings.api_key))
-        )
-    return entries
+    for raw in api_keys.split(","):
+        raw = raw.strip()
+        if not raw:
+            continue
+        parts = [p.strip() for p in raw.split("|")]
+        if len(parts) != 3 or not all(parts):
+            raise ValueError("API_KEYS entries must be '<user_id>|<role>|<key or sha256=hex>'.")
+        user_id, role, secret = parts
+        try:
+            role_value = Role(role)
+        except ValueError:
+            raise ValueError(
+                f"API_KEYS: unknown role {role!r} (use viewer, analyst, reviewer or admin)."
+            ) from None
+        if secret.startswith("sha256="):
+            try:
+                digest = bytes.fromhex(secret.removeprefix("sha256="))
+            except ValueError:
+                raise ValueError("API_KEYS: sha256= digest must be hexadecimal.") from None
+            if len(digest) != hashlib.sha256().digest_size:
+                raise ValueError("API_KEYS: sha256= digest must be 64 hex characters.")
+        else:
+            digest = _digest(secret)
+        entries.append(_KeyEntry(user_id=user_id, role=role_value, digest=digest))
+    if api_key:
+        entries.append(_KeyEntry(user_id="api-user", role=Role.ANALYST, digest=_digest(api_key)))
+    return tuple(entries)
 
 
 def authenticate(settings: Settings, authorization: str | None) -> Principal:
@@ -88,9 +105,10 @@ def authenticate(settings: Settings, authorization: str | None) -> Principal:
     entries = parse_api_keys(settings)
     if not entries:
         return LOCAL_PRINCIPAL
-    if not authorization or not authorization.startswith("Bearer "):
+    scheme, _, token = (authorization or "").partition(" ")
+    if scheme.lower() != "bearer" or not token.strip():
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid or missing API key.")
-    presented = _digest(authorization.removeprefix("Bearer ").strip())
+    presented = _digest(token.strip())
     match: _KeyEntry | None = None
     for entry in entries:  # compare against every entry: no early exit timing signal
         if hmac.compare_digest(presented, entry.digest):
@@ -131,4 +149,3 @@ def require_role(role: Role):  # type: ignore[no-untyped-def]
 
 
 require_reviewer_role = require_role(Role.REVIEWER)
-require_analyst_role = require_role(Role.ANALYST)

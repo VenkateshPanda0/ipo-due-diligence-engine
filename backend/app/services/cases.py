@@ -9,6 +9,7 @@ extracted values are never overwritten in place.
 
 from __future__ import annotations
 
+import copy
 import enum
 from datetime import UTC, datetime
 from decimal import Decimal, InvalidOperation
@@ -35,7 +36,7 @@ from app.models.company_data import CompanyData
 from app.models.enums import ConfidenceLevel, ExtractionMethod, FieldStatus, ListingRoute
 from app.models.exceptions import InvalidStateError, NotFoundError
 from app.models.extracted_value import ExtractedValue
-from app.models.field_paths import get_value, set_value, value_type
+from app.models.field_paths import get_value, set_value, set_value_in_place, value_type
 from app.models.ipo_report import IPOReport
 
 
@@ -54,6 +55,7 @@ class ReviewItemStatus(str, enum.Enum):
     CORRECTED = "corrected"
     REJECTED = "rejected"
     MORE_EVIDENCE_REQUESTED = "more_evidence_requested"
+    SUPERSEDED = "superseded"  # replaced by a newer extraction run of the same document
 
 
 _UNIT_FOR_TYPE = {"decimal": "INR_CRORE", "int": "COUNT", "bool": "BOOLEAN"}
@@ -246,6 +248,31 @@ class CaseService:
             "report_count": int(reports),
         }
 
+    @staticmethod
+    def _counts_many(s: Any, case_ids: list[str]) -> dict[str, dict[str, int]]:
+        """Document / open-item / report counts for many cases in three grouped queries."""
+        out = {
+            cid: {"document_count": 0, "open_review_items": 0, "report_count": 0}
+            for cid in case_ids
+        }
+        if not case_ids:
+            return out
+        queries = (
+            ("document_count", DocumentRow.case_id, select(DocumentRow.case_id, func.count())),
+            (
+                "open_review_items",
+                ReviewItemRow.case_id,
+                select(ReviewItemRow.case_id, func.count()).where(
+                    ReviewItemRow.status == ReviewItemStatus.OPEN.value
+                ),
+            ),
+            ("report_count", ReportRow.case_id, select(ReportRow.case_id, func.count())),
+        )
+        for key, column, stmt in queries:
+            for cid, n in s.execute(stmt.where(column.in_(case_ids)).group_by(column)):
+                out[cid][key] = int(n)
+        return out
+
     def list_cases(
         self, *, status: str | None = None, q: str | None = None, limit: int = 50, offset: int = 0
     ) -> dict[str, Any]:
@@ -254,15 +281,17 @@ class CaseService:
             if status:
                 stmt = stmt.where(CaseRow.status == status)
             if q:
-                stmt = stmt.where(CaseRow.company_name.ilike(f"%{q}%"))
+                escaped = q.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+                stmt = stmt.where(CaseRow.company_name.ilike(f"%{escaped}%", escape="\\"))
             total = s.execute(select(func.count()).select_from(stmt.subquery())).scalar_one()
             rows = (
                 s.execute(stmt.order_by(CaseRow.updated_at.desc()).limit(limit).offset(offset))
                 .scalars()
                 .all()
             )
+            counts = self._counts_many(s, [r.id for r in rows])
             return {
-                "items": [self._out(r, self._counts(s, r.id)) for r in rows],
+                "items": [self._out(r, counts[r.id]) for r in rows],
                 "total": int(total),
                 "limit": limit,
                 "offset": offset,
@@ -313,6 +342,9 @@ class CaseService:
                 self._new_version(
                     s, row, payload, source="metadata", actor=actor, reason="case metadata updated"
                 )
+            if archived is False:
+                s.flush()
+                self._refresh_status(s, row)  # restore the status the case's state implies
             row.updated_at = datetime.now(tz=UTC)
             audit(
                 s,
@@ -451,16 +483,19 @@ class CaseService:
         """Set individual fields manually. Each update: {field_path, value|null, note}."""
         with self._db.session() as s:
             row = self._row(s, case_id)
-            payload = latest_version(s, case_id).payload  # type: ignore[union-attr]
+            if row.status == CaseStatus.ARCHIVED.value:
+                raise InvalidStateError("case", row.status, "Archived cases cannot be edited.")
+            # One private copy of the stored (append-only) version, then in-place edits.
+            payload = copy.deepcopy(latest_version(s, case_id).payload)  # type: ignore[union-attr]
             changed: list[str] = []
             for upd in updates:
                 path = upd["field_path"]
                 value_type(path)
                 if upd.get("value") is None:
-                    payload = set_value(payload, path, None)
+                    set_value_in_place(payload, path, None)
                 else:
                     value = parse_field_value(path, upd["value"])
-                    payload = set_value(
+                    set_value_in_place(
                         payload,
                         path,
                         _manual_value(path, value, actor, upd.get("note")),
@@ -509,8 +544,15 @@ class CaseService:
             row.status = CaseStatus.PROCESSING.value
         elif open_items:
             row.status = CaseStatus.AWAITING_REVIEW.value
-        elif row.status not in (CaseStatus.SCREENED.value,):
-            row.status = CaseStatus.READY.value
+        else:
+            # "Screened" only while a report exists for the current data version; once the
+            # data changes the case needs screening again.
+            screened = s.execute(
+                select(ReportRow.report_id)
+                .where(ReportRow.case_id == row.id, ReportRow.data_version == row.current_version)
+                .limit(1)
+            ).first()
+            row.status = CaseStatus.SCREENED.value if screened else CaseStatus.READY.value
 
     def history(self, case_id: str, limit: int = 200) -> list[dict[str, Any]]:
         with self._db.session() as s:
@@ -540,27 +582,42 @@ class CaseService:
     # -- review workspace -----------------------------------------------------------
 
     def review_items(
-        self, case_id: str | None = None, status: str | None = "open"
+        self,
+        case_id: str | None = None,
+        status: str | None = "open",
+        *,
+        item_id: str | None = None,
     ) -> list[dict[str, Any]]:
+        """Review items with their event history and the case's current value.
+
+        Events are fetched in one query and each case's latest payload is loaded once
+        (not once per item).
+        """
         with self._db.session() as s:
             stmt = select(ReviewItemRow)
+            if item_id:
+                stmt = stmt.where(ReviewItemRow.id == item_id)
             if case_id:
                 stmt = stmt.where(ReviewItemRow.case_id == case_id)
             if status:
                 stmt = stmt.where(ReviewItemRow.status == status)
             rows = s.execute(stmt.order_by(ReviewItemRow.created_at)).scalars().all()
+            events_by_item: dict[str, list[ReviewItemEventRow]] = {}
+            if rows:
+                events = s.execute(
+                    select(ReviewItemEventRow)
+                    .where(ReviewItemEventRow.item_id.in_([r.id for r in rows]))
+                    .order_by(ReviewItemEventRow.id)
+                ).scalars()
+                for e in events:
+                    events_by_item.setdefault(e.item_id, []).append(e)
+            payloads: dict[str, dict[str, Any]] = {}
             out = []
             for r in rows:
-                events = (
-                    s.execute(
-                        select(ReviewItemEventRow)
-                        .where(ReviewItemEventRow.item_id == r.id)
-                        .order_by(ReviewItemEventRow.id)
-                    )
-                    .scalars()
-                    .all()
-                )
-                current = get_value(latest_version(s, r.case_id).payload, r.field_path)  # type: ignore[union-attr]
+                if r.case_id not in payloads:
+                    latest = latest_version(s, r.case_id)
+                    payloads[r.case_id] = latest.payload if latest else {}
+                current = get_value(payloads[r.case_id], r.field_path)
                 out.append(
                     {
                         "id": r.id,
@@ -586,7 +643,7 @@ class CaseService:
                                 "data_version": e.data_version,
                                 "created_at": e.created_at,
                             }
-                            for e in events
+                            for e in events_by_item.get(r.id, [])
                         ],
                     }
                 )
@@ -690,7 +747,7 @@ class CaseService:
             )
             s.flush()
             self._refresh_status(s, case)
-        return next(i for i in self.review_items(status=None) if i["id"] == item_id)
+        return self.review_items(status=None, item_id=item_id)[0]
 
 
 class CaseScreeningService:
@@ -745,18 +802,27 @@ class CaseScreeningService:
         with self._db.session() as s:
             case = s.get(CaseRow, case_id)
             assert case is not None
-            case.status = CaseStatus.SCREENED.value
             case.updated_at = datetime.now(tz=UTC)
+            CaseService._refresh_status(s, case)  # screened, unless review items remain open
         return report
 
     def list_reports(self, case_id: str | None = None, limit: int = 50) -> list[dict[str, Any]]:
         with self._db.session() as s:
-            stmt = select(ReportRow)
+            # Listing columns only: the report payload can be large and is not needed here.
+            stmt = select(
+                ReportRow.report_id,
+                ReportRow.case_id,
+                ReportRow.data_version,
+                ReportRow.ruleset_version,
+                ReportRow.outcome,
+                ReportRow.legacy_status,
+                ReportRow.company_name,
+                ReportRow.created_by,
+                ReportRow.created_at,
+            )
             if case_id:
                 stmt = stmt.where(ReportRow.case_id == case_id)
-            rows = (
-                s.execute(stmt.order_by(ReportRow.created_at.desc()).limit(limit)).scalars().all()
-            )
+            rows = s.execute(stmt.order_by(ReportRow.created_at.desc()).limit(limit)).all()
             return [
                 {
                     "report_id": r.report_id,

@@ -405,3 +405,87 @@ def test_interrupted_jobs_are_recovered_on_restart(app_factory: Any) -> None:
     assert after["status"] == "failed" and after["error_code"] == "INTERRUPTED"
     retried = client.post(f"/api/v1/documents/{doc['id']}/retry", headers=ANALYST).json()
     assert retried["status"] in ("completed", "awaiting_review") and retried["attempts"] == 2
+
+
+def test_retention_purge_keeps_files_shared_with_unexpired_documents(app_factory: Any) -> None:
+    from datetime import UTC, datetime, timedelta
+
+    from app.db.models import DocumentRow
+
+    client = _client(app_factory, RETENTION_DAYS=30)
+    container = client.app.state.container  # type: ignore[attr-defined]
+    pdf = standard_drhp()
+    old = _upload(client, _case(client, "Old Ltd")["id"], pdf)
+    new = _upload(client, _case(client, "New Ltd")["id"], pdf)  # same bytes, same stored file
+    with container.db.session() as s:
+        s.get(DocumentRow, old["id"]).created_at = datetime.now(tz=UTC) - timedelta(days=90)
+
+    assert container.documents.purge_expired() == 0  # newer document still needs the file
+    assert client.get(f"/api/v1/documents/{new['id']}", headers=VIEWER).json()["content_retained"]
+
+    with container.db.session() as s:
+        s.get(DocumentRow, new["id"]).created_at = datetime.now(tz=UTC) - timedelta(days=90)
+    assert container.documents.purge_expired() == 2
+    assert not client.get(f"/api/v1/documents/{new['id']}", headers=VIEWER).json()[
+        "content_retained"
+    ]
+
+
+def test_reprocessing_supersedes_open_review_items(app_factory: Any) -> None:
+    client = _client(app_factory)
+    case = _case(client)
+    doc = _upload(client, case["id"], standard_drhp())
+
+    def open_items() -> list[dict[str, Any]]:
+        return client.get(
+            "/api/v1/review-items", params={"case_id": case["id"]}, headers=VIEWER
+        ).json()
+
+    first = open_items()
+    assert first
+    client.post(f"/api/v1/documents/{doc['id']}/retry", headers=ANALYST)
+    second = open_items()
+    # same number of open items (not doubled), and they belong to the new run
+    assert len(second) == len(first)
+    assert {i["id"] for i in first}.isdisjoint({i["id"] for i in second})
+    old = client.get(
+        "/api/v1/review-items",
+        params={"case_id": case["id"], "status": "superseded"},
+        headers=VIEWER,
+    ).json()
+    assert {i["id"] for i in old} == {i["id"] for i in first}
+    assert old[0]["history"][-1]["action"] == "superseded"
+    stale = client.post(
+        f"/api/v1/review-items/{first[0]['id']}/resolve",
+        json={"action": "confirm"},
+        headers=REVIEWER,
+    )
+    assert stale.status_code == 409
+
+
+def test_case_status_tracks_data_changes_archive_and_search(app_factory: Any) -> None:
+    client = _client(app_factory)
+    case = _case(client, "Percent_50% Holdings Ltd")
+    _case(client, "Plain Industries Ltd")
+    cid = case["id"]
+
+    r = client.post(f"/api/v1/cases/{cid}/screenings", headers=ANALYST)
+    assert r.status_code in (200, 201), r.text
+    assert client.get(f"/api/v1/cases/{cid}", headers=VIEWER).json()["status"] == "screened"
+
+    # New data makes the last report stale: the case needs screening again.
+    upd = {"updates": [{"field_path": "issue_details.issue_size", "value": "500"}]}
+    assert client.patch(f"/api/v1/cases/{cid}/fields", json=upd, headers=ANALYST).status_code == 200
+    assert (
+        client.get(f"/api/v1/cases/{cid}", headers=VIEWER).json()["status"] == "ready_for_screening"
+    )
+
+    # Archive / un-archive restores the state-derived status (not "draft").
+    client.patch(f"/api/v1/cases/{cid}", json={"archived": True}, headers=ANALYST)
+    restored = client.patch(f"/api/v1/cases/{cid}", json={"archived": False}, headers=ANALYST)
+    assert restored.json()["status"] == "ready_for_screening"
+
+    # Search treats % and _ literally.
+    hits = client.get("/api/v1/cases", params={"q": "50%"}, headers=VIEWER).json()["items"]
+    assert [c["company_name"] for c in hits] == ["Percent_50% Holdings Ltd"]
+    assert client.get("/api/v1/cases", params={"q": "_"}, headers=VIEWER).json()["total"] == 1

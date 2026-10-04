@@ -8,7 +8,7 @@ It depends only on the standard library and Pydantic.
 
 Exports:
     - All domain enumerations (IPOStatus, Verdict, RuleCategory, etc.)
-    - All domain exceptions (InsufficientDataError, etc.)
+    - Domain exceptions (DomainError and subclasses)
     - Core value types (ExtractedValue, SourceCitation)
     - Domain models (CompanyData and all sub-models)
     - Result/report models (RuleResult, RuleMetadata, IPOReport, etc.)
@@ -48,11 +48,7 @@ from app.models.enums import (
 from app.models.evidence import EvidenceRef
 from app.models.exceptions import (
     DomainError,
-    ExtractionError,
-    InsufficientDataError,
     ReportNotFoundError,
-    RuleEvaluationError,
-    RulesetNotFoundError,
     UnsupportedDocumentError,
 )
 from app.models.extracted_value import ExtractedValue
@@ -85,12 +81,8 @@ __all__ = [
     "HumanFinalDecision",
     # Exceptions
     "DomainError",
-    "InsufficientDataError",
-    "RuleEvaluationError",
-    "ExtractionError",
     "UnsupportedDocumentError",
     "ReportNotFoundError",
-    "RulesetNotFoundError",
     # Value types
     "ExtractedValue",
     "SourceCitation",

@@ -13,19 +13,8 @@ This module MUST NOT import from:
 from __future__ import annotations
 
 from datetime import datetime
-from decimal import Decimal
 
 from app.models.enums import IPOStatus, ScreeningOutcome, Verdict
-
-
-def format_currency(value: Decimal) -> str:
-    """Format a Decimal crore value as Indian rupee crores."""
-    return f"Rs. {value:,.2f} Cr"
-
-
-def format_percentage(value: Decimal) -> str:
-    """Format a Decimal percentage with two decimal places."""
-    return f"{value:.2f}%"
 
 
 def format_verdict(verdict: Verdict) -> str:

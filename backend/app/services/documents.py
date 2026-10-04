@@ -22,6 +22,7 @@ Merge policy when extraction completes:
 
 from __future__ import annotations
 
+import copy
 import logging
 import threading
 import time
@@ -35,14 +36,21 @@ from sqlalchemy import select
 
 from app.core.config import Settings
 from app.db.base import Database
-from app.db.models import CaseRow, DocumentRow, ExtractionRunRow, FieldResultRow, ReviewItemRow
+from app.db.models import (
+    CaseRow,
+    DocumentRow,
+    ExtractionRunRow,
+    FieldResultRow,
+    ReviewItemEventRow,
+    ReviewItemRow,
+)
 from app.db.repositories import audit, latest_version
 from app.intelligence import PIPELINE_VERSION
 from app.intelligence.ingest import validate_pdf
 from app.intelligence.pipeline import PipelineConfig, PipelineResult, run_pipeline
 from app.models.enums import FieldStatus
 from app.models.exceptions import DocumentRejectedError, InvalidStateError, NotFoundError
-from app.models.field_paths import get_value, set_value
+from app.models.field_paths import get_value, set_value_in_place
 from app.services.cases import CaseService, CaseStatus, ReviewItemStatus, is_human_value
 from app.services.file_store import FileStore
 
@@ -338,24 +346,32 @@ class DocumentService:
         return self.get(document_id)
 
     def purge_expired(self) -> int:
-        """Delete stored files older than the retention period (or all, if retention is off)."""
+        """Delete stored files older than the retention period (or all, if retention is off).
+
+        Files are content-addressed and may be shared by several documents (the same
+        PDF uploaded to different cases), so a file is deleted only when every
+        document referencing it has expired and none is still being processed.
+        """
         cutoff = datetime.now(tz=UTC) - timedelta(days=self._settings.retention_days)
         purged = 0
         with self._db.session() as s:
-            rows = (
-                s.execute(
-                    select(DocumentRow).where(DocumentRow.status.notin_(("uploaded", "extracting")))
-                )
-                .scalars()
-                .all()
-            )
+            rows = s.execute(select(DocumentRow)).scalars().all()
+            by_sha: dict[str, list[DocumentRow]] = defaultdict(list)
             for row in rows:
+                by_sha[row.sha256].append(row)
+
+            def expired(row: DocumentRow) -> bool:
+                if row.status in ("uploaded", "extracting"):
+                    return False
                 created = (
                     row.created_at if row.created_at.tzinfo else row.created_at.replace(tzinfo=UTC)
                 )
-                if (not self._settings.retain_documents or created < cutoff) and self._store.delete(
-                    row.sha256
-                ):
+                return not self._settings.retain_documents or created < cutoff
+
+            for sha, docs in by_sha.items():
+                if not all(expired(d) for d in docs) or not self._store.delete(sha):
+                    continue
+                for row in docs:
                     purged += 1
                     audit(
                         s,
@@ -524,7 +540,9 @@ class DocumentService:
                         score=o.score,
                     )
                 )
-            payload = latest_version(s, case.id).payload  # type: ignore[union-attr]
+            # Work on a private copy: the stored version row is append-only.
+            payload = copy.deepcopy(latest_version(s, case.id).payload)  # type: ignore[union-attr]
+            self._supersede_open_items(s, document_id, run_id)
             opened = 0
             applied: list[str] = []
             for o in result.outcomes:
@@ -539,7 +557,7 @@ class DocumentService:
                         ):
                             needs_review = True
                     else:
-                        payload = set_value(payload, o.field_path, o.selected)
+                        set_value_in_place(payload, o.field_path, o.selected)
                         applied.append(o.field_path)
                 if needs_review:
                     opened += 1
@@ -607,6 +625,36 @@ class DocumentService:
             )
             s.flush()
             CaseService._refresh_status(s, case)
+
+    @staticmethod
+    def _supersede_open_items(s: Any, document_id: str, run_id: str) -> None:
+        """Retire this document's unresolved items from earlier runs (re-extraction)."""
+        stale = (
+            s.execute(
+                select(ReviewItemRow).where(
+                    ReviewItemRow.document_id == document_id,
+                    ReviewItemRow.status.in_(
+                        (
+                            ReviewItemStatus.OPEN.value,
+                            ReviewItemStatus.MORE_EVIDENCE_REQUESTED.value,
+                        )
+                    ),
+                )
+            )
+            .scalars()
+            .all()
+        )
+        for item in stale:
+            item.status = ReviewItemStatus.SUPERSEDED.value
+            item.resolved_at = datetime.now(tz=UTC)
+            s.add(
+                ReviewItemEventRow(
+                    item_id=item.id,
+                    action="superseded",
+                    actor="system",
+                    reason=f"Replaced by extraction run {run_id}.",
+                )
+            )
 
     def mark_reviewed_documents(self, case_id: str) -> None:
         """Move documents to completed once none of their review items remain open."""

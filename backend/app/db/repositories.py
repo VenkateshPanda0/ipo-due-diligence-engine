@@ -66,6 +66,14 @@ def next_version_number(session: Session, case_id: str) -> int:
     return int(current or 0) + 1
 
 
+def _report_exists(session: Session, report_id: UUID) -> bool:
+    """Primary-key probe that does not load the (large) report payload."""
+    found = session.execute(
+        select(ReportRow.report_id).where(ReportRow.report_id == str(report_id))
+    ).first()
+    return found is not None
+
+
 class SqlReportStorage:
     """ReportStorage implementation backed by the ``reports`` table."""
 
@@ -82,7 +90,7 @@ class SqlReportStorage:
         created_by: str = "system",
     ) -> None:
         with self._db.session() as s:
-            if s.get(ReportRow, str(report_id)) is not None:
+            if _report_exists(s, report_id):
                 raise ValueError("Reports are immutable; report_id already exists.")
             s.add(
                 ReportRow(
@@ -118,7 +126,7 @@ class SqlReportStorage:
 
     def exists(self, report_id: UUID) -> bool:
         with self._db.session() as s:
-            return s.get(ReportRow, str(report_id)) is not None
+            return _report_exists(s, report_id)
 
 
 class SqlReviewStorage:

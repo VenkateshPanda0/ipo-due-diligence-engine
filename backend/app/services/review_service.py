@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from uuid import UUID
 
-from app.models.exceptions import InvalidStateError, ReportNotFoundError
+from app.models.exceptions import InvalidStateError, NotFoundError, ReportNotFoundError
 from app.models.human_review import (
     HumanFinalDecision,
     HumanReviewRecord,
@@ -43,7 +43,7 @@ class HumanReviewService:
         """Return a review record by ID."""
         review = self._review_storage.get(review_id)
         if review is None:
-            raise ReportNotFoundError(review_id)
+            raise NotFoundError("review", review_id)
         return review
 
     def complete_review(

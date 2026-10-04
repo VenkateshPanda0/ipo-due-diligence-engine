@@ -1,11 +1,11 @@
 """
 backend/app/models/source_citation.py
 
-SourceCitation model for evidence traceability.
+Legacy (ruleset 1.0.0) evidence citation.
 
-Every RuleResult carries a SourceCitation that links the verdict back to
-specific pages and tables in the source document. This is the first link
-in the four-link evidence chain described in ARCHITECTURE.md §11.
+Rules no longer produce a SourceCitation; ruleset 2.0.0 records per-fact
+provenance in ``RuleResult.evidence`` (see ``app.models.evidence``). The model is
+kept so that reports stored under 1.0.0 still deserialise and render.
 
 This module MUST NOT import from:
   - app.rules, app.intelligence, app.api, app.engine
@@ -27,12 +27,7 @@ type CitationExtractedValue = (
 
 
 class SourceCitation(BaseModel):
-    """Links a rule verdict back to its evidence in the source document.
-
-    The SourceCitation is attached to every RuleResult by the Evidence Mapper.
-    It provides the full provenance chain required by auditors and investment
-    bankers: which document, which page, which table, which value, extracted
-    how, and with what confidence.
+    """Legacy link from a 1.0.0 rule verdict to its source document.
 
     The overall confidence of a citation is the lowest confidence among all
     extracted values it references — the weakest link in the evidence chain.

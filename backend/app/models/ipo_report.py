@@ -20,7 +20,7 @@ from app.models.enums import IPOStatus, ListingRoute, ScreeningOutcome
 from app.models.rule_result import RuleResult
 from app.models.ruleset_version import RulesetVersion
 
-ENGINE_VERSION = "2.0.0"
+ENGINE_VERSION = "2.0.1"
 
 STANDARD_LIMITATIONS: tuple[str, ...] = (
     "This is a decision-support screening against an explicitly limited set of rules; it is "

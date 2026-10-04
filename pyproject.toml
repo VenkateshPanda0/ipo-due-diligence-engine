@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ipo-due-diligence-engine"
-version = "2.0.0"
+version = "2.0.1"
 description = "Deterministic regulatory decision engine for evaluating IPO eligibility under SEBI ICDR regulations."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -33,6 +33,7 @@ dependencies = [
     "pikepdf>=9.0",
     "pytesseract>=0.3",
     "pillow>=10.4",
+    "numpy>=1.26",  # OCR deskew (projection profiles)
 ]
 
 [project.optional-dependencies]
@@ -47,11 +48,6 @@ dev = [
     "hypothesis>=6.100",
     "pip-audit>=2.7",
     "reportlab>=4.2",  # test fixtures only: synthetic PDFs
-]
-
-docs = [
-    "mkdocs>=1.6",
-    "mkdocs-material>=9.5",
 ]
 
 [project.urls]

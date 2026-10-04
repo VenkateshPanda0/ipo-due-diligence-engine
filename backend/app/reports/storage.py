@@ -35,6 +35,8 @@ class InMemoryReportStorage:
 
     def save(self, report_id: UUID, report: IPOReport) -> None:
         with self._lock:
+            if report_id in self._reports:
+                raise ValueError("Reports are immutable; report_id already exists.")
             self._reports[report_id] = report
 
     def get(self, report_id: UUID) -> IPOReport | None:

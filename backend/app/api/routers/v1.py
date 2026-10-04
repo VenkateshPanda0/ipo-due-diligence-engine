@@ -20,13 +20,15 @@ Legacy endpoints (/screen/*, /reports/{id}, /reviews/*, /rules, /health) remain.
 from __future__ import annotations
 
 import io
+import threading
+from collections import OrderedDict
 from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, Request, UploadFile, status
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import Response
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
 
 from app.api.dependencies import Container, get_container
@@ -46,6 +48,36 @@ reviewer = require_role(Role.REVIEWER)
 admin = require_role(Role.ADMIN)
 _STARTED = datetime.now(tz=UTC)
 _UPLOAD_CHUNK = 1024 * 1024
+
+
+class _PngCache:
+    """Small thread-safe LRU cache of rendered page images (bounded by total bytes)."""
+
+    def __init__(self, max_bytes: int = 32 * 1024 * 1024) -> None:
+        self._data: OrderedDict[tuple[str, int, int], bytes] = OrderedDict()
+        self._size = 0
+        self._max = max_bytes
+        self._lock = threading.Lock()
+
+    def get(self, key: tuple[str, int, int]) -> bytes | None:
+        with self._lock:
+            value = self._data.get(key)
+            if value is not None:
+                self._data.move_to_end(key)
+            return value
+
+    def put(self, key: tuple[str, int, int], value: bytes) -> None:
+        with self._lock:
+            if key in self._data:
+                return
+            self._data[key] = value
+            self._size += len(value)
+            while self._size > self._max and self._data:
+                _, old = self._data.popitem(last=False)
+                self._size -= len(old)
+
+
+_PAGE_CACHE = _PngCache()
 
 
 # ----------------------------------------------------------------- schemas
@@ -107,11 +139,10 @@ def health(c: Container = Depends(get_container)) -> dict[str, Any]:
 @router.get("/system/ready")
 def ready(c: Container = Depends(get_container)) -> Response:
     """Readiness: database reachable and rules loaded."""
-    ok = c.db.ping() and len(c.registry) > 0
-    import json
-
-    body = {"ready": ok, "database": c.db.ping(), "rules_loaded": len(c.registry)}
-    return Response(json.dumps(body), status_code=200 if ok else 503, media_type="application/json")
+    db_ok = c.db.ping()
+    ok = db_ok and len(c.registry) > 0
+    body = {"ready": ok, "database": db_ok, "rules_loaded": len(c.registry)}
+    return JSONResponse(body, status_code=200 if ok else 503)
 
 
 @router.get("/system/capabilities")
@@ -281,7 +312,7 @@ async def _read_limited(upload: UploadFile, limit: int) -> bytes:
         buf.write(chunk)
         if buf.tell() > limit:
             raise HTTPException(
-                status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                413,
                 detail=f"Upload exceeds the {limit // (1024 * 1024)} MB limit.",
             )
     return buf.getvalue()
@@ -311,7 +342,7 @@ async def upload_document(
         and int(declared) > c.settings.max_upload_size_bytes + 1024 * 64
     ):
         raise HTTPException(
-            status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            413,
             detail=f"Upload exceeds the {c.settings.max_upload_size_mb} MB limit.",
         )
     if not c.documents.rate_limiter.allow(p.user_id):
@@ -387,17 +418,25 @@ async def page_image(
     c: Container = Depends(get_container),
     _p: Principal = Depends(get_principal),
 ) -> Response:
-    """Render one page as PNG for the evidence viewer."""
-    doc = c.documents.get(str(document_id))
-    if not 1 <= page <= int(doc["page_count"] or 0):
-        raise NotFoundError("page", page)
-    content = c.documents.content(str(document_id))
+    """Render one page as PNG for the evidence viewer.
+
+    All work (DB lookup, file read, rendering) runs off the event loop; rendered pages
+    are cached in memory by content hash, so paging back and forth is instant.
+    """
 
     def render() -> bytes:
-        img = render_page(content, page - 1, dpi)
+        doc = c.documents.get(str(document_id))
+        if not 1 <= page <= int(doc["page_count"] or 0):
+            raise NotFoundError("page", page)
+        cached = _PAGE_CACHE.get((doc["sha256"], page, dpi))
+        if cached is not None:
+            return cached
+        img = render_page(c.documents.content(str(document_id)), page - 1, dpi)
         out = io.BytesIO()
         img.save(out, format="PNG", optimize=True)
-        return out.getvalue()
+        png = out.getvalue()
+        _PAGE_CACHE.put((doc["sha256"], page, dpi), png)
+        return png
 
     png = await run_in_threadpool(render)
     return Response(png, media_type="image/png", headers={"Cache-Control": "private, max-age=3600"})

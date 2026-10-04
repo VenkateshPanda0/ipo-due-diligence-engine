@@ -15,8 +15,10 @@ data versions can be stored and patched without losing provenance metadata.
 
 from __future__ import annotations
 
+import calendar
 import copy
 import re
+from datetime import date
 from typing import Any
 
 _FY_RE = re.compile(r"^financials\.fiscal_years\[(?P<label>[^\]]+)\]\.(?P<field>[a-z_]+)$")
@@ -70,6 +72,41 @@ SCALAR_FIELDS: dict[str, str] = {
 }
 
 
+_FY_LABEL_RE = re.compile(r"^FY(\d{4})$")
+_YE_LABEL_RE = re.compile(r"^YE(\d{4})-(\d{2})$")
+_STUB_LABEL_RE = re.compile(r"^P(\d{4})-(\d{2})-(\d{2})-\d+M$")
+
+
+def period_end_from_label(label: str) -> date | None:
+    """Period end implied by a canonical label (FY2024, YE2024-12, P2024-09-30-6M)."""
+    try:
+        if m := _FY_LABEL_RE.match(label):
+            return date(int(m[1]), 3, 31)
+        if m := _YE_LABEL_RE.match(label):
+            year, month = int(m[1]), int(m[2])
+            return date(year, month, calendar.monthrange(year, month)[1])
+        if m := _STUB_LABEL_RE.match(label):
+            return date(int(m[1]), int(m[2]), int(m[3]))
+    except ValueError:  # e.g. month 13
+        return None
+    return None
+
+
+def period_sort_key(label: str, period_end: date | str | None) -> tuple[int, str]:
+    """Chronological sort key: stored period end, else the end implied by the label.
+
+    Periods whose end cannot be determined sort after dated ones, by label.
+    """
+    end = period_end if isinstance(period_end, date) else None
+    if isinstance(period_end, str):
+        try:
+            end = date.fromisoformat(period_end)
+        except ValueError:
+            end = None
+    end = end or period_end_from_label(label)
+    return (end.toordinal(), label) if end else (date.max.toordinal(), label)
+
+
 class FieldPathError(ValueError):
     """Raised for an unknown or malformed field path."""
 
@@ -116,33 +153,43 @@ def set_value(
 ) -> dict[str, Any]:
     """Return a deep copy of ``payload`` with ``path`` set to ``value``.
 
-    A missing fiscal year is created and the list is re-sorted (by period_end when
-    all years have one, otherwise by label).
+    A missing fiscal year is created (unless ``value`` is None) and the list is
+    re-sorted chronologically (see :func:`period_sort_key`).
     """
-    value_type(path)
     out = copy.deepcopy(payload)
+    set_value_in_place(out, path, value, period_end=period_end)
+    return out
+
+
+def set_value_in_place(
+    payload: dict[str, Any],
+    path: str,
+    value: dict[str, Any] | None,
+    *,
+    period_end: str | None = None,
+) -> None:
+    """Like :func:`set_value` but mutates ``payload`` (for callers that own it)."""
+    value_type(path)
     m = _FY_RE.match(path)
     if m:
-        fin = out.setdefault("financials", {})
+        fin = payload.setdefault("financials", {})
         years: list[dict[str, Any]] = fin.setdefault("fiscal_years", [])
         target = next((fy for fy in years if fy.get("year_label") == m.group("label")), None)
         if target is None:
+            if value is None:
+                return  # clearing a field of a year that does not exist: no-op
             target = {"year_label": m.group("label"), "months": 12}
             if period_end:
                 target["period_end"] = period_end
             years.append(target)
-            if all(fy.get("period_end") for fy in years):
-                years.sort(key=lambda fy: str(fy["period_end"]))
-            else:
-                years.sort(key=lambda fy: str(fy["year_label"]))
+            years.sort(key=lambda fy: period_sort_key(fy["year_label"], fy.get("period_end")))
         target[m.group("field")] = value
-        return out
+        return
     parts = path.split(".")
-    node = out
+    node = payload
     for part in parts[:-1]:
         node = node.setdefault(part, {})
     node[parts[-1]] = value
-    return out
 
 
 def iter_paths(payload: dict[str, Any]) -> list[str]:

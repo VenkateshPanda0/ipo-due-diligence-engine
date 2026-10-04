@@ -86,6 +86,13 @@ class TestFinancialHistory:
         with pytest.raises(ValidationError, match="chronological"):
             FinancialHistory(fiscal_years=years, years_of_operation=3)
 
+    def test_mixed_year_end_labels_order_by_date_not_text(self) -> None:
+        # "YE2024-12" sorts after "FY2025" as text but ends earlier (Dec 2024 < Mar 2025).
+        years = [_make_fiscal_year("YE2024-12"), _make_fiscal_year("FY2025")]
+        assert len(FinancialHistory(fiscal_years=years).fiscal_years) == 2
+        with pytest.raises(ValidationError, match="chronological"):
+            FinancialHistory(fiscal_years=list(reversed(years)))
+
     def test_duplicate_labels_raise(self) -> None:
         years = [
             _make_fiscal_year("FY2022"),
@@ -118,7 +125,7 @@ class TestCompanyData:
 
     def test_ruleset_version_default(self) -> None:
         company = CompanyDataFactory.create()
-        assert company.ruleset_version.version == "1.0.0"
+        assert company.ruleset_version.version == "2.0.0"
 
     def test_json_round_trip(self) -> None:
         company = CompanyDataFactory.create()

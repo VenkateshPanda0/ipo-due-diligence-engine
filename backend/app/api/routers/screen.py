@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.concurrency import run_in_threadpool
 
 from app.api.dependencies import Container, get_container, get_screening_service
 from app.api.routers.v1 import _read_limited
 from app.api.schemas.request_schemas import CompanyDataSchema
 from app.api.schemas.response_schemas import ScreeningResponse
-from app.core.security import require_api_key
+from app.core.security import Principal, require_api_key
 from app.services.screening_service import ScreeningService
 
 router = APIRouter(
@@ -31,11 +31,19 @@ def screen_json(
 async def screen_pdf(
     file: UploadFile = File(...),
     c: Container = Depends(get_container),
+    p: Principal = Depends(require_api_key),
 ) -> ScreeningResponse:
     """Screen a company from one uploaded PDF (synchronous; prefer /api/v1 cases).
 
-    The file type is established from its bytes, not the declared content type.
+    The file type is established from its bytes, not the declared content type. The
+    same per-user upload rate limit as API v1 applies.
     """
+    if not c.documents.rate_limiter.allow(p.user_id):
+        raise HTTPException(
+            status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Too many uploads; try again shortly.",
+            headers={"Retry-After": "60"},
+        )
     content = await _read_limited(file, c.settings.max_upload_size_bytes)
     report = await run_in_threadpool(
         c.screening.screen_pdf, file.filename or "uploaded.pdf", content

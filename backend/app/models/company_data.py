@@ -26,6 +26,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 from app.models.enums import ListingRoute, StatementBasis
 from app.models.extracted_value import ExtractedValue
+from app.models.field_paths import period_sort_key
 from app.models.ruleset_version import DEFAULT_RULESET_VERSION, RulesetVersion
 
 _CIN_PATTERN = re.compile(r"^[A-Z]{1}[0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$")
@@ -112,14 +113,10 @@ class FinancialHistory(BaseModel):
         labels = [fy.year_label for fy in fiscal_years]
         if len(set(labels)) != len(labels):
             raise ValueError(f"fiscal_years must have unique labels. Received: {labels}")
-        ends = [fy.period_end for fy in fiscal_years]
-        if all(e is not None for e in ends):
-            if ends != sorted(ends):  # type: ignore[type-var]
-                raise ValueError("fiscal_years must be ordered by period_end (oldest first).")
-        elif labels != sorted(labels):
+        keys = [period_sort_key(fy.year_label, fy.period_end) for fy in fiscal_years]
+        if keys != sorted(keys):
             raise ValueError(
-                "fiscal_years must be in chronological order (oldest first) "
-                f"with unique labels. Received: {labels}"
+                f"fiscal_years must be in chronological order (oldest first). Received: {labels}"
             )
         return fiscal_years
 

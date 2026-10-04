@@ -38,6 +38,7 @@ def make_engine(url: str) -> Engine:
             cur.execute("PRAGMA foreign_keys=ON")
             if path is not None:
                 cur.execute("PRAGMA journal_mode=WAL")
+                cur.execute("PRAGMA synchronous=NORMAL")  # safe with WAL; fewer fsyncs
             cur.execute("PRAGMA busy_timeout=30000")
             cur.close()
 

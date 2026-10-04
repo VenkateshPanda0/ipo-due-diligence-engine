@@ -23,5 +23,5 @@ def test_text_formatter_renders_evidence_citations() -> None:
     rendered = TextReportFormatter().format(report)
 
     assert "Annual_Report_Test.pdf p.1" in rendered
-    assert "Evidence: financials.FY2022.net_tangible_assets" in rendered
+    assert "Evidence: financials.fiscal_years[FY2022].net_tangible_assets" in rendered
     assert "Limitations" in rendered

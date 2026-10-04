@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 from uuid import uuid4
 
+import pytest
+
 from app.db.base import Database
 from app.db.repositories import SqlReportStorage
 from app.engine.decision_engine import DecisionEngine
@@ -30,7 +32,8 @@ def test_in_memory_storage_returns_none_for_unknown_report() -> None:
     assert storage.get(uuid4()) is None
 
 
-def test_in_memory_storage_allows_overwrite() -> None:
+def test_in_memory_storage_rejects_overwrite() -> None:
+    """Reports are immutable, as in the SQL store."""
     first = DecisionEngine(RuleRegistry()).evaluate(CompanyDataFactory.create())
     second = DecisionEngine(RuleRegistry()).evaluate(
         CompanyDataFactory.create(company_name="Replacement Ltd")
@@ -38,9 +41,10 @@ def test_in_memory_storage_allows_overwrite() -> None:
     storage = InMemoryReportStorage()
 
     storage.save(first.report_id, first)
-    storage.save(first.report_id, second)
+    with pytest.raises(ValueError, match="immutable"):
+        storage.save(first.report_id, second)
 
-    assert storage.get(first.report_id) == second
+    assert storage.get(first.report_id) == first
 
 
 def test_sqlite_storage_persists_report_across_instances(tmp_path) -> None:

@@ -114,3 +114,8 @@ temp/
 
 # Jupyter notebooks (if any)
 .ipynb_checkpoints/
+
+# Runtime data: uploaded documents, databases (never commit confidential filings)
+/data/
+/backend/data/
+/benchmark/documents/

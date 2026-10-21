@@ -17,11 +17,41 @@ ROBOTS = b"User-agent: *\nDisallow: /blocked/\n"
 class _Handler(BaseHTTPRequestHandler):
     hits: list[str] = []  # noqa: RUF012
 
+    def _cut_first_response(self) -> None:
+        """Announce the full length, send half the bytes, then drop the connection."""
+        self.send_response(200)
+        self.send_header("Content-Type", "application/pdf")
+        self.send_header("Content-Length", str(len(PDF)))
+        self.end_headers()
+        self.wfile.write(PDF[: len(PDF) // 2])
+        self.wfile.flush()
+        self.close_connection = True
+
+    def _serve_range(self, start: int) -> None:
+        self.send_response(206)
+        self.send_header("Content-Type", "application/pdf")
+        self.send_header("Content-Range", f"bytes {start}-{len(PDF) - 1}/{len(PDF)}")
+        self.send_header("Content-Length", str(len(PDF) - start))
+        self.end_headers()
+        self.wfile.write(PDF[start:])
+
     def do_GET(self) -> None:
         _Handler.hits.append(self.path)
+        range_hdr = self.headers.get("Range")
+        n_prior = _Handler.hits.count(self.path) - 1
+        if self.path == "/cut.pdf":  # first request cut off; Range resume supported
+            if range_hdr:
+                return self._serve_range(int(range_hdr.removeprefix("bytes=").rstrip("-")))
+            return self._cut_first_response()
+        if self.path == "/cut-ignores-range.pdf" and n_prior == 0:  # cut once, then full body
+            return self._cut_first_response()
+        if self.path == "/always-cut.pdf":  # never completes
+            return self._cut_first_response()
         routes = {
             "/robots.txt": (200, "text/plain", ROBOTS),
             "/ok.pdf": (200, "application/pdf", PDF),
+            "/cut-ignores-range.pdf": (200, "application/pdf", PDF),
+            "/no-eof.pdf": (200, "application/pdf", PDF[: PDF.rindex(b"%%EOF")]),
             "/blocked/x.pdf": (200, "application/pdf", PDF),
             "/page.html": (200, "text/html", b"<html>login</html>"),
         }
@@ -170,3 +200,60 @@ def test_load_sources_rejects_duplicate_ids(tmp_path: Path) -> None:
     (spec,) = load_sources(toml)
     assert spec.doc_type is DocType.RHP
     assert spec.platform is Platform.SME
+
+
+def test_truncated_transfer_is_resumed_with_range(server: str, tmp_path: Path) -> None:
+    f = _fetcher(tmp_path)
+    entry, downloaded = f.fetch(_spec(server, "/cut.pdf"), Manifest(tmp_path / "m.jsonl"))
+    assert downloaded
+    assert (tmp_path / entry.local_path).read_bytes() == PDF
+    assert entry.size_bytes == len(PDF)
+    assert _Handler.hits.count("/cut.pdf") == 2  # initial request + one Range resume
+
+
+def test_resume_falls_back_when_server_ignores_range(server: str, tmp_path: Path) -> None:
+    f = _fetcher(tmp_path)
+    entry, _ = f.fetch(_spec(server, "/cut-ignores-range.pdf"), Manifest(tmp_path / "m.jsonl"))
+    assert (tmp_path / entry.local_path).read_bytes() == PDF
+
+
+def test_gives_up_after_max_resumes_and_keeps_no_file(server: str, tmp_path: Path) -> None:
+    f = _fetcher(tmp_path, max_resumes=2)
+    with pytest.raises(FetchError, match="incomplete"):
+        f.fetch(_spec(server, "/always-cut.pdf"), Manifest(tmp_path / "m.jsonl"))
+    assert list((tmp_path / "raw").glob("*")) == []
+    assert _Handler.hits.count("/always-cut.pdf") == 3  # first try + 2 resumes
+
+
+def test_file_without_eof_marker_is_rejected(server: str, tmp_path: Path) -> None:
+    f = _fetcher(tmp_path)
+    with pytest.raises(FetchError, match="EOF"):
+        f.fetch(_spec(server, "/no-eof.pdf"), Manifest(tmp_path / "m.jsonl"))
+    assert list((tmp_path / "raw").glob("*")) == []
+
+
+def test_cached_truncated_file_is_refetched(server: str, tmp_path: Path) -> None:
+    """A truncated file already recorded in the manifest (older buggy fetch) must not be trusted."""
+    from datetime import UTC, datetime
+
+    from redherring.ingest.manifest import ManifestEntry, sha256_file
+
+    raw = tmp_path / "raw"
+    raw.mkdir()
+    bad = raw / "d1.pdf"
+    bad.write_bytes(PDF[: len(PDF) // 2])
+    manifest = Manifest(tmp_path / "m.jsonl")
+    spec = _spec(server, "/ok.pdf")
+    manifest.add(
+        ManifestEntry(
+            **spec.model_dump(),
+            sha256=sha256_file(bad),
+            size_bytes=bad.stat().st_size,
+            fetched_at=datetime.now(UTC),
+            local_path="raw/d1.pdf",
+            content_type="application/pdf",
+        )
+    )
+    entry, downloaded = _fetcher(tmp_path).fetch(spec, manifest)
+    assert downloaded
+    assert (tmp_path / entry.local_path).read_bytes() == PDF

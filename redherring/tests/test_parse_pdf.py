@@ -109,3 +109,72 @@ def test_stats(synthetic_pdf: Path) -> None:
     assert stats.pct_needs_ocr == 20.0
     assert stats.multi_page_tables == 1
     assert stats.tables_with_unit == stats.logical_tables
+
+
+def _statement_pdf(tmp_path: Path) -> Path:
+    """Unruled, right-aligned financial statement, with padding spaces overlapping first digits."""
+    p = PageSpec()
+    p.text(72, 60, "Annexure VI: Notes to Restated Consolidated Summary Statements", 10)
+    p.text(72, 74, "(All amounts are in Indian Rupees in Million, except as stated otherwise)", 8)
+    p.text(72, 96, "Particulars", 8)
+    p.text(330, 96, "March 31, 2025", 8)
+    p.text(430, 96, "March 31, 2024", 8)
+    rows = [
+        ("Revenue from operations", "1,000.50", "900.25"),
+        ("Other income", "12.75", "9.10"),
+        ("Total income", "1,013.25", "909.35"),
+        ("Profit before tax", "(50.00)", "40.00"),
+        ("Cash and cash equivalents", "9,521.29", "4,871.75"),
+    ]
+    for i, (label, a, b) in enumerate(rows):
+        top = 114 + i * 14
+        p.text(72, top, label, 8)
+        p.text(400 - 4.45 * len(a), top, a, 8)
+        p.text(500 - 4.45 * len(b), top, b, 8)
+    # One value emitted the way the Moneyview PDF does: first digit, an overlapping space, rest.
+    p.text(72, 190, "Deposits with banks", 10)
+    p.text(344.0, 190, "7", 10)  # Helvetica digit is 5.56 pt wide at 10 pt
+    p.text(345.0, 190, " ", 10)  # padding space sitting on top of the "7"
+    p.text(349.56, 190, ",654.32", 10)
+    path = tmp_path / "statement.pdf"
+    path.write_bytes(build_pdf([p]))
+    return path
+
+
+def test_space_overlapping_a_digit_does_not_split_the_number(tmp_path: Path) -> None:
+    doc = parse_pdf(_statement_pdf(tmp_path))
+    all_text = " ".join(" ".join(r) for t in doc.pages[0].tables for r in t.rows) + " ".join(
+        b.text for b in doc.pages[0].blocks
+    )
+    assert "7,654.32" in all_text
+    assert "7 ,654.32" not in all_text
+
+
+def test_unruled_numeric_statement_becomes_rows_with_unit(tmp_path: Path) -> None:
+    doc = parse_pdf(_statement_pdf(tmp_path))
+    tables = [t for t in doc.pages[0].tables if t.strategy == "numeric_rows"]
+    assert len(tables) == 1
+    t = tables[0]
+    assert ["Revenue from operations", "1,000.50", "900.25"] in t.rows
+    assert ["Profit before tax", "(50.00)", "40.00"] in t.rows
+    assert t.unit is Unit.MILLION
+    # the statement lines are in the table, not duplicated as prose
+    assert not any("Revenue from operations" in b.text for b in doc.pages[0].blocks)
+
+
+def test_unit_inside_row_labels(tmp_path: Path) -> None:
+    p = PageSpec()
+    rows = [
+        ["Particulars", "FY 2024", "FY 2023"],
+        ["Number of customers", "120", "95"],
+        ["Revenue from Operations (Rs. in Lakhs)", "1718.99", "522.70"],
+        ["Total Income (Rs. in Lakhs)", "1762.49", "538.03"],
+        ["EBITDA (Rs. in Lakhs)", "469.44", "113.04"],
+    ]
+    p.grid(72, 100, [260, 90, 90], rows)
+    path = tmp_path / "rowunit.pdf"
+    path.write_bytes(build_pdf([p]))
+    (t,) = parse_pdf(path).pages[0].tables
+    assert t.unit is Unit.LAKH
+    assert t.unit_text is not None
+    assert t.unit_text.startswith("row labels")

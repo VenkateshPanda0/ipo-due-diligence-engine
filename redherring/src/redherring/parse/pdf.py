@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import re
 import time
+from collections import defaultdict
 from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import Any
@@ -19,7 +20,7 @@ import pypdfium2.raw as pdfium_c
 
 from redherring.parse.models import BBox, Block, ParsedDocument, ParsedPage, RawTable
 from redherring.parse.tables import clean_rows, stitch_tables
-from redherring.parse.units import detect_unit
+from redherring.parse.units import detect_unit, parse_amount
 
 MIN_ALNUM_FOR_TEXT_LAYER = 25
 LINE_TOL = 3.0  # points: words whose `top` differ by less are on the same line
@@ -119,6 +120,105 @@ def _printed_page(words: list[dict[str, Any]], height: float) -> str | None:
     return None
 
 
+def _without_overlapping_spaces(page: Any) -> Any:
+    """Return `page`, minus whitespace chars that sit on top of a glyph.
+
+    Some generators right-align numbers with padding spaces positioned inside the first digit's
+    box. Sorted by x, such a space lands between the digit and the rest of the number and splits
+    "9,521.29" into "9" and ",521.29". Real inter-word spaces lie between glyphs, never inside one.
+    """
+    chars = page.chars
+    glyphs: dict[int, list[tuple[float, float]]] = defaultdict(list)
+    for c in chars:
+        if not c["text"].isspace():
+            glyphs[round(c["top"])].append((c["x0"], c["x1"]))
+    drop: set[tuple[float, float]] = set()
+    for c in chars:
+        if not c["text"].isspace():
+            continue
+        mid = (c["x0"] + c["x1"]) / 2
+        key = round(c["top"])
+        if any(
+            x0 + 0.3 < mid < x1 - 0.3
+            for k in (key - 1, key, key + 1)
+            for x0, x1 in glyphs.get(k, ())
+        ):
+            drop.add((c["x0"], c["top"]))
+    if not drop:
+        return page
+    return page.filter(
+        lambda o: (
+            not (
+                o.get("object_type") == "char"
+                and o["text"].isspace()
+                and (o["x0"], o["top"]) in drop
+            )
+        )
+    )
+
+
+_NIL_TOKENS = {"-", "–", "—", "nil"}
+_HEADERISH = re.compile(
+    r"\b(as\s+(?:at|on)|year\s+ended|period\s+ended|for\s+the|particulars|notes?|fy|"
+    r"jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\b",
+    re.IGNORECASE,
+)
+
+
+def _is_value(token: str) -> bool:
+    return parse_amount(token) is not None or token.lower() in _NIL_TOKENS
+
+
+def _numeric_rows_table(pdf_page: int, words: list[dict[str, Any]]) -> RawTable | None:
+    """Rebuild an unruled, right-aligned statement as rows of [label, value, value, ...].
+
+    pdfplumber's text strategy needs stable left edges to find columns, which right-aligned
+    numbers do not have. Here a row is simply a line whose trailing run of tokens are values.
+    """
+    lines = _group_lines(words)
+    parsed: list[tuple[list[dict[str, Any]], int]] = []  # (line, number of trailing values)
+    for line in lines:
+        k = 0
+        for w in reversed(line):
+            if _is_value(w["text"]):
+                k += 1
+            else:
+                break
+        if k < 2 or all(w["text"].lower() in _NIL_TOKENS for w in line[-k:]):
+            k = 0
+        parsed.append((line, k))
+    data_idx = [i for i, (_, k) in enumerate(parsed) if k]
+    if len(data_idx) < 3:
+        return None
+    first, last = data_idx[0], data_idx[-1]
+    start = first
+    while (
+        start > 0
+        and first - start < 3
+        and _HEADERISH.search(" ".join(w["text"] for w in parsed[start - 1][0]))
+    ):
+        start -= 1
+    ncols = 1 + max(k for _, k in parsed)
+    rows: list[list[str]] = []
+    for line, k in parsed[start : last + 1]:
+        texts = [w["text"] for w in line]
+        label = " ".join(texts[: len(texts) - k]) if k else " ".join(texts)
+        values = texts[len(texts) - k :] if k else []
+        rows.append([label, *values] + [""] * (ncols - 1 - len(values)))
+    boxes = [_line_bbox(line) for line, _ in parsed[start : last + 1]]
+    return RawTable(
+        pdf_page=pdf_page,
+        bbox=BBox(
+            x0=min(b.x0 for b in boxes),
+            top=min(b.top for b in boxes),
+            x1=max(b.x1 for b in boxes),
+            bottom=max(b.bottom for b in boxes),
+        ),
+        rows=rows,
+        strategy="numeric_rows",
+    )
+
+
 def _looks_numeric_tabular(words: list[dict[str, Any]]) -> bool:
     numeric = re.compile(r"^\(?[\d,]+(?:\.\d+)?\)?%?$")
     rows_with_numbers = 0
@@ -128,38 +228,50 @@ def _looks_numeric_tabular(words: list[dict[str, Any]]) -> bool:
     return rows_with_numbers >= 4
 
 
-def _find_tables(plumber_page: Any, words: list[dict[str, Any]]) -> list[RawTable]:
+def _overlaps_vertically(a: BBox, b: BBox) -> bool:
+    inter = min(a.bottom, b.bottom) - max(a.top, b.top)
+    return inter > 0.5 * min(a.bottom - a.top, b.bottom - b.top)
+
+
+def _plumber_tables(
+    plumber_page: Any, settings: dict[str, Any], strategy: str, min_rows: int, min_cols: int
+) -> list[RawTable]:
     found: list[RawTable] = []
-    for strategy, settings in (
-        ("lines", {}),
-        (
-            "text",
-            {
-                "vertical_strategy": "text",
-                "horizontal_strategy": "text",
-                "snap_tolerance": 3,
-                "min_words_vertical": 2,
-                "min_words_horizontal": 2,
-            },
-        ),
-    ):
-        if strategy == "text" and (found or not _looks_numeric_tabular(words)):
-            break
-        for t in plumber_page.find_tables(table_settings=settings):
-            rows = clean_rows(t.extract())
-            min_rows, min_cols = (2, 2) if strategy == "lines" else (3, 3)
-            if len(rows) < min_rows or max((len(r) for r in rows), default=0) < min_cols:
-                continue
-            x0, top, x1, bottom = t.bbox
-            found.append(
-                RawTable(
-                    pdf_page=plumber_page.page_number,
-                    bbox=BBox(x0=x0, top=top, x1=x1, bottom=bottom),
-                    rows=rows,
-                    strategy=strategy,
-                )
+    for t in plumber_page.find_tables(table_settings=settings):
+        rows = clean_rows(t.extract())
+        if len(rows) < min_rows or max((len(r) for r in rows), default=0) < min_cols:
+            continue
+        x0, top, x1, bottom = t.bbox
+        found.append(
+            RawTable(
+                pdf_page=plumber_page.page_number,
+                bbox=BBox(x0=x0, top=top, x1=x1, bottom=bottom),
+                rows=rows,
+                strategy=strategy,
             )
+        )
     return found
+
+
+_TEXT_SETTINGS = {
+    "vertical_strategy": "text",
+    "horizontal_strategy": "text",
+    "snap_tolerance": 3,
+    "min_words_vertical": 2,
+    "min_words_horizontal": 2,
+}
+
+
+def _find_tables(plumber_page: Any, words: list[dict[str, Any]]) -> list[RawTable]:
+    """Ruled tables first; on pages without any, unruled numeric statements and text tables."""
+    ruled = _plumber_tables(plumber_page, {}, "lines", 2, 2)
+    if ruled or not _looks_numeric_tabular(words):
+        return ruled
+    statement = _numeric_rows_table(plumber_page.page_number, words)
+    others = _plumber_tables(plumber_page, _TEXT_SETTINGS, "text", 3, 3)
+    if statement is None:
+        return others
+    return [statement, *(t for t in others if not _overlaps_vertically(t.bbox, statement.bbox))]
 
 
 def _attach_units(tables: list[RawTable], words: list[dict[str, Any]]) -> None:
@@ -178,6 +290,11 @@ def _attach_units(tables: list[RawTable], words: list[dict[str, Any]]) -> None:
             hit = detect_unit(text)
         if hit:
             t.unit, t.unit_text = hit
+            continue
+        # e.g. KPI tables that put the unit in each row label: "EBITDA (Rs. in Lakhs)"
+        row_hits = [h for r in t.rows if r and (h := detect_unit(r[0]))]
+        if row_hits and len({h[0] for h in row_hits}) == 1:
+            t.unit, t.unit_text = row_hits[0][0], f"row labels: {row_hits[0][1]}"
 
 
 def parse_pdf(
@@ -199,8 +316,9 @@ def parse_pdf(
             n_pages = len(plumber.pages)
             selected = pages if pages is not None else range(1, n_pages + 1)
             for n in selected:
-                plumber_page = plumber.pages[n - 1]
-                width, height = float(plumber_page.width), float(plumber_page.height)
+                raw_page = plumber.pages[n - 1]
+                plumber_page = _without_overlapping_spaces(raw_page)
+                width, height = float(raw_page.width), float(raw_page.height)
                 heights[n] = height
 
                 words = plumber_page.extract_words(keep_blank_chars=False, use_text_flow=False)
@@ -226,7 +344,7 @@ def parse_pdf(
                     )
                 )
                 raw_tables.extend(tables)
-                plumber_page.flush_cache()
+                raw_page.flush_cache()
                 if progress:
                     progress(n, n_pages)
     finally:

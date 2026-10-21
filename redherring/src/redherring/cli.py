@@ -8,6 +8,7 @@ from pathlib import Path
 
 from redherring.ingest.fetch import Fetcher, FetchError
 from redherring.ingest.manifest import Manifest, load_sources
+from redherring.parse.models import ParsedDocument
 from redherring.parse.pdf import parse_pdf
 from redherring.parse.render import render_tagged
 from redherring.parse.report import compute_stats, stats_markdown
@@ -49,17 +50,36 @@ def _cmd_parse(args: argparse.Namespace) -> int:
     out_dir = data_dir / "parsed"
     out_dir.mkdir(parents=True, exist_ok=True)
     stats = []
+    failures = 0
     for e in entries:
-        pages = range(1, args.max_pages + 1) if args.max_pages else None
-        doc = parse_pdf(data_dir / e.local_path, doc_id=e.doc_id, sha256=e.sha256, pages=pages)
-        (out_dir / f"{e.doc_id}.json").write_text(doc.model_dump_json(), encoding="utf-8")
-        (out_dir / f"{e.doc_id}.tagged.txt").write_text(render_tagged(doc), encoding="utf-8")
+        json_path = out_dir / f"{e.doc_id}.json"
+        doc: ParsedDocument | None = None
+        if json_path.exists() and not args.force and not args.max_pages:
+            cached = ParsedDocument.model_validate_json(json_path.read_text(encoding="utf-8"))
+            if cached.sha256 == e.sha256:
+                doc = cached
+                print(f"cached {e.doc_id}: parsed output matches sha256", file=sys.stderr)
+        if doc is None:
+            pages = range(1, args.max_pages + 1) if args.max_pages else None
+            try:
+                doc = parse_pdf(
+                    data_dir / e.local_path, doc_id=e.doc_id, sha256=e.sha256, pages=pages
+                )
+            except Exception as exc:  # batch boundary: report the bad document, keep going
+                print(f"FAIL  {e.doc_id}: {type(exc).__name__}: {exc}", file=sys.stderr)
+                failures += 1
+                continue
+            json_path.write_text(doc.model_dump_json(), encoding="utf-8")
+            (out_dir / f"{e.doc_id}.tagged.txt").write_text(render_tagged(doc), encoding="utf-8")
+            print(
+                f"parsed {e.doc_id}: {doc.n_pages} pages in {doc.parse_seconds}s", file=sys.stderr
+            )
         stats.append(compute_stats(doc))
-        print(f"parsed {e.doc_id}: {doc.n_pages} pages in {doc.parse_seconds}s", file=sys.stderr)
-    table = stats_markdown(stats)
-    (out_dir / "parse_report.md").write_text(table + "\n", encoding="utf-8")
-    print(table)
-    return 0
+    if stats:
+        table = stats_markdown(stats)
+        (out_dir / "parse_report.md").write_text(table + "\n", encoding="utf-8")
+        print(table)
+    return 1 if failures else 0
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -75,6 +95,7 @@ def build_parser() -> argparse.ArgumentParser:
     par = sub.add_parser("parse", help="parse ingested PDFs into page-tagged blocks and tables")
     par.add_argument("--doc-id", action="append", help="limit to this doc_id (repeatable)")
     par.add_argument("--max-pages", type=int, help="parse only the first N pages")
+    par.add_argument("--force", action="store_true", help="re-parse even if output is up to date")
     par.set_defaults(func=_cmd_parse)
 
     for name, milestone in NOT_YET.items():

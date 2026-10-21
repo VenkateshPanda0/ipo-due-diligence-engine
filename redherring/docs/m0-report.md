@@ -15,7 +15,7 @@ values are correct; it says what the parser found and where it visibly fell shor
   flag, multi-page table stitching, unit detection (₹ lakh / crore / million / thousand), Indian
   number parsing, tagged-text rendering, parse-quality table. Per-document failures do not stop the
   batch; output is cached by (PDF hash, parser version).
-- 69 tests, ruff, mypy: all pass locally (see the end of this file). CI workflow written, **never
+- 69 tests, ruff, ruff format, mypy: all pass locally (run before the final commit). CI workflow written, **never
   run** (needs a push).
 
 ## Documents (4 of 5; document 5 awaits approval)
@@ -40,7 +40,7 @@ Total 1,747 pages. **No scanned document yet**: only 1 page across all four has 
 
 Speed: 0.31–0.43 s/page (pdfplumber, single process). A 600-page filing takes about 4–5 minutes.
 
-Coverage metrics (my own heuristics; definitions in `scratchpad/metrics.py`, not committed):
+Coverage metrics (my own heuristics, computed by a throwaway script that is not in the repo):
 
 | doc | numeric lines in tables | numeric lines left in prose | merged-value cells | numeric-heavy tables with a unit |
 |---|---|---|---|---|

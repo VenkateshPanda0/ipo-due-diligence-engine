@@ -18,7 +18,14 @@ import pdfplumber
 import pypdfium2 as pdfium
 import pypdfium2.raw as pdfium_c
 
-from redherring.parse.models import BBox, Block, ParsedDocument, ParsedPage, RawTable
+from redherring.parse.models import (
+    PARSER_VERSION,
+    BBox,
+    Block,
+    ParsedDocument,
+    ParsedPage,
+    RawTable,
+)
 from redherring.parse.tables import clean_rows, stitch_tables
 from redherring.parse.units import detect_unit, parse_amount
 
@@ -353,6 +360,7 @@ def parse_pdf(
     return ParsedDocument(
         doc_id=doc_id or path.stem,
         sha256=sha256,
+        parser_version=PARSER_VERSION,
         n_pages=n_pages,
         parse_seconds=round(time.perf_counter() - started, 2),
         pages=parsed_pages,

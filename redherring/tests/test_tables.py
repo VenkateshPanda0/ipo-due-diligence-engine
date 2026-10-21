@@ -49,7 +49,7 @@ def test_no_stitch_when_units_differ() -> None:
     assert len(stitch_tables([p1, p2], HEIGHTS)) == 2
 
 
-def test_transposed_table_is_detected_and_flipped() -> None:
+def test_transposed_table_is_flagged_but_not_flipped() -> None:
     rows = [
         ["Period", "Revenue", "PAT"],
         ["March 31, 2024", "100", "10"],
@@ -58,9 +58,9 @@ def test_transposed_table_is_detected_and_flipped() -> None:
     ]
     assert looks_transposed(rows)
     (t,) = stitch_tables([_raw(1, 100, 300, rows)], HEIGHTS)
-    assert t.transposed
-    assert t.rows[0] == ["Period", "March 31, 2024", "March 31, 2023", "March 31, 2022"]
-    assert t.rows[1] == ["Revenue", "100", "90", "70"]
+    assert t.transposed_suspect
+    assert t.rows == rows  # as found
+    assert transpose(t.rows)[0] == ["Period", "March 31, 2024", "March 31, 2023", "March 31, 2022"]
 
 
 def test_normal_table_not_transposed() -> None:

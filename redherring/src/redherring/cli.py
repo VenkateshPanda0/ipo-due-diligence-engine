@@ -8,7 +8,7 @@ from pathlib import Path
 
 from redherring.ingest.fetch import Fetcher, FetchError
 from redherring.ingest.manifest import Manifest, load_sources
-from redherring.parse.models import ParsedDocument
+from redherring.parse.models import PARSER_VERSION, ParsedDocument
 from redherring.parse.pdf import parse_pdf
 from redherring.parse.render import render_tagged
 from redherring.parse.report import compute_stats, stats_markdown
@@ -56,7 +56,7 @@ def _cmd_parse(args: argparse.Namespace) -> int:
         doc: ParsedDocument | None = None
         if json_path.exists() and not args.force and not args.max_pages:
             cached = ParsedDocument.model_validate_json(json_path.read_text(encoding="utf-8"))
-            if cached.sha256 == e.sha256:
+            if cached.sha256 == e.sha256 and cached.parser_version == PARSER_VERSION:
                 doc = cached
                 print(f"cached {e.doc_id}: parsed output matches sha256", file=sys.stderr)
         if doc is None:

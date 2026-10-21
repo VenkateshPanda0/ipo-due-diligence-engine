@@ -78,7 +78,7 @@ def _continues(prev: RawTable, nxt: RawTable, page_heights: dict[int, float]) ->
 
 
 def stitch_tables(raw: list[RawTable], page_heights: dict[int, float]) -> list[Table]:
-    """Merge tables that run across consecutive pages; apply orientation fix per logical table."""
+    """Merge tables that run across consecutive pages; flag (never flip) suspect orientation."""
     ordered = sorted(raw, key=lambda t: (t.pdf_page, t.bbox.top))
     groups: list[list[RawTable]] = []
     for t in ordered:
@@ -98,14 +98,13 @@ def stitch_tables(raw: list[RawTable], page_heights: dict[int, float]) -> list[T
             rows.extend(tail)
         unit = next((t.unit for t in g if t.unit), None)
         unit_text = next((t.unit_text for t in g if t.unit), None)
-        flipped = looks_transposed(rows)
         tables.append(
             Table(
                 pdf_pages=sorted({t.pdf_page for t in g}),
-                rows=transpose(rows) if flipped else rows,
+                rows=rows,
                 unit=unit,
                 unit_text=unit_text,
-                transposed=flipped,
+                transposed_suspect=looks_transposed(rows),
                 stitched_from=len(g),
             )
         )

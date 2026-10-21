@@ -18,7 +18,7 @@ class ParseStats(BaseModel):
     raw_tables: int
     logical_tables: int
     multi_page_tables: int
-    transposed_tables: int
+    transposed_suspect_tables: int
     tables_with_unit: int
     pct_tables_with_unit: float
     pages_with_printed_number: int
@@ -41,7 +41,7 @@ def compute_stats(doc: ParsedDocument) -> ParseStats:
         raw_tables=sum(len(p.tables) for p in doc.pages),
         logical_tables=len(doc.tables),
         multi_page_tables=sum(t.stitched_from > 1 for t in doc.tables),
-        transposed_tables=sum(t.transposed for t in doc.tables),
+        transposed_suspect_tables=sum(t.transposed_suspect for t in doc.tables),
         tables_with_unit=with_unit,
         pct_tables_with_unit=round(100 * with_unit / max(len(doc.tables), 1), 1),
         pages_with_printed_number=sum(p.printed_page is not None for p in doc.pages),
@@ -59,7 +59,7 @@ def stats_markdown(rows: list[ParseStats]) -> str:
         ("raw_tables", "raw tbl"),
         ("logical_tables", "logical tbl"),
         ("multi_page_tables", "multi-pg"),
-        ("transposed_tables", "transposed"),
+        ("transposed_suspect_tables", "transposed?"),
         ("pct_tables_with_unit", "% tbl w/ unit"),
         ("pages_with_printed_number", "printed pg #"),
     ]

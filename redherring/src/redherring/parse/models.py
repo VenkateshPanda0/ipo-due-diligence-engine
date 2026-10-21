@@ -11,6 +11,11 @@ from pydantic import BaseModel, Field
 from redherring.parse.units import Unit
 
 
+# Bump whenever parser output changes meaningfully; cached parsed files with another version
+# are re-parsed. 1: initial. 2: overlap-space fix, numeric_rows, row-label units, no row flipping.
+PARSER_VERSION = 2
+
+
 def page_tag(pdf_page: int) -> str:
     return f"[PDF_PAGE_{pdf_page}]"
 
@@ -48,7 +53,9 @@ class Table(BaseModel):
     rows: list[list[str]]
     unit: Unit | None = None
     unit_text: str | None = None
-    transposed: bool = False  # True if `rows` were transposed so periods are columns
+    # True if periods appear to run down the first column. `rows` are kept AS FOUND; the flag is
+    # unvalidated (see M0 report) so nothing is flipped silently. Use `tables.transpose` to flip.
+    transposed_suspect: bool = False
     stitched_from: int = 1
 
 
@@ -68,6 +75,7 @@ class ParsedPage(BaseModel):
 class ParsedDocument(BaseModel):
     doc_id: str
     sha256: str | None = None
+    parser_version: int = 0  # 0 = written before versioning; always treated as stale
     n_pages: int
     parse_seconds: float = 0.0
     pages: list[ParsedPage]

@@ -85,3 +85,19 @@ def test_parse_reuses_output_when_hash_unchanged(
     assert "cached good" in capsys.readouterr().err
     assert main(["--data-dir", str(tmp_path), "parse", "--force"]) == 0
     assert "parsed good" in capsys.readouterr().err
+
+
+def test_parse_ignores_output_from_older_parser_version(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    import json
+
+    _register(tmp_path, "good", build_pdf([PageSpec().text(72, 72, "Objects of the Issue")]))
+    assert main(["--data-dir", str(tmp_path), "parse"]) == 0
+    out = tmp_path / "parsed" / "good.json"
+    data = json.loads(out.read_text())
+    data["parser_version"] = 0  # as written by a pre-versioning parser
+    out.write_text(json.dumps(data))
+    capsys.readouterr()
+    assert main(["--data-dir", str(tmp_path), "parse"]) == 0
+    assert "parsed good" in capsys.readouterr().err  # re-parsed, not "cached"

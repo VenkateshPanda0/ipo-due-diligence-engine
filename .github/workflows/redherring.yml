@@ -1,0 +1,39 @@
+name: redherring
+
+# Isolated from any other workflow in this repo: runs only for changes under redherring/.
+on:
+  push:
+    paths:
+      - "redherring/**"
+      - ".github/workflows/redherring.yml"
+  pull_request:
+    paths:
+      - "redherring/**"
+      - ".github/workflows/redherring.yml"
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: redherring
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        run: pip install uv
+      - name: Install dependencies (locked)
+        run: uv sync --frozen
+      - name: Lint
+        run: uv run ruff check . && uv run ruff format --check .
+      - name: Type-check
+        run: uv run mypy
+      - name: Unit tests
+        run: uv run pytest -q
+      # Offline eval on cached fixtures is added in M1, once there is something to evaluate.

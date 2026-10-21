@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+# Downloaded filings and derived artefacts are never committed; only manifest.jsonl is.
+data/raw/
+data/parsed/
+data/*.part

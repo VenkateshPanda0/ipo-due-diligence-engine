@@ -10,7 +10,6 @@ from pydantic import BaseModel, Field
 
 from redherring.parse.units import Unit
 
-
 # Bump whenever parser output changes meaningfully; cached parsed files with another version
 # are re-parsed. 1: initial. 2: overlap-space fix, numeric_rows, row-label units, no row flipping.
 PARSER_VERSION = 2

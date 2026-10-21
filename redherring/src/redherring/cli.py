@@ -1,0 +1,97 @@
+"""`rh` command line. M0 implements `ingest` and `parse`; the rest arrive in later milestones."""
+
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+
+from redherring.ingest.fetch import Fetcher, FetchError
+from redherring.ingest.manifest import Manifest, load_sources
+from redherring.parse.pdf import parse_pdf
+from redherring.parse.render import render_tagged
+from redherring.parse.report import compute_stats, stats_markdown
+
+NOT_YET = {
+    "analyze": "M1",
+    "diff": "M3",
+    "eval": "M1",
+    "report": "M2",
+}
+
+
+def _cmd_ingest(args: argparse.Namespace) -> int:
+    data_dir = Path(args.data_dir)
+    manifest = Manifest(data_dir / "manifest.jsonl")
+    fetcher = Fetcher(data_dir, min_interval_s=args.min_interval)
+    failures = 0
+    for spec in load_sources(Path(args.sources)):
+        try:
+            entry, downloaded = fetcher.fetch(spec, manifest)
+        except FetchError as e:
+            print(f"FAIL  {spec.doc_id}: {e}", file=sys.stderr)
+            failures += 1
+            continue
+        verb = "fetched" if downloaded else "cached "
+        print(f"{verb} {entry.doc_id}  {entry.size_bytes:>11,} B  sha256={entry.sha256[:12]}…")
+    return 1 if failures else 0
+
+
+def _cmd_parse(args: argparse.Namespace) -> int:
+    data_dir = Path(args.data_dir)
+    manifest = Manifest(data_dir / "manifest.jsonl")
+    entries = manifest.entries()
+    if args.doc_id:
+        entries = [e for e in entries if e.doc_id in args.doc_id]
+    if not entries:
+        print("nothing to parse (run `rh ingest` first, or check --doc-id)", file=sys.stderr)
+        return 1
+    out_dir = data_dir / "parsed"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    stats = []
+    for e in entries:
+        pages = range(1, args.max_pages + 1) if args.max_pages else None
+        doc = parse_pdf(data_dir / e.local_path, doc_id=e.doc_id, sha256=e.sha256, pages=pages)
+        (out_dir / f"{e.doc_id}.json").write_text(doc.model_dump_json(), encoding="utf-8")
+        (out_dir / f"{e.doc_id}.tagged.txt").write_text(render_tagged(doc), encoding="utf-8")
+        stats.append(compute_stats(doc))
+        print(f"parsed {e.doc_id}: {doc.n_pages} pages in {doc.parse_seconds}s", file=sys.stderr)
+    table = stats_markdown(stats)
+    (out_dir / "parse_report.md").write_text(table + "\n", encoding="utf-8")
+    print(table)
+    return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(prog="rh", description="RedHerring: IPO offer-document analysis")
+    p.add_argument("--data-dir", default="data", help="working data directory (default: data)")
+    sub = p.add_subparsers(dest="cmd", required=True)
+
+    ing = sub.add_parser("ingest", help="download documents listed in a sources TOML")
+    ing.add_argument("--sources", default="data/sources.toml")
+    ing.add_argument("--min-interval", type=float, default=3.0, help="seconds between requests")
+    ing.set_defaults(func=_cmd_ingest)
+
+    par = sub.add_parser("parse", help="parse ingested PDFs into page-tagged blocks and tables")
+    par.add_argument("--doc-id", action="append", help="limit to this doc_id (repeatable)")
+    par.add_argument("--max-pages", type=int, help="parse only the first N pages")
+    par.set_defaults(func=_cmd_parse)
+
+    for name, milestone in NOT_YET.items():
+        stub = sub.add_parser(name, help=f"not implemented yet (planned {milestone})")
+        stub.set_defaults(func=lambda _a, n=name, m=milestone: _not_yet(n, m))
+    return p
+
+
+def _not_yet(name: str, milestone: str) -> int:
+    print(f"`rh {name}` is not implemented yet (planned {milestone}).", file=sys.stderr)
+    return 2
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    return int(args.func(args))
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

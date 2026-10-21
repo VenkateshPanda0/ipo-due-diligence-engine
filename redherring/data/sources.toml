@@ -1,0 +1,37 @@
+# M0 parse-spike documents (public filings). Approved by the author 2026-10-21 (docs 1-4).
+
+[[document]]
+doc_id = "varyaa_prospectus_2024"
+url = "https://www.bseindia.com/corporates/download/345104/SME_IPO%20Open/Varyaa%20Creation%20Limited_20240417155644.pdf"
+issuer = "Varyaa Creations Limited"
+doc_type = "prospectus"
+platform = "sme"
+filing_date = 2024-04-12
+notes = "BSE SME. SEBI interim order 14 May 2025 re diversion of IPO proceeds (press-reported; primary order to be added)."
+
+[[document]]
+doc_id = "synoptics_dp_2023"
+url = "https://archives.nseindia.com/emerge/corporates/content/SynopticsTechnologies_DP.pdf"
+issuer = "Synoptics Technologies Limited"
+doc_type = "drhp"
+platform = "sme"
+filing_date = 2023-03-15
+notes = "NSE Emerge DRAFT prospectus (final prospectus not located). SEBI interim order 6 May 2025."
+
+[[document]]
+doc_id = "runwal_rhp_2026"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/sep-2026/1790230747174.pdf"
+issuer = "Runwal Enterprises Limited"
+doc_type = "rhp"
+platform = "mainboard"
+filing_date = 2026-09-24
+notes = "Post-March-2026 format. Prospectus (SEBI, 2026-10-01) is a candidate diff pair for M3."
+
+[[document]]
+doc_id = "moneyview_prospectus_2026"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/sep-2026/1790674448687.pdf"
+issuer = "Moneyview Limited"
+doc_type = "prospectus"
+platform = "mainboard"
+filing_date = 2026-09-29
+notes = "Fintech/lending; table-heavy."

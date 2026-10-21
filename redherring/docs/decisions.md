@@ -103,8 +103,29 @@ SEBI's listing pages (`HomeAction.do?doListing=yes&sid=3&ssid=15&smid={10,11,12,
 reachable. Fetcher identifies itself (`RedHerring-research/0.1`) and waits 3 s between requests to
 a host. **Open item:** read each site's terms of use before bulk fetching beyond the 5 M0 documents.
 
+## D-011 — Fetcher integrity rules, from real downloads (2026-10-21)
+
+Both SEBI PDFs were silently truncated by the first fetcher. Rules now: compare received bytes with
+the announced length, resume with HTTP Range (bounded retries, restart if the server ignores Range),
+require `%%EOF`, and treat a cached file that fails these checks as missing. Alternative considered:
+trusting the manifest hash alone; rejected, because a hash of a truncated file is still a valid hash.
+
+## D-012 — Never flip table orientation silently (2026-10-21)
+
+Orientation detection flagged 63 tables in one document and the sampled ones did not look like
+correct flips. Rows are kept as found with a `transposed_suspect` flag; flipping is an explicit
+`tables.transpose` call, to be enabled only if labelled data shows the detector is precise.
+Parsed output carries `parser_version` so stale cached output is never reused.
+
+## D-013 — Local commits are unsigned (2026-10-21)
+
+The session's global git config signs commits with the environment's key, not the author's. After
+the author said to continue (reading it as accepting my recommendation), commits are made with a
+one-off `git -c commit.gpgsign=false`; no git setting was changed. Author and committer are checked
+after each commit. If a push target requires signed commits, the author must decide how to proceed.
+
 ## Open items
 
 - Terms-of-use review for SEBI / BSE / NSE (see D-010).
-- Global git config has `commit.gpgsign=true` with an SSH signing key path that is empty on this
-  machine; see the M0 report for how this was handled.
+- Commit signing: see D-013. The author should confirm the unsigned-commit choice.
+- Document 5, primary SEBI enforcement orders, post-March-2026 filing count: see `m0-report.md`.

@@ -123,9 +123,10 @@ The session's global git config signs commits with the environment's key, not th
 the author said to continue (reading it as accepting my recommendation), commits are made with a
 one-off `git -c commit.gpgsign=false`; no git setting was changed. Author and committer are checked
 after each commit. If a push target requires signed commits, the author must decide how to proceed.
+The author later approved this explicitly (2026-10-23); the push of 13 unsigned commits succeeded.
 
 ## Open items
 
 - Terms-of-use review for SEBI / BSE / NSE (see D-010).
-- Commit signing: see D-013. The author should confirm the unsigned-commit choice.
-- Document 5, primary SEBI enforcement orders, post-March-2026 filing count: see `m0-report.md`.
+- A scanned or image-heavy test document; primary SEBI enforcement orders; post-March-2026 filing
+  count: see `m0-report.md`.

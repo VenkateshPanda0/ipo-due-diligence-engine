@@ -1,7 +1,8 @@
 # M0 report: skeleton, ingest, parse
 
-Branch `redherring/m0` (from `main` at `218b056`). Everything is under `redherring/` plus one new
-workflow file, `.github/workflows/redherring.yml`. Not pushed.
+Branch `redherring/m0` (from `main` at `218b056`), pushed to `origin` after the author's approval.
+Everything is under `redherring/` plus one new workflow file, `.github/workflows/redherring.yml`,
+and one added section in the root `README.md` (approved, see below).
 
 **Read this first.** There is no ground truth yet (labelling starts in M1). Every number below is a
 *heuristic measurement of parser output*, not an accuracy figure. Nothing here says the extracted
@@ -18,7 +19,7 @@ values are correct; it says what the parser found and where it visibly fell shor
 - 69 tests, ruff, ruff format, mypy: all pass locally (run before the final commit). CI workflow written, **never
   run** (needs a push).
 
-## Documents (4 of 5; document 5 awaits approval)
+## Documents (6)
 
 | doc_id | Document | Platform | Pages | Size |
 |---|---|---|---|---|
@@ -26,8 +27,12 @@ values are correct; it says what the parser found and where it visibly fell shor
 | `synoptics_dp_2023` | Synoptics Technologies *draft* prospectus, Mar 2023 | SME (NSE Emerge) | 304 | 5.4 MB |
 | `runwal_rhp_2026` | Runwal Enterprises RHP, Sep 2026 | Mainboard | 611 | 18.1 MB |
 | `moneyview_prospectus_2026` | Moneyview Prospectus, Sep 2026 | Mainboard | 537 | 15.8 MB |
+| `paytm_drhp_2021` | One 97 Communications DRHP, Jul 2021 (issuer confirmed from page 1) | Mainboard | 497 | 15.5 MB |
+| `sebi_draft_2010_probe` | Tanla Solutions DRHP, c. 2010 (date unconfirmed; chosen as a scanned-page probe) | Mainboard | 214 | 3.2 MB |
 
-Total 1,747 pages. **No scanned document yet**: only 1 page across all four has no text layer.
+Total 2,458 pages. **No scanned document found.** Only 2 pages across all six lack a text layer
+(Synoptics 1, Paytm p175), and the old Tanla probe has a full text layer. The scanned path is still
+untested on real data.
 
 ## Parse-quality table (final run, parser v2)
 
@@ -37,8 +42,10 @@ Total 1,747 pages. **No scanned document yet**: only 1 page across all four has 
 | synoptics | 304 | 102.9 | 1 | 2283 | 313 | 218 | 52 | 4 | 4 |
 | runwal | 611 | 259.4 | 0 | 5481 | 660 | 552 | 73 | 63 | 592 |
 | moneyview | 537 | 230.8 | 0 | 4362 | 336 | 326 | 9 | 0 | 530 |
+| paytm | 497 | 150.4 | 1 | 4355 | 384 | 349 | 30 | 10 | 378 |
+| tanla (probe) | 214 | 32.1 | 0 | 1970 | 146 | 132 | 12 | 6 | 214 |
 
-Speed: 0.31–0.43 s/page (pdfplumber, single process). A 600-page filing takes about 4–5 minutes.
+Speed: 0.15–0.43 s/page (pdfplumber, single process). A 600-page filing takes about 4–5 minutes.
 
 Coverage metrics (my own heuristics, computed by a throwaway script that is not in the repo):
 
@@ -48,6 +55,8 @@ Coverage metrics (my own heuristics, computed by a throwaway script that is not 
 | synoptics | 716 | 13 | 81 | 70% |
 | runwal | 1,291 | 36 | 634 | 39% |
 | moneyview | 1,303 | **636 (33%)** | 149 | 50% |
+| paytm | 1,026 | **309 (23%)** | 198 | 41% |
+| tanla (probe) | 420 | 17 | 72 | 27% |
 
 "Numeric line" = a line ending in at least two money-like tokens. "Merged-value cell" = a table cell
 containing two or more money-like values.
@@ -74,11 +83,12 @@ containing two or more money-like values.
 3. **Transposed-table detection is unvalidated and probably over-triggers** (63 flagged in Runwal;
    none of the 3 I read looked like a correct flip). It used to flip rows; it now only sets
    `transposed_suspect` and leaves rows as found.
-4. **Moneyview: 33% of numeric lines stay in prose** (131 pages, e.g. p35–36 KPI tables). The
+4. **Numeric lines left in prose: 33% in Moneyview** (131 pages, e.g. p35–36 KPI tables) **and 23%
+   in Paytm** (60 pages). The
    unruled-statement row builder needs at least 3 data rows and a numeric-looking page; other pages
    fall through. Open.
-5. **Runwal: 634 merged-value cells.** Wide ruled tables (for example p292, statement of changes in
-   equity) collapse several columns into one cell. Open.
+5. **Merged-value cells: 634 in Runwal** (Paytm 198, Moneyview 149). Wide ruled tables (for example
+   Runwal p292, statement of changes in equity) collapse several columns into one cell. Open.
 6. **Multi-line column headers are not assembled** (e.g. Moneyview p322 header fragments are
    interleaved). Rows are right; headers need a pass in M1.
 7. **Unit coverage is partial** (39–70% of numeric-heavy tables), and units can differ by table.
@@ -90,23 +100,18 @@ containing two or more money-like values.
 
 ## Not done
 
-- Document 5 (older mainboard, ideally scanned): not downloaded, awaiting approval (see below).
+- A scanned or image-heavy document: none of the six qualifies. A real candidate still has to be found.
 - Count of post-March-2026 filings (needed before promising the abridged-vs-full check): not counted.
 - Terms-of-use review of SEBI/BSE/NSE: only robots.txt was checked.
 - Primary-source SEBI orders (Varyaa, Synoptics): not fetched; enforcement facts so far come from
   press reports.
-- Local commits are unsigned (see `decisions.md`, D-013).
+- Commits are unsigned (the author accepted this; see `decisions.md`, D-013).
 
-## Candidates for document 5 (headers only, nothing downloaded)
+## Document 5 and root README (resolved after approval)
 
-| Candidate | URL | Size | Note |
-|---|---|---|---|
-| One97 (Paytm) DRHP, 15 Jul 2021 | `sebi.gov.in/sebi_data/attachdocs/jul-2021/1626426805246.pdf` | 15.5 MB | Issuer unverified until page 1 is read. I could not find its final RHP on SEBI. |
-| Old SEBI draft offer document (2010) | `sebi.gov.in/sebi_data/attachdocs/1292989425401.pdf` | 3.2 MB | Issuer unknown; chosen only as a plausible scanned candidate. |
-
-## Proposed root `README.md` change (not applied)
-
-Add a short "Related project: RedHerring" section linking to `redherring/README.md`. Nothing else.
+Both candidates were downloaded (sizes matched the server's announced lengths) and their issuers read
+from page 1: One 97 Communications (Paytm DRHP) and Tanla Solutions (the old probe). The root
+`README.md` gained one "Related project: RedHerring" section; nothing else in it changed.
 
 ## Changelog
 
@@ -116,4 +121,4 @@ Add a short "Related project: RedHerring" section linking to `redherring/README.
 3. Page-tagged parser with tables, stitching, units, Indian-number parsing, scanned-page flag.
 4. Fixes from real documents: digit-splitting spaces, unruled statements, row-label units,
    no silent row flipping, parser-versioned cache.
-5. First parse-quality measurements on 4 filings (1,747 pages); six open defects listed above.
+5. First parse-quality measurements on 6 filings (2,458 pages); open defects listed above.

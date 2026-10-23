@@ -32,7 +32,7 @@ from redherring.parse.statements import build_statement_tables, looks_numeric_ta
 from redherring.parse.statements import group_lines as _group_lines
 from redherring.parse.statements import line_bbox as _line_bbox
 from redherring.parse.tables import clean_rows, stitch_tables
-from redherring.parse.units import detect_unit
+from redherring.parse.units import detect_unit, parse_amount
 
 MIN_ALNUM_FOR_TEXT_LAYER = 25
 LINE_TOL = 3.0  # points: words whose `top` differ by less are on the same line
@@ -153,6 +153,23 @@ def _overlaps_vertically(a: BBox, b: BBox) -> bool:
     return inter > 0.5 * min(a.bottom - a.top, b.bottom - b.top)
 
 
+def _money_tokens(cell: str) -> int:
+    return sum(
+        parse_amount(t) is not None and ("," in t or "." in t or len(t) >= 3) for t in cell.split()
+    )
+
+
+def _has_merged_cells(rows: list[list[str]]) -> bool:
+    """Several values fused into one cell: a ruled box whose row rules are missing."""
+    per_cell = [_money_tokens(c) for r in rows for c in r]
+    return any(n >= 3 for n in per_cell) or sum(n >= 2 for n in per_cell) >= 2
+
+
+def _numeric_density(rows: list[list[str]]) -> float:
+    cells = [c for r in rows for c in r if c]
+    return sum(parse_amount(c) is not None for c in cells) / len(cells) if cells else 0.0
+
+
 def _plumber_tables(
     plumber_page: Any, settings: dict[str, Any], strategy: str, min_rows: int, min_cols: int
 ) -> list[RawTable]:
@@ -161,6 +178,8 @@ def _plumber_tables(
         rows = clean_rows(t.extract())
         if len(rows) < min_rows or max((len(r) for r in rows), default=0) < min_cols:
             continue
+        if strategy == "text" and _numeric_density(rows) < 0.2:
+            continue  # whitespace "tables" must be numeric; this is prose cut into columns
         x0, top, x1, bottom = t.bbox
         found.append(
             RawTable(
@@ -182,13 +201,31 @@ _TEXT_SETTINGS = {
 }
 
 
+def _rebuild_merged(
+    pdf_page: int, tables: list[RawTable], words: list[dict[str, Any]]
+) -> list[RawTable]:
+    """Replace ruled tables whose cells fused several rows by row-by-row statement tables."""
+    out: list[RawTable] = []
+    for t in tables:
+        if t.strategy == "lines" and _has_merged_cells(t.rows):
+            inside = [w for w in words if _inside(w, [t.bbox])]
+            rebuilt = build_statement_tables(pdf_page, inside)
+            if rebuilt:
+                out.extend(rebuilt)
+                continue
+        out.append(t)
+    return out
+
+
 def _find_tables(plumber_page: Any, words: list[dict[str, Any]]) -> list[RawTable]:
     """Ruled tables, plus unruled numeric statements among the words outside them.
 
     On pages with no ruled table, pdfplumber's whitespace "text" tables are kept too, unless they
     overlap a rebuilt statement.
     """
-    ruled = _plumber_tables(plumber_page, {}, "lines", 2, 2)
+    ruled = _rebuild_merged(
+        plumber_page.page_number, _plumber_tables(plumber_page, {}, "lines", 2, 2), words
+    )
     boxes = [t.bbox for t in ruled]
     outside = [w for w in words if not _inside(w, boxes)] if ruled else words
     if not looks_numeric_tabular(outside):

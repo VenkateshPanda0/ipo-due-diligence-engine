@@ -13,7 +13,8 @@ from redherring.parse.units import Unit
 # Bump whenever parser output changes meaningfully; cached parsed files with another version
 # are re-parsed. 1: initial. 2: overlap-space fix, numeric_rows, row-label units, no row flipping.
 # 3: x-anchored statement columns with assembled headers, residual rows beside ruled tables.
-PARSER_VERSION = 3
+# 4: ruled boxes with fused cells are rebuilt row by row; prose is not a text table.
+PARSER_VERSION = 4
 
 
 def page_tag(pdf_page: int) -> str:

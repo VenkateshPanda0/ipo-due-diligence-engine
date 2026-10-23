@@ -346,3 +346,58 @@ def test_page_level_failure_is_recorded_not_fatal(
     assert doc.pages[0].error is None
     assert doc.pages[2].blocks  # later pages still parsed
     assert compute_stats(doc).pages_with_errors == 1
+
+
+def _is_fused_numbers(cell: str) -> bool:
+    """Two or more numbers in one cell, e.g. '17,989.49 518.44'."""
+    flat = cell.replace(",", "").replace(".", "").replace(" ", "")
+    return len(cell.split()) >= 2 and flat.isdigit()
+
+
+def test_ruled_box_without_row_rules_is_rebuilt_row_by_row(tmp_path: Path) -> None:
+    """A ruled header row over one tall body row: pdfplumber returns a single cell per column
+    holding every line of the statement (the Runwal p293 shape)."""
+    p = PageSpec()
+    x_label, x_a, x_b = 72.0, 340.0, 440.0
+    widths = (268.0, 100.0, 100.0)
+    p.grid(x_label, 100, list(widths), [["Particulars", "FY 2026", "FY 2025"]], row_h=18)
+    body_top, body_h = 118.0, 90.0
+    for x, w in zip((x_label, x_a, x_b), widths, strict=True):
+        p.ops.append(f"{x} {792 - body_top - body_h} {w} {body_h} re S")
+    rows = [
+        ("Revenue from operations", "17,989.49", "10,077.66"),
+        ("Other income", "518.44", "429.48"),
+        ("Total income", "18,507.93", "10,507.14"),
+        ("Total expenses", "16,268.63", "9,531.54"),
+    ]
+    for i, (label, a, b) in enumerate(rows):
+        y = body_top + 6 + i * 14
+        p.text(x_label + 3, y, label, 8)
+        _right(p, x_a + 95, y, a)
+        _right(p, x_b + 95, y, b)
+    doc = _parse_one(tmp_path, p)
+    stmts = [t for t in doc.pages[0].tables if t.strategy == "numeric_rows"]
+    assert len(stmts) == 1
+    assert ["Total income", "18,507.93", "10,507.14"] in stmts[0].rows
+    assert ["Revenue from operations", "17,989.49", "10,077.66"] in stmts[0].rows
+    assert [t.strategy for t in doc.pages[0].tables] == ["numeric_rows"]  # merged table replaced
+    for table in doc.pages[0].tables:
+        for r in table.rows:
+            assert not any(_is_fused_numbers(c) for c in r)
+
+
+def test_prose_is_not_turned_into_a_text_table(tmp_path: Path) -> None:
+    p = PageSpec()
+    lines = [
+        "Other expenses increased by 30.15% from Rs. 1,585.70 million for Fiscal 2025 to",
+        "Rs. 2,682.75 million for Fiscal 2026, primarily as a result of a decrease in the",
+        "amounts allocated to project costs from Rs. 4,027.69 million for Fiscal 2025 to",
+        "Rs. 2,227.43 million, and an increase in advertising expenses from Rs. 793.30",
+        "million in Fiscal 2025 to Rs. 1,104.60 million in Fiscal 2026 as discussed above.",
+        "Total tax expenses decreased by 8.96% from Rs. 419.08 million for Fiscal 2025 to",
+    ]
+    for i, ln in enumerate(lines):
+        p.text(72, 100 + i * 12, ln, 9)
+    doc = _parse_one(tmp_path, p)
+    assert doc.pages[0].tables == []
+    assert any("Other expenses increased" in b.text for b in doc.pages[0].blocks)

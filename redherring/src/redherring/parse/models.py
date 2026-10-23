@@ -76,6 +76,7 @@ class ParsedPage(BaseModel):
     needs_ocr: bool = Field(description="Little/no text layer but page contains images")
     blocks: list[Block] = Field(default_factory=list)
     tables: list[RawTable] = Field(default_factory=list)
+    error: str | None = Field(default=None, description="Set if this page failed to parse")
 
 
 class ParsedDocument(BaseModel):

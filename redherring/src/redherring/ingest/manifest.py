@@ -19,6 +19,7 @@ class DocType(StrEnum):
     PROSPECTUS = "prospectus"
     ADDENDUM = "addendum"
     ENFORCEMENT_ORDER = "enforcement_order"
+    REGULATION = "regulation"
     OTHER = "other"
 
 
@@ -36,7 +37,7 @@ class SourceSpec(BaseModel):
     url: str
     issuer: str
     doc_type: DocType
-    platform: Platform
+    platform: Platform | None = None  # None for non-filings (regulations, orders)
     filing_date: date | None = None
     notes: str = ""
 

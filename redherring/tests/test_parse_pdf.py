@@ -299,3 +299,50 @@ def test_parallel_parse_matches_serial(tmp_path: Path) -> None:
 
     assert strip(serial) == strip(parallel)
     assert [t.pdf_pages for t in serial.tables] == [t.pdf_pages for t in parallel.tables]
+
+
+def _word(text: str, x1: float, top: float, width: float = 30.0) -> dict[str, object]:
+    return {"text": text, "x0": x1 - width, "x1": x1, "top": top, "bottom": top + 8}
+
+
+def test_line_with_more_values_than_columns_degrades_to_label_text() -> None:
+    from redherring.parse.statements import build_statement_tables
+
+    words: list[dict[str, object]] = []
+    for i in range(3):  # three normal rows with two value columns (right edges 400 and 500)
+        top = 80 + i * 14
+        words += [_word(f"Row{i}", 120, top), _word("100.50", 400, top), _word("200.50", 500, top)]
+    # five tightly packed values, all nearest one anchor: cannot be placed one per column
+    top = 124
+    words += [_word("Crowded", 120, top)] + [
+        _word(f"{j}1.00", 396 + j * 2, top, width=2) for j in range(5)
+    ]
+    (table,) = build_statement_tables(1, words)  # must not raise
+    assert ["Row0", "100.50", "200.50"] in table.rows
+    crowded = next(r for r in table.rows if r[0].startswith("Crowded"))
+    assert len(crowded) == 3  # [label, col1, col2]; width stays consistent
+    assert "01.00" in crowded[0]  # the unplaceable values are kept as text, not dropped
+
+
+def test_page_level_failure_is_recorded_not_fatal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from redherring.parse import pdf as pdfmod
+
+    real = pdfmod._find_tables
+
+    def flaky(page: object, words: list[dict[str, object]]) -> list[object]:
+        if getattr(page, "page_number", 0) == 2:
+            raise RuntimeError("boom")
+        return real(page, words)  # type: ignore[return-value]
+
+    monkeypatch.setattr(pdfmod, "_find_tables", flaky)
+    path = tmp_path / "three.pdf"
+    path.write_bytes(build_pdf([PageSpec().text(72, 72, f"Page {i}") for i in (1, 2, 3)]))
+    doc = parse_pdf(path)
+    assert [p.pdf_page for p in doc.pages] == [1, 2, 3]
+    assert doc.pages[1].error is not None
+    assert "boom" in doc.pages[1].error
+    assert doc.pages[0].error is None
+    assert doc.pages[2].blocks  # later pages still parsed
+    assert compute_stats(doc).pages_with_errors == 1

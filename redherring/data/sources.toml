@@ -53,3 +53,11 @@ issuer = "Tanla Solutions Limited"
 doc_type = "drhp"
 platform = "mainboard"
 notes = "Probe for scanned/image-heavy pages. Issuer confirmed from page 1 (DRHP, follow-on public issue of 15,885,000 shares). Filing date not stated on page 1; SEBI file timestamp suggests c. 2010 but that is unconfirmed."
+
+# Primary regulatory text used for red-flag rule thresholds (not an offer document; do not parse).
+[[document]]
+doc_id = "sebi_icdr_2018_consolidated_2026_03"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/mar-2026/1774592300989.pdf"
+issuer = "SEBI"
+doc_type = "regulation"
+notes = "SEBI (Issue of Capital and Disclosure Requirements) Regulations, 2018, SEBI consolidated copy marked amended up to 21 March 2026 (per search listing; confirm on page 1)."

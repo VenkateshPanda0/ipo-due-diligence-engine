@@ -226,6 +226,29 @@ def _attach_units(tables: list[RawTable], words: list[dict[str, Any]]) -> None:
             t.unit, t.unit_text = row_hits[0][0], f"row labels: {row_hits[0][1]}"
 
 
+def _parse_one_page(pdfium_doc: Any, raw_page: Any, n: int) -> ParsedPage:
+    plumber_page = _without_overlapping_spaces(raw_page)
+    words = plumber_page.extract_words(keep_blank_chars=False, use_text_flow=False)
+    n_images, coverage = _page_image_stats(pdfium_doc[n - 1])
+    alnum = sum(ch.isalnum() for w in words for ch in w["text"])
+
+    tables = _find_tables(plumber_page, words)
+    _attach_units(tables, words)
+    height = float(raw_page.height)
+    return ParsedPage(
+        pdf_page=n,
+        printed_page=_printed_page(words, height),
+        width=float(raw_page.width),
+        height=height,
+        alnum_chars=alnum,
+        n_images=n_images,
+        image_coverage=coverage,
+        needs_ocr=alnum < MIN_ALNUM_FOR_TEXT_LAYER and n_images > 0,
+        blocks=_blocks_from_words(n, words, [t.bbox for t in tables]),
+        tables=tables,
+    )
+
+
 def _parse_pages(path: str, page_numbers: list[int]) -> list[ParsedPage]:
     """Parse the given 1-based pages. Top-level so it can run in a worker process."""
     pdfium_doc = pdfium.PdfDocument(path)
@@ -234,29 +257,23 @@ def _parse_pages(path: str, page_numbers: list[int]) -> list[ParsedPage]:
         with pdfplumber.open(path) as plumber:
             for n in page_numbers:
                 raw_page = plumber.pages[n - 1]
-                plumber_page = _without_overlapping_spaces(raw_page)
-                words = plumber_page.extract_words(keep_blank_chars=False, use_text_flow=False)
-                n_images, coverage = _page_image_stats(pdfium_doc[n - 1])
-                alnum = sum(ch.isalnum() for w in words for ch in w["text"])
-
-                tables = _find_tables(plumber_page, words)
-                _attach_units(tables, words)
-                height = float(raw_page.height)
-                out.append(
-                    ParsedPage(
-                        pdf_page=n,
-                        printed_page=_printed_page(words, height),
-                        width=float(raw_page.width),
-                        height=height,
-                        alnum_chars=alnum,
-                        n_images=n_images,
-                        image_coverage=coverage,
-                        needs_ocr=alnum < MIN_ALNUM_FOR_TEXT_LAYER and n_images > 0,
-                        blocks=_blocks_from_words(n, words, [t.bbox for t in tables]),
-                        tables=tables,
+                try:
+                    out.append(_parse_one_page(pdfium_doc, raw_page, n))
+                except Exception as exc:  # one bad page must not lose the document
+                    out.append(
+                        ParsedPage(
+                            pdf_page=n,
+                            width=float(raw_page.width),
+                            height=float(raw_page.height),
+                            alnum_chars=0,
+                            n_images=0,
+                            image_coverage=0.0,
+                            needs_ocr=False,
+                            error=f"{type(exc).__name__}: {exc}",
+                        )
                     )
-                )
-                raw_page.flush_cache()
+                finally:
+                    raw_page.flush_cache()
     finally:
         pdfium_doc.close()
     return out

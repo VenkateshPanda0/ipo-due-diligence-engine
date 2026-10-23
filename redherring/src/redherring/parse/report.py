@@ -13,6 +13,7 @@ class ParseStats(BaseModel):
     parse_seconds: float
     pages_no_text_layer: int  # alnum chars below threshold (includes blank pages)
     pages_needs_ocr: int  # no text layer and has images
+    pages_with_errors: int  # pages that raised during parsing (content missing)
     pct_needs_ocr: float
     blocks: int
     raw_tables: int
@@ -36,6 +37,7 @@ def compute_stats(doc: ParsedDocument) -> ParseStats:
         parse_seconds=doc.parse_seconds,
         pages_no_text_layer=sum(p.alnum_chars < MIN_ALNUM_FOR_TEXT_LAYER for p in doc.pages),
         pages_needs_ocr=needs_ocr,
+        pages_with_errors=sum(p.error is not None for p in doc.pages),
         pct_needs_ocr=round(100 * needs_ocr / n, 1),
         blocks=sum(len(p.blocks) for p in doc.pages),
         raw_tables=sum(len(p.tables) for p in doc.pages),
@@ -54,6 +56,7 @@ def stats_markdown(rows: list[ParseStats]) -> str:
         ("n_pages", "pages"),
         ("parse_seconds", "sec"),
         ("pages_needs_ocr", "OCR pages"),
+        ("pages_with_errors", "err pages"),
         ("pct_needs_ocr", "% OCR"),
         ("blocks", "blocks"),
         ("raw_tables", "raw tbl"),

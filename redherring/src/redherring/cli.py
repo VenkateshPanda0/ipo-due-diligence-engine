@@ -7,11 +7,13 @@ import sys
 from pathlib import Path
 
 from redherring.ingest.fetch import Fetcher, FetchError
-from redherring.ingest.manifest import Manifest, load_sources
+from redherring.ingest.manifest import DocType, Manifest, load_sources
 from redherring.parse.models import PARSER_VERSION, ParsedDocument
 from redherring.parse.pdf import default_workers, parse_pdf
 from redherring.parse.render import render_tagged
 from redherring.parse.report import compute_stats, stats_markdown
+
+NOT_FILINGS = {DocType.REGULATION, DocType.ENFORCEMENT_ORDER}
 
 NOT_YET = {
     "analyze": "M1",
@@ -44,6 +46,8 @@ def _cmd_parse(args: argparse.Namespace) -> int:
     entries = manifest.entries()
     if args.doc_id:
         entries = [e for e in entries if e.doc_id in args.doc_id]
+    else:  # by default only offer documents; regulations and orders are reference material
+        entries = [e for e in entries if e.doc_type not in NOT_FILINGS]
     if not entries:
         print("nothing to parse (run `rh ingest` first, or check --doc-id)", file=sys.stderr)
         return 1
@@ -78,6 +82,9 @@ def _cmd_parse(args: argparse.Namespace) -> int:
             print(
                 f"parsed {e.doc_id}: {doc.n_pages} pages in {doc.parse_seconds}s", file=sys.stderr
             )
+            bad = [p.pdf_page for p in doc.pages if p.error]
+            if bad:
+                print(f"WARN  {e.doc_id}: {len(bad)} page(s) failed: {bad[:10]}", file=sys.stderr)
         stats.append(compute_stats(doc))
     if stats:
         table = stats_markdown(stats)

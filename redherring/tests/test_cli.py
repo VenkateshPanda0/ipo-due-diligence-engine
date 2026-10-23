@@ -101,3 +101,18 @@ def test_parse_ignores_output_from_older_parser_version(
     capsys.readouterr()
     assert main(["--data-dir", str(tmp_path), "parse"]) == 0
     assert "parsed good" in capsys.readouterr().err  # re-parsed, not "cached"
+
+
+def test_parse_skips_regulations_unless_named(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _register(tmp_path, "filing", build_pdf([PageSpec().text(72, 72, "Objects of the Issue")]))
+    _register(tmp_path, "icdr", build_pdf([PageSpec().text(72, 72, "Regulation 7")]))
+    m = Manifest(tmp_path / "manifest.jsonl")
+    m.add(m.get("icdr").model_copy(update={"doc_type": DocType.REGULATION}))  # type: ignore[union-attr]
+    assert main(["--data-dir", str(tmp_path), "parse"]) == 0
+    out = capsys.readouterr().out
+    assert "| filing |" in out
+    assert "| icdr |" not in out
+    assert main(["--data-dir", str(tmp_path), "parse", "--doc-id", "icdr"]) == 0
+    assert "| icdr |" in capsys.readouterr().out

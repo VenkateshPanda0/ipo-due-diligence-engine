@@ -137,6 +137,23 @@ def _promote_aligned_rows(lines: list[_Line], first: int, last: int, anchors: li
             ln.k = run
 
 
+def _place_values(
+    ln: _Line, anchors: list[float], ncols: int, anchored: bool
+) -> list[tuple[int, dict[str, Any]]] | None:
+    """(column, word) for each value of `ln`, or None if they cannot sit one per column."""
+    if not ln.k:
+        return []
+    if ln.k > ncols:
+        return None
+    if anchored:
+        slots = [_nearest(anchors, w["x1"]) for w in ln.value_words]
+        if len(set(slots)) != len(slots):  # collision: right-align positionally
+            slots = list(range(ncols - ln.k, ncols))
+    else:
+        slots = list(range(ln.k))
+    return list(zip(slots, ln.value_words, strict=True))
+
+
 def _segments(lines: list[_Line]) -> list[tuple[int, int]]:
     """(first, last) line indices of each run of data rows, split on long non-data gaps."""
     data = [i for i, ln in enumerate(lines) if ln.k]
@@ -208,14 +225,11 @@ def build_statement_tables(pdf_page: int, words: list[dict[str, Any]]) -> list[R
         for ln in seg:
             label = " ".join(w["text"] for w in ln.label_words)
             cells = [""] * ncols
-            if ln.k:
-                if anchored:
-                    slots = [_nearest(anchors, w["x1"]) for w in ln.value_words]
-                    if len(set(slots)) != len(slots):  # collision: right-align positionally
-                        slots = list(range(ncols - ln.k, ncols))
-                else:
-                    slots = list(range(ln.k))
-                for slot, w in zip(slots, ln.value_words, strict=True):
+            placed = _place_values(ln, anchors, ncols, anchored)
+            if placed is None:  # cannot place one value per column: keep every token as text
+                label = ln.text
+            else:
+                for slot, w in placed:
                     cells[slot] = w["text"]
             rows.append([label, *cells])
 

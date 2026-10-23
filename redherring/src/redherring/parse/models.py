@@ -12,7 +12,8 @@ from redherring.parse.units import Unit
 
 # Bump whenever parser output changes meaningfully; cached parsed files with another version
 # are re-parsed. 1: initial. 2: overlap-space fix, numeric_rows, row-label units, no row flipping.
-PARSER_VERSION = 2
+# 3: x-anchored statement columns with assembled headers, residual rows beside ruled tables.
+PARSER_VERSION = 3
 
 
 def page_tag(pdf_page: int) -> str:
@@ -40,9 +41,13 @@ class RawTable(BaseModel):
     pdf_page: int
     bbox: BBox
     rows: list[list[str]]
-    strategy: str  # "lines" (ruled) or "text" (whitespace-aligned fallback)
+    strategy: str  # "lines" (ruled), "numeric_rows" (unruled statement) or "text"
     unit: Unit | None = None
     unit_text: str | None = None
+    # numeric_rows only: header text per value column (rows are [label, *values] in that order)
+    # and the header text over the label column.
+    columns: list[str] = Field(default_factory=list)
+    label_header: str = ""
 
 
 class Table(BaseModel):
@@ -52,6 +57,8 @@ class Table(BaseModel):
     rows: list[list[str]]
     unit: Unit | None = None
     unit_text: str | None = None
+    columns: list[str] = Field(default_factory=list)  # see RawTable.columns
+    label_header: str = ""
     # True if periods appear to run down the first column. `rows` are kept AS FOUND; the flag is
     # unvalidated (see M0 report) so nothing is flipped silently. Use `tables.transpose` to flip.
     transposed_suspect: bool = False

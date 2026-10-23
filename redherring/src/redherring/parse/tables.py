@@ -104,6 +104,8 @@ def stitch_tables(raw: list[RawTable], page_heights: dict[int, float]) -> list[T
                 rows=rows,
                 unit=unit,
                 unit_text=unit_text,
+                columns=next((t.columns for t in g if t.columns), []),
+                label_header=next((t.label_header for t in g if t.label_header), ""),
                 transposed_suspect=looks_transposed(rows),
                 stitched_from=len(g),
             )

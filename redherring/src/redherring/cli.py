@@ -9,7 +9,7 @@ from pathlib import Path
 from redherring.ingest.fetch import Fetcher, FetchError
 from redherring.ingest.manifest import Manifest, load_sources
 from redherring.parse.models import PARSER_VERSION, ParsedDocument
-from redherring.parse.pdf import parse_pdf
+from redherring.parse.pdf import default_workers, parse_pdf
 from redherring.parse.render import render_tagged
 from redherring.parse.report import compute_stats, stats_markdown
 
@@ -63,7 +63,11 @@ def _cmd_parse(args: argparse.Namespace) -> int:
             pages = range(1, args.max_pages + 1) if args.max_pages else None
             try:
                 doc = parse_pdf(
-                    data_dir / e.local_path, doc_id=e.doc_id, sha256=e.sha256, pages=pages
+                    data_dir / e.local_path,
+                    doc_id=e.doc_id,
+                    sha256=e.sha256,
+                    pages=pages,
+                    workers=args.workers,
                 )
             except Exception as exc:  # batch boundary: report the bad document, keep going
                 print(f"FAIL  {e.doc_id}: {type(exc).__name__}: {exc}", file=sys.stderr)
@@ -95,6 +99,9 @@ def build_parser() -> argparse.ArgumentParser:
     par = sub.add_parser("parse", help="parse ingested PDFs into page-tagged blocks and tables")
     par.add_argument("--doc-id", action="append", help="limit to this doc_id (repeatable)")
     par.add_argument("--max-pages", type=int, help="parse only the first N pages")
+    par.add_argument(
+        "--workers", type=int, default=default_workers(), help="parallel processes per document"
+    )
     par.add_argument("--force", action="store_true", help="re-parse even if output is up to date")
     par.set_defaults(func=_cmd_parse)
 

@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+from redherring.parse.models import ParsedDocument
 from redherring.parse.pdf import parse_pdf
 from redherring.parse.render import render_tagged
 from redherring.parse.report import compute_stats
@@ -178,3 +179,123 @@ def test_unit_inside_row_labels(tmp_path: Path) -> None:
     assert t.unit is Unit.LAKH
     assert t.unit_text is not None
     assert t.unit_text.startswith("row labels")
+
+
+# ---- statement rows: column anchors, assembled headers, residual rows, segmentation, workers ----
+
+
+def _right(p: PageSpec, x1: float, top: float, s: str, size: float = 8) -> None:
+    p.text(x1 - 4.45 * len(s), top, s, size)  # Helvetica digits ~0.556 em, comma/period ~0.278
+
+
+def _two_period_statement() -> PageSpec:
+    """Right-aligned statement with a Note column, a header split over three lines, and a row
+    that has no value in the first period column."""
+    p = PageSpec()
+    p.text(72, 60, "(All amounts are in Indian Rupees in Million)", 8)
+    p.text(72, 80, "Particulars", 8)
+    _right(p, 300, 80, "Note")
+    p.text(380, 80, "For the year", 8)
+    p.text(480, 80, "For the year", 8)
+    p.text(380, 90, "ended March 31,", 8)
+    p.text(480, 90, "ended March 31,", 8)
+    p.text(400, 100, "2026", 8)
+    p.text(500, 100, "2025", 8)
+    rows = [
+        ("Revenue from operations", "31", "1,000.50", "900.25"),
+        ("Other income", "32", "12.75", "9.10"),
+        ("Total income", "", "1,013.25", "909.35"),
+        ("Exceptional item", "", "", "(5.00)"),  # only the second period has a value
+        ("Profit before tax", "", "(50.00)", "40.00"),
+    ]
+    for i, (label, note, a, b) in enumerate(rows):
+        top = 118 + i * 14
+        p.text(72, top, label, 8)
+        if note:
+            _right(p, 300, top, note)
+        if a:
+            _right(p, 440, top, a)
+        _right(p, 540, top, b)
+    return p
+
+
+def _parse_one(tmp_path: Path, spec: PageSpec, name: str = "s.pdf") -> ParsedDocument:
+    path = tmp_path / name
+    path.write_bytes(build_pdf([spec]))
+    return parse_pdf(path)
+
+
+def test_statement_columns_are_anchored_by_x_position(tmp_path: Path) -> None:
+    doc = _parse_one(tmp_path, _two_period_statement())
+    (t,) = [t for t in doc.pages[0].tables if t.strategy == "numeric_rows"]
+    assert len(t.columns) == 3  # Note + two periods
+    assert "2026" in t.columns[1]
+    assert "2025" in t.columns[2]
+    assert "For the year" in t.columns[1]
+    assert t.label_header.startswith("Particulars")
+    # the row with a value only in the second period keeps it in the second period column
+    row = next(r for r in t.rows if r[0] == "Exceptional item")
+    assert row == ["Exceptional item", "", "", "(5.00)"]
+    assert next(r for r in t.rows if r[0] == "Total income") == [
+        "Total income",
+        "",
+        "1,013.25",
+        "909.35",
+    ]
+    # header lines are columns, not data rows
+    assert not any("ended" in " ".join(r) for r in t.rows)
+
+
+def test_numeric_lines_outside_a_ruled_table_still_become_rows(tmp_path: Path) -> None:
+    p = PageSpec()
+    p.grid(72, 60, [200, 100, 100], [["Item", "FY 2024", "FY 2023"], ["Boxed", "1", "2"]])
+    for i, (label, a, b) in enumerate(
+        [("Loan disbursals", "71,519.55", "50,992.90"), ("Total revenue", "10,411.13", "6,930.46"),
+         ("Marketing costs", "1,220.90", "1,073.45"), ("Impairment", "2,614.03", "2,004.30")]
+    ):  # fmt: skip
+        top = 300 + i * 14
+        p.text(72, top, label, 8)
+        _right(p, 400, top, a)
+        _right(p, 500, top, b)
+    doc = _parse_one(tmp_path, p)
+    strategies = sorted(t.strategy for t in doc.pages[0].tables)
+    assert strategies == ["lines", "numeric_rows"]
+    statement = next(t for t in doc.pages[0].tables if t.strategy == "numeric_rows")
+    assert ["Total revenue", "10,411.13", "6,930.46"] in statement.rows
+    assert not any("Total revenue" in b.text for b in doc.pages[0].blocks)
+
+
+def test_unrelated_numeric_blocks_are_split_into_separate_tables(tmp_path: Path) -> None:
+    p = PageSpec()
+    for i in range(3):
+        top = 80 + i * 14
+        p.text(72, top, f"First block row {i}", 8)
+        _right(p, 400, top, f"{100 + i},000.50")
+        _right(p, 500, top, f"{200 + i},000.50")
+    for j in range(6):  # a paragraph of prose between the two blocks
+        p.text(72, 140 + j * 14, "This is ordinary prose that separates the two numeric blocks.", 8)
+    for i in range(3):
+        top = 300 + i * 14
+        p.text(72, top, f"Second block row {i}", 8)
+        _right(p, 400, top, f"{300 + i},000.50")
+        _right(p, 500, top, f"{400 + i},000.50")
+    doc = _parse_one(tmp_path, p)
+    tables = [t for t in doc.pages[0].tables if t.strategy == "numeric_rows"]
+    assert len(tables) == 2
+    assert not any("ordinary prose" in " ".join(r) for t in tables for r in t.rows)
+
+
+def test_parallel_parse_matches_serial(tmp_path: Path) -> None:
+    pages = [_two_period_statement() for _ in range(6)]
+    path = tmp_path / "multi.pdf"
+    path.write_bytes(build_pdf(pages))
+    serial = parse_pdf(path, workers=1)
+    parallel = parse_pdf(path, workers=3, min_pages_per_worker=1)
+
+    def strip(d: ParsedDocument) -> list[tuple[int, list[str], list[list[list[str]]]]]:
+        return [
+            (p.pdf_page, [b.text for b in p.blocks], [t.rows for t in p.tables]) for p in d.pages
+        ]
+
+    assert strip(serial) == strip(parallel)
+    assert [t.pdf_pages for t in serial.tables] == [t.pdf_pages for t in parallel.tables]

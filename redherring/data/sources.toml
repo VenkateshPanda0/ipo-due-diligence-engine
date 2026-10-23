@@ -35,3 +35,21 @@ doc_type = "prospectus"
 platform = "mainboard"
 filing_date = 2026-09-29
 notes = "Fintech/lending; table-heavy."
+
+# Added 2026-10-23 after the author approved the document-5 candidates.
+[[document]]
+doc_id = "paytm_drhp_2021"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/jul-2021/1626426805246.pdf"
+issuer = "One 97 Communications Limited"
+doc_type = "drhp"
+platform = "mainboard"
+filing_date = 2021-07-15
+notes = "Older mainboard layout. Issuer confirmed from page 1 (offer up to INR 166,000 million). Final RHP not located on SEBI."
+
+[[document]]
+doc_id = "sebi_draft_2010_probe"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/1292989425401.pdf"
+issuer = "Tanla Solutions Limited"
+doc_type = "drhp"
+platform = "mainboard"
+notes = "Probe for scanned/image-heavy pages. Issuer confirmed from page 1 (DRHP, follow-on public issue of 15,885,000 shares). Filing date not stated on page 1; SEBI file timestamp suggests c. 2010 but that is unconfirmed."

@@ -239,6 +239,12 @@ docs/          architecture, regulations, benchmark, guides, ADRs, screenshots
 [Roadmap](docs/ROADMAP.md) ·
 [Changelog](docs/CHANGELOG.md) (what changed in 2.0.1)
 
+## Related project: RedHerring
+
+[`redherring/`](redherring/README.md) is a separate, self-contained project in this repository:
+page-cited extraction and forensic red flags for Indian offer documents. It has its own
+dependencies, tests and CI, shares no code with the engine above, and is at an early stage (M0).
+
 ## License
 
 [MIT](LICENSE) © 2026 Venkatesh Panda. Regulatory content is a good-faith reading of

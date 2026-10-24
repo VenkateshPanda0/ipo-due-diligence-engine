@@ -54,7 +54,7 @@ no_implicit_optional = true
 
 # Strict where extraction logic will live (M1+); those packages are empty stubs in M0.
 [[tool.mypy.overrides]]
-module = ["redherring.extract.*", "redherring.verify.*", "redherring.flags.*"]
+module = ["redherring.extract.*", "redherring.verify.*", "redherring.flags.*", "redherring.llm.*"]
 strict = true
 
 # Untyped third-party PDF libraries.

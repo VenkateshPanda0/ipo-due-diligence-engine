@@ -12,15 +12,16 @@ def _pct(n: int, d: int) -> str:
 def summary_markdown(rows: list[Summary]) -> str:
     head = (
         "| doc | values | citation-verified | footing passed | multi-source groups "
-        "| unanimous | no period | no unit | issue facts verified | flags |"
+        "| unanimous | no period | no unit | issue facts verified | rules decisive | flags |"
     )
-    lines = [head, "|" + "---|" * 10]
+    lines = [head, "|" + "---|" * 11]
     for r in rows:
         lines.append(
             f"| {r.doc_id} | {r.values_total} | {_pct(r.values_verified, r.values_total)} "
             f"| {_pct(r.footing_passed, r.footing_checked)} | {r.consensus_multi_source} "
             f"| {_pct(r.consensus_unanimous_multi, r.consensus_multi_source)} "
             f"| {r.values_without_period} | {r.values_without_unit} "
-            f"| {_pct(r.issue_facts_verified, r.issue_facts_total)} | {r.flags} |"
+            f"| {_pct(r.issue_facts_verified, r.issue_facts_total)} "
+            f"| {r.rules_decisive}/{r.rules_applicable} | {r.flags} |"
         )
     return "\n".join(lines)

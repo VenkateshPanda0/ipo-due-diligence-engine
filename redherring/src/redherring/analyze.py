@@ -14,7 +14,7 @@ from redherring.extract.financials import extract_financials
 from redherring.extract.issue import IssueFact, extract_issue_facts
 from redherring.extract.models import CitedNumber, Concept
 from redherring.extract.periods import period_key
-from redherring.flags.engine import Flag, evaluate, load_rules
+from redherring.flags.engine import Flag, RuleAudit, audit, evaluate, load_rules
 from redherring.flags.facts import facts_from
 from redherring.parse.models import ParsedDocument
 from redherring.verify.cited import PdfiumPageText, check_cited_number, check_evidence
@@ -68,6 +68,8 @@ class Summary(BaseModel):
     issue_facts_total: int
     issue_facts_verified: int
     flags: int
+    rules_decisive: int  # rules that could be evaluated (flagged or clear)
+    rules_applicable: int  # rules in force for this platform and date
 
 
 class AnalysisReport(BaseModel):
@@ -77,6 +79,7 @@ class AnalysisReport(BaseModel):
     footing: list[FootingRecord]
     consensus: list[ConsensusRecord]
     flags: list[Flag]
+    rule_audit: list[RuleAudit]
 
 
 def _footing_record(c: FootingCheck) -> FootingRecord:
@@ -128,10 +131,11 @@ def analyze_document(
     multi = [c for c in consensus if c.total >= 2]
     good_issue = [f for f, vf in zip(issue, verified_issue, strict=True) if vf.verified]
     flags: list[Flag] = []
+    rule_audit: list[RuleAudit] = []
     if platform is not None:
-        flags = evaluate(
-            load_rules(), facts_from(consensus, good_issue), platform=platform, as_of=as_of
-        )
+        rules, facts = load_rules(), facts_from(consensus, good_issue)
+        flags = evaluate(rules, facts, platform=platform, as_of=as_of)
+        rule_audit = audit(rules, facts, platform=platform, as_of=as_of)
     summary = Summary(
         doc_id=doc.doc_id,
         values_total=len(values),
@@ -147,6 +151,10 @@ def analyze_document(
         issue_facts_total=len(issue),
         issue_facts_verified=sum(f.verified for f in verified_issue),
         flags=len(flags),
+        rules_decisive=sum(a.status in ("flagged", "clear") for a in rule_audit),
+        rules_applicable=sum(
+            a.status not in ("other_platform", "not_in_force") for a in rule_audit
+        ),
     )
     return AnalysisReport(
         summary=summary,
@@ -155,6 +163,7 @@ def analyze_document(
         footing=[_footing_record(c) for c in footing],
         consensus=[_consensus_record(c) for c in consensus],
         flags=flags,
+        rule_audit=rule_audit,
     )
 
 

@@ -247,3 +247,55 @@ def test_only_fiscal_years_enter_trend_rules_by_default(tmp_path: Path) -> None:
         **series(PAT_KEY, {"FY2025": "60", "FY2026": "80", "3M-2026-06-30": "9"}, 150),
     }
     assert evaluate([rule], facts, platform="sme") == []  # only two fiscal years: not enough
+
+
+# ---- audit: why a rule was or was not decisive ---------------------------------------------------
+
+
+def test_audit_distinguishes_clear_flagged_missing_and_inapplicable(tmp_path: Path) -> None:
+    from redherring.flags.engine import audit
+
+    gcp = spec(GCP, tmp_path)
+    sme_only = spec(
+        GCP.replace('platforms = ["mainboard"]', 'platforms = ["sme"]').replace(
+            'id = "T-GCP"', 'id = "T-SME"'
+        ),
+        tmp_path,
+    )
+    future_toml = GCP.replace(
+        'severity = "medium"', 'severity = "medium"\nvalid_from = 2030-01-01'
+    ).replace('id = "T-GCP"', 'id = "T-FUT"')
+    future = spec(future_toml, tmp_path)
+
+    clear_facts = {
+        "objects.gcp_amount": fact("objects.gcp_amount", "100"),
+        "issue.fresh_issue_amount": fact("issue.fresh_issue_amount", "1000"),
+    }
+    by_id = {
+        a.rule_id: a for a in audit([gcp, sme_only, future], clear_facts, platform="mainboard")
+    }
+    assert by_id["T-GCP"].status == "clear"
+    assert by_id["T-GCP"].numbers["ratio"] == Decimal("0.1")
+    assert by_id["T-SME"].status == "other_platform"
+    assert by_id["T-FUT"].status == "not_in_force"
+
+    flagged = {**clear_facts, "objects.gcp_amount": fact("objects.gcp_amount", "300")}
+    assert audit([gcp], flagged, platform="mainboard")[0].status == "flagged"
+
+    only_den = {"issue.fresh_issue_amount": fact("issue.fresh_issue_amount", "1000")}
+    (missing,) = audit([gcp], only_den, platform="mainboard")
+    assert missing.status == "missing_inputs"
+    assert missing.missing == ["objects.gcp_amount"]
+
+
+def test_audit_reports_series_that_are_too_short(tmp_path: Path) -> None:
+    from redherring.flags.engine import audit
+
+    rule = spec(CFO, tmp_path)
+    short = {
+        **series(CFO_KEY, {"FY2025": "-20", "FY2026": "10"}, 200),
+        **series(PAT_KEY, {"FY2025": "60", "FY2026": "80"}, 150),
+    }
+    (a,) = audit([rule], short, platform="sme")
+    assert a.status == "missing_inputs"
+    assert "3" in a.detail  # says how many fiscal years are needed

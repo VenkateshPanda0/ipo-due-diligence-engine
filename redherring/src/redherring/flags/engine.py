@@ -7,6 +7,7 @@ from collections.abc import Iterable
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -56,6 +57,10 @@ def load_rules(directory: Path = RULES_DIR) -> list[RuleSpec]:
     return [load_rule_file(p) for p in sorted(directory.glob("*.toml"))]
 
 
+def _missing(facts: Facts, keys: Iterable[str]) -> list[str]:
+    return [k for k in keys if k not in facts or not facts[k].citations]
+
+
 def _usable(facts: Facts, keys: Iterable[str]) -> list[Fact] | None:
     """The facts for `keys`, or None if any is missing or uncited."""
     out: list[Fact] = []
@@ -88,6 +93,16 @@ def _series(facts: Facts, prefix: str, period_regex: str) -> dict[str, Fact]:
     }
 
 
+class _Result(BaseModel):
+    """What one rule did: flags raised, whether it could be evaluated, and the figures involved."""
+
+    flags: list[Flag] = Field(default_factory=list)
+    evaluated: bool = False
+    numbers: dict[str, Decimal] = Field(default_factory=dict)
+    missing: list[str] = Field(default_factory=list)
+    detail: str = ""
+
+
 def _flag(
     rule: RuleSpec,
     severity: Severity,
@@ -107,13 +122,14 @@ def _flag(
     )
 
 
-def _ratio_vs_cap(rule: RuleSpec, logic: RatioVsCap, facts: Facts) -> list[Flag]:
-    used = _usable(facts, [*logic.numerators, logic.denominator])
+def _ratio_vs_cap(rule: RuleSpec, logic: RatioVsCap, facts: Facts) -> _Result:
+    keys = [*logic.numerators, logic.denominator]
+    used = _usable(facts, keys)
     if used is None:
-        return []
+        return _Result(missing=_missing(facts, keys))
     *nums, den = used
     if den.value <= 0:
-        return []
+        return _Result(detail="denominator is not positive")
     numerator = sum((n.value for n in nums), Decimal(0))
     ratio = numerator / den.value
     cap = Decimal(str(logic.cap))
@@ -124,71 +140,139 @@ def _ratio_vs_cap(rule: RuleSpec, logic: RatioVsCap, facts: Facts) -> list[Flag]
         text = (
             f"{rule.name}: {ratio:.0%} against a limit of {cap:.0%}; the figure is above the limit."
         )
-        return [_flag(rule, "high", text, numbers, used)]
+        return _Result(
+            flags=[_flag(rule, "high", text, numbers, used)], evaluated=True, numbers=numbers
+        )
     if ratio >= cap * Decimal(str(logic.near_cap_fraction)):
         text = f"{rule.name}: {ratio:.0%} against a limit of {cap:.0%}, i.e. close to the limit."
-        return [_flag(rule, rule.severity, text, numbers, used)]
-    return []
+        flag = _flag(rule, rule.severity, text, numbers, used)
+        return _Result(flags=[flag], evaluated=True, numbers=numbers)
+    return _Result(evaluated=True, numbers=numbers)
 
 
-def _required_if(rule: RuleSpec, logic: RequiredIf, facts: Facts) -> list[Flag]:
-    used = _usable(facts, [logic.trigger, logic.required])
+def _required_if(rule: RuleSpec, logic: RequiredIf, facts: Facts) -> _Result:
+    keys = [logic.trigger, logic.required]
+    used = _usable(facts, keys)
     if used is None:
-        return []
+        return _Result(missing=_missing(facts, keys))
     trigger, required = used
-    if trigger.value > Decimal(str(logic.threshold)) and required.value == 0:
+    threshold = Decimal(str(logic.threshold))
+    numbers = {"size": trigger.value, "threshold": threshold, "required_present": required.value}
+    if trigger.value > threshold and required.value == 0:
         text = (
             f"{rule.name}: the size ({trigger.value:,.0f}) is above the threshold of "
-            f"{Decimal(str(logic.threshold)):,.0f} but the document states it is not in place."
+            f"{threshold:,.0f} but the document states it is not in place."
         )
-        numbers = {"size": trigger.value, "threshold": Decimal(str(logic.threshold))}
-        return [_flag(rule, rule.severity, text, numbers, used)]
-    return []
+        flag = _flag(rule, rule.severity, text, numbers, used)
+        return _Result(flags=[flag], evaluated=True, numbers=numbers)
+    return _Result(evaluated=True, numbers=numbers)
 
 
-def _persistent_below(rule: RuleSpec, logic: PersistentBelow, facts: Facts) -> list[Flag]:
+def _persistent_below(rule: RuleSpec, logic: PersistentBelow, facts: Facts) -> _Result:
     left = _series(facts, logic.left, logic.period_regex)
     right = _series(facts, logic.right, logic.period_regex)
     periods = sorted(set(left) & set(right))[-logic.min_periods :]
     if len(periods) < logic.min_periods:
-        return []
+        return _Result(
+            missing=[logic.left, logic.right],
+            detail=f"needs {logic.min_periods} common periods of both series; have {len(periods)}",
+        )
     breached = [
         p
         for p in periods
         if left[p].value < right[p].value
         and (right[p].value > 0 or not logic.require_right_positive)
     ]
+    numbers = {"breaches": Decimal(len(breached)), "periods": Decimal(len(periods))}
     if len(breached) < logic.min_breaches:
-        return []
+        return _Result(evaluated=True, numbers=numbers)
     used = [f for p in periods for f in (left[p], right[p])]
     text = (
         f"{rule.name}: below in {len(breached)} of the last {len(periods)} years "
         f"({', '.join(breached)})."
     )
-    numbers = {"breaches": Decimal(len(breached)), "periods": Decimal(len(periods))}
-    return [_flag(rule, rule.severity, text, numbers, used)]
+    flag = _flag(rule, rule.severity, text, numbers, used)
+    return _Result(flags=[flag], evaluated=True, numbers=numbers)
 
 
-def _growth_gap(rule: RuleSpec, logic: GrowthGap, facts: Facts) -> list[Flag]:
+def _growth_gap(rule: RuleSpec, logic: GrowthGap, facts: Facts) -> _Result:
     left = _series(facts, logic.left, logic.period_regex)
     right = _series(facts, logic.right, logic.period_regex)
     periods = sorted(set(left) & set(right))[-2:]
     if len(periods) < 2:
-        return []
+        return _Result(
+            missing=[logic.left, logic.right],
+            detail=f"needs 2 common periods of both series; have {len(periods)}",
+        )
     p0, p1 = periods
     if left[p0].value <= 0 or right[p0].value <= 0:
-        return []
+        return _Result(detail="base-period value is not positive")
     g_left = left[p1].value / left[p0].value - 1
     g_right = right[p1].value / right[p0].value - 1
     gap = (g_left - g_right) * 100
+    numbers = {"growth_left": g_left, "growth_right": g_right, "gap_pp": gap}
     if gap < Decimal(str(logic.min_gap_pp)):
-        return []
+        return _Result(evaluated=True, numbers=numbers)
     text = (
         f"{rule.name}: grew {g_left:.0%} against {g_right:.0%} ({p0} to {p1}), "
         f"a gap of {gap:.0f} percentage points."
     )
-    numbers = {"growth_left": g_left, "growth_right": g_right, "gap_pp": gap}
-    return [_flag(rule, rule.severity, text, numbers, [left[p0], left[p1], right[p0], right[p1]])]
+    used = [left[p0], left[p1], right[p0], right[p1]]
+    return _Result(
+        flags=[_flag(rule, rule.severity, text, numbers, used)], evaluated=True, numbers=numbers
+    )
+
+
+def _run(rule: RuleSpec, facts: Facts) -> _Result:
+    logic = rule.logic
+    if isinstance(logic, RatioVsCap):
+        return _ratio_vs_cap(rule, logic, facts)
+    if isinstance(logic, RequiredIf):
+        return _required_if(rule, logic, facts)
+    if isinstance(logic, PersistentBelow):
+        return _persistent_below(rule, logic, facts)
+    return _growth_gap(rule, logic, facts)
+
+
+AuditStatus = Literal["flagged", "clear", "missing_inputs", "other_platform", "not_in_force"]
+
+
+class RuleAudit(BaseModel):
+    """Why a rule did or did not decide anything for one document."""
+
+    rule_id: str
+    status: AuditStatus
+    numbers: dict[str, Decimal] = Field(default_factory=dict)
+    missing: list[str] = Field(default_factory=list)
+    detail: str = ""
+
+
+def audit(
+    rules: Iterable[RuleSpec], facts: Facts, *, platform: str, as_of: date | None = None
+) -> list[RuleAudit]:
+    """One entry per rule: flagged, clear (with its figures), or why it was not decisive."""
+    day = as_of or date.today()
+    out: list[RuleAudit] = []
+    for rule in rules:
+        if platform not in rule.platforms:
+            out.append(RuleAudit(rule_id=rule.id, status="other_platform"))
+        elif not rule.applies_on(day):
+            out.append(RuleAudit(rule_id=rule.id, status="not_in_force"))
+        else:
+            r = _run(rule, facts)
+            status: AuditStatus = (
+                "flagged" if r.flags else ("clear" if r.evaluated else "missing_inputs")
+            )
+            out.append(
+                RuleAudit(
+                    rule_id=rule.id,
+                    status=status,
+                    numbers=r.numbers,
+                    missing=r.missing,
+                    detail=r.detail,
+                )
+            )
+    return out
 
 
 def evaluate(
@@ -202,15 +286,6 @@ def evaluate(
     day = as_of or date.today()
     flags: list[Flag] = []
     for rule in rules:
-        if platform not in rule.platforms or not rule.applies_on(day):
-            continue
-        logic = rule.logic
-        if isinstance(logic, RatioVsCap):
-            flags += _ratio_vs_cap(rule, logic, facts)
-        elif isinstance(logic, RequiredIf):
-            flags += _required_if(rule, logic, facts)
-        elif isinstance(logic, PersistentBelow):
-            flags += _persistent_below(rule, logic, facts)
-        else:
-            flags += _growth_gap(rule, logic, facts)
+        if platform in rule.platforms and rule.applies_on(day):
+            flags += _run(rule, facts).flags
     return flags

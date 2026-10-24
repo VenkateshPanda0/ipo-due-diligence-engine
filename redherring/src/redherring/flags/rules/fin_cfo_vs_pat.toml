@@ -4,6 +4,7 @@ rationale = "Profit that is not backed by operating cash flow, year after year, 
 platforms = ["mainboard", "sme"]
 severity = "medium"
 heuristic = true
+not_for_sectors = ["lender", "real_estate"]  # loan growth / inventory build sit in operating cash flow
 citation_requirement = "Cite the cash-flow-from-operations row and the profit-after-tax row for each of the years used."
 
 [logic]

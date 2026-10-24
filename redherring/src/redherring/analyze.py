@@ -14,6 +14,7 @@ from redherring.extract.financials import extract_financials
 from redherring.extract.issue import IssueFact, extract_issue_facts
 from redherring.extract.models import CitedNumber, Concept
 from redherring.extract.periods import period_key
+from redherring.extract.sector import SectorEvidence, detect_sectors
 from redherring.flags.engine import Flag, RuleAudit, audit, evaluate, load_rules
 from redherring.flags.facts import facts_from
 from redherring.parse.models import ParsedDocument
@@ -21,7 +22,7 @@ from redherring.verify.cited import PdfiumPageText, check_cited_number, check_ev
 from redherring.verify.footing import FootingCheck, run_footing, trusted_columns
 
 # Bump when AnalysisReport changes shape or meaning; older files are refused with a clear message.
-ANALYSIS_VERSION = 9
+ANALYSIS_VERSION = 10
 
 
 class VerifiedNumber(CitedNumber):
@@ -94,6 +95,7 @@ class AnalysisReport(BaseModel):
     footing: list[FootingRecord]
     consensus: list[ConsensusRecord]
     facts: list[FactRecord]
+    sectors: list[SectorEvidence] = []
     flags: list[Flag]
     rule_audit: list[RuleAudit]
 
@@ -148,12 +150,14 @@ def analyze_document(
     multi = [c for c in consensus if c.total >= 2]
     good_issue = [f for f, vf in zip(issue, verified_issue, strict=True) if vf.verified]
     facts = facts_from(consensus, good_issue)
+    sectors = detect_sectors(doc)
     flags: list[Flag] = []
     rule_audit: list[RuleAudit] = []
     if platform is not None:
         rules = load_rules()
-        flags = evaluate(rules, facts, platform=platform, as_of=as_of)
-        rule_audit = audit(rules, facts, platform=platform, as_of=as_of)
+        found = {s.sector for s in sectors}
+        flags = evaluate(rules, facts, platform=platform, as_of=as_of, sectors=found)
+        rule_audit = audit(rules, facts, platform=platform, as_of=as_of, sectors=found)
     summary = Summary(
         doc_id=doc.doc_id,
         values_total=len(values),
@@ -172,7 +176,7 @@ def analyze_document(
         flags=len(flags),
         rules_decisive=sum(a.status in ("flagged", "clear") for a in rule_audit),
         rules_applicable=sum(
-            a.status not in ("other_platform", "not_in_force") for a in rule_audit
+            a.status not in ("other_platform", "not_in_force", "not_applicable") for a in rule_audit
         ),
     )
     return AnalysisReport(
@@ -192,6 +196,7 @@ def analyze_document(
             )
             for k, f in sorted(facts.items())
         ],
+        sectors=sectors,
         flags=flags,
         rule_audit=rule_audit,
     )

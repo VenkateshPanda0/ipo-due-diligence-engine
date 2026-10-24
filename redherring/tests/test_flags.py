@@ -358,3 +358,15 @@ def test_growth_gap_needs_consecutive_fiscal_years(tmp_path: Path) -> None:
     }
     assert evaluate([rule], gap, platform="mainboard") == []
     assert audit([rule], gap, platform="mainboard")[0].status == "missing_inputs"
+
+
+def test_no_icdr_2018_rule_applies_to_a_filing_that_predates_the_regulations() -> None:
+    """A December 2005 draft (Tanla) was judged by 2018 rules because several had no start date."""
+    from redherring.flags.engine import audit
+
+    rules = load_rules()
+    for platform in ("mainboard", "sme"):
+        out = audit(rules, {}, platform=platform, as_of=date(2005, 12, 3))
+        for rule, a in zip(rules, out, strict=True):
+            if platform in rule.platforms and not rule.heuristic:
+                assert a.status == "not_in_force", rule.id

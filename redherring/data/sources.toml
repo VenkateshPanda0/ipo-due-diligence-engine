@@ -52,7 +52,8 @@ url = "https://www.sebi.gov.in/sebi_data/attachdocs/1292989425401.pdf"
 issuer = "Tanla Solutions Limited"
 doc_type = "drhp"
 platform = "mainboard"
-notes = "Probe for scanned/image-heavy pages. Issuer confirmed from page 1 (DRHP, follow-on public issue of 15,885,000 shares). Filing date not stated on page 1; SEBI file timestamp suggests c. 2010 but that is unconfirmed."
+filing_date = 2005-12-03
+notes = "Probe for scanned/image-heavy pages. Issuer confirmed from page 1 (DRHP, follow-on public issue of 15,885,000 shares). Dated 3 December 2005 (page 5); financials run FY2001 to six months to 30 Sep 2005. The earlier guess of c. 2010 from the SEBI file timestamp was wrong. Pre-ICDR: no ICDR 2018 rule applies."
 
 # Primary regulatory text used for red-flag rule thresholds (not an offer document; do not parse).
 [[document]]

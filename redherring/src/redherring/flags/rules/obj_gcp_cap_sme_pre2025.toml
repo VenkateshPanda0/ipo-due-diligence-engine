@@ -4,6 +4,7 @@ rationale = "Before March 2025 the SME general-purposes bucket was capped at 25%
 platforms = ["sme"]
 severity = "medium"
 heuristic = false
+valid_from = 2018-11-10  # ICDR 2018 in force: gazette 11 Sep 2018 + 60 days (secondary sources, e.g. AZB & Partners; the consolidated copy omits the date)
 valid_to = 2025-03-07
 citation_requirement = "Cite the objects-of-the-issue row for general corporate purposes and the row giving the amount being raised."
 

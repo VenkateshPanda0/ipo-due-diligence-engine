@@ -175,6 +175,11 @@ class Fetcher:
         if existing and existing.url == spec.url:
             path = self.data_dir / existing.local_path
             if path.exists() and sha256_file(path) == existing.sha256 and looks_complete(path):
+                described = spec.model_dump()
+                if any(getattr(existing, k) != v for k, v in described.items()):
+                    # sources.toml was corrected (a filing date, a note): the manifest follows
+                    existing = existing.model_copy(update=described)
+                    manifest.add(existing)
                 return existing, False
 
         if not self.allowed(spec.url):

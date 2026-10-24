@@ -100,6 +100,8 @@ class RuleSpec(BaseModel):
     # that applied when it was filed, not by today's.
     valid_from: date | None = None
     valid_to: date | None = None
+    # Sectors (see `extract.sector`) for which the rule says nothing useful: it is not applied.
+    not_for_sectors: list[str] = Field(default_factory=list)
     citation_requirement: str
     logic: Logic
     sources: list[Source] = Field(min_length=1)

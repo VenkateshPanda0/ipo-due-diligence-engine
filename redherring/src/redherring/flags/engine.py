@@ -247,7 +247,9 @@ def _run(rule: RuleSpec, facts: Facts) -> _Result:
     return _growth_gap(rule, logic, facts)
 
 
-AuditStatus = Literal["flagged", "clear", "missing_inputs", "other_platform", "not_in_force"]
+AuditStatus = Literal[
+    "flagged", "clear", "missing_inputs", "other_platform", "not_in_force", "not_applicable"
+]
 
 
 class RuleAudit(BaseModel):
@@ -260,8 +262,18 @@ class RuleAudit(BaseModel):
     detail: str = ""
 
 
+def _excluded_sector(rule: RuleSpec, sectors: set[str] | None) -> str | None:
+    hit = sorted(set(rule.not_for_sectors) & (sectors or set()))
+    return hit[0] if hit else None
+
+
 def audit(
-    rules: Iterable[RuleSpec], facts: Facts, *, platform: str, as_of: date | None = None
+    rules: Iterable[RuleSpec],
+    facts: Facts,
+    *,
+    platform: str,
+    as_of: date | None = None,
+    sectors: set[str] | None = None,
 ) -> list[RuleAudit]:
     """One entry per rule: flagged, clear (with its figures), or why it was not decisive."""
     day = as_of or date.today()
@@ -271,6 +283,14 @@ def audit(
             out.append(RuleAudit(rule_id=rule.id, status="other_platform"))
         elif not rule.applies_on(day):
             out.append(RuleAudit(rule_id=rule.id, status="not_in_force"))
+        elif (sector := _excluded_sector(rule, sectors)) is not None:
+            out.append(
+                RuleAudit(
+                    rule_id=rule.id,
+                    status="not_applicable",
+                    detail=f"not applied to this sector: {sector}",
+                )
+            )
         else:
             r = _run(rule, facts)
             status: AuditStatus = (
@@ -289,7 +309,12 @@ def audit(
 
 
 def evaluate(
-    rules: Iterable[RuleSpec], facts: Facts, *, platform: str, as_of: date | None = None
+    rules: Iterable[RuleSpec],
+    facts: Facts,
+    *,
+    platform: str,
+    as_of: date | None = None,
+    sectors: set[str] | None = None,
 ) -> list[Flag]:
     """Run every rule that applies to `platform`; return the flags raised.
 
@@ -299,6 +324,10 @@ def evaluate(
     day = as_of or date.today()
     flags: list[Flag] = []
     for rule in rules:
-        if platform in rule.platforms and rule.applies_on(day):
+        if (
+            platform in rule.platforms
+            and rule.applies_on(day)
+            and _excluded_sector(rule, sectors) is None
+        ):
             flags += _run(rule, facts).flags
     return flags

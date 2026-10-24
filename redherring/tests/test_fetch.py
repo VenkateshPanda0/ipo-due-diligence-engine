@@ -124,6 +124,28 @@ def test_fetch_records_hash_and_is_idempotent(server: str, tmp_path: Path) -> No
     assert Manifest(tmp_path / "manifest.jsonl").get("d1") == entry
 
 
+def test_corrected_source_metadata_reaches_the_manifest_without_a_download(
+    server: str, tmp_path: Path
+) -> None:
+    """The filing date of an already-fetched document was corrected in sources.toml; the manifest
+    (which `analyze` reads) must follow, or the rules would keep judging it by the wrong date."""
+    from datetime import date
+
+    manifest = Manifest(tmp_path / "manifest.jsonl")
+    f = _fetcher(tmp_path)
+    spec = _spec(server, "/ok.pdf")
+    first, _ = f.fetch(spec, manifest)
+    assert first.filing_date is None
+    n_hits = len(_Handler.hits)
+    fixed = spec.model_copy(update={"filing_date": date(2005, 12, 3)})
+    entry, downloaded = f.fetch(fixed, manifest)
+    assert not downloaded
+    assert len(_Handler.hits) == n_hits
+    assert entry.filing_date == date(2005, 12, 3)
+    assert entry.sha256 == first.sha256 and entry.fetched_at == first.fetched_at
+    assert Manifest(tmp_path / "manifest.jsonl").get("d1") == entry
+
+
 def test_refetch_when_local_file_is_corrupted(server: str, tmp_path: Path) -> None:
     manifest = Manifest(tmp_path / "manifest.jsonl")
     f = _fetcher(tmp_path)

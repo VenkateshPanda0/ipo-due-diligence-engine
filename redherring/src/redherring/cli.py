@@ -18,6 +18,7 @@ from redherring.parse.models import PARSER_VERSION, ParsedDocument
 from redherring.parse.pdf import default_workers, parse_pdf
 from redherring.parse.render import render_tagged
 from redherring.parse.report import compute_stats, stats_markdown
+from redherring.report_html import report_html
 from redherring.report_text import summary_markdown
 from redherring.verify.cited import PdfiumPageText
 
@@ -25,7 +26,6 @@ NOT_FILINGS = {DocType.REGULATION, DocType.ENFORCEMENT_ORDER}
 
 NOT_YET = {
     "diff": "M3",
-    "report": "M2",
 }
 
 
@@ -151,6 +151,36 @@ def _predictions(data_dir: Path, doc_id: str) -> list[Prediction] | None:
     ]
 
 
+def _cmd_report(args: argparse.Namespace) -> int:
+    data_dir = Path(args.data_dir)
+    manifest = Manifest(data_dir / "manifest.jsonl")
+    entries = [e for e in manifest.entries() if e.doc_type not in NOT_FILINGS]
+    if args.doc_id:
+        entries = [e for e in entries if e.doc_id in args.doc_id]
+    out_dir = data_dir / "reports"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    failures = 0
+    for e in entries:
+        path = data_dir / "extracted" / f"{e.doc_id}.financials.json"
+        if not path.exists():
+            print(f"FAIL  {e.doc_id}: run `rh analyze` first", file=sys.stderr)
+            failures += 1
+            continue
+        raw = json.loads(path.read_text(encoding="utf-8"))
+        if raw.get("analysis_version") != ANALYSIS_VERSION:
+            print(
+                f"FAIL  {e.doc_id}: written by an older analyzer; re-run `rh analyze`",
+                file=sys.stderr,
+            )
+            failures += 1
+            continue
+        report = AnalysisReport.model_validate(raw)
+        target = out_dir / f"{e.doc_id}.html"
+        target.write_text(report_html(report, e), encoding="utf-8")
+        print(f"wrote {target}")
+    return 1 if failures else 0
+
+
 def _cmd_label_init(args: argparse.Namespace) -> int:
     data_dir, labels_dir = Path(args.data_dir), Path(args.labels_dir)
     manifest = Manifest(data_dir / "manifest.jsonl")
@@ -267,6 +297,10 @@ def build_parser() -> argparse.ArgumentParser:
     ana = sub.add_parser("analyze", help="extract financial values and run verification checks")
     ana.add_argument("--doc-id", action="append", help="limit to this doc_id (repeatable)")
     ana.set_defaults(func=_cmd_analyze)
+
+    rep = sub.add_parser("report", help="write one HTML page per analysed filing")
+    rep.add_argument("--doc-id", action="append", help="limit to this doc_id (repeatable)")
+    rep.set_defaults(func=_cmd_report)
 
     lab = sub.add_parser("label-init", help="write draft label files pre-filled from the extractor")
     lab.add_argument("--doc-id", action="append", help="limit to this doc_id (repeatable)")

@@ -20,6 +20,13 @@ from redherring.verify.footing import quantum
 # Lines that are parts of a total, not rival readings of one figure: never compared.
 COMPONENT_CONCEPTS = frozenset({Concept.BORROWINGS})
 
+# In a cash-flow statement "profit before tax" is the line the reconciliation starts from, often
+# before the share of associates or exceptional items: a rival reading, not a confirmation, of the
+# income statement's figure.
+_RECONCILIATION_START = frozenset(
+    {Concept.PROFIT_BEFORE_TAX, Concept.PROFIT_AFTER_TAX, Concept.TAX_EXPENSE}
+)
+
 
 @dataclass(frozen=True)
 class Consensus:
@@ -82,6 +89,7 @@ def build_consensus(
     column whose own totals foot is preferred to repeated agreement among columns that cannot be
     validated.
     """
+    cash_flow_tables = {v.table_id for v in values if v.concept is Concept.CASH_FROM_OPERATIONS}
     groups: dict[tuple[Concept, str], list[CitedNumber]] = defaultdict(list)
     for v in values:
         if (
@@ -95,10 +103,14 @@ def build_consensus(
     out: list[Consensus] = []
     for (concept, key), members in sorted(groups.items(), key=lambda kv: (kv[0][0], kv[0][1])):
         ignored = 0
+        if concept in _RECONCILIATION_START:
+            statements = [m for m in members if m.table_id not in cash_flow_tables]
+            if statements:
+                ignored, members = len(members) - len(statements), statements
         if trusted:
             kept = [m for m in members if _column(m) in trusted]
             if kept:
-                ignored, members = len(members) - len(kept), kept
+                ignored, members = ignored + len(members) - len(kept), kept
         clusters: list[list[CitedNumber]] = []
         for v in sorted(members, key=lambda m: m.rupees or Decimal(0)):
             for cluster in clusters:

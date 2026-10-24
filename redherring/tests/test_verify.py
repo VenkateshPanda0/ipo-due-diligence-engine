@@ -342,6 +342,27 @@ def test_within_a_cluster_the_figure_most_tables_print_exactly_is_chosen() -> No
     assert c.supporters == 3
 
 
+def test_cash_flow_profit_is_a_starting_line_and_loses_to_the_income_statement() -> None:
+    """Runwal FY2024: three cash-flow statements start from 'profit before tax' 1,567.73 (before the
+    share of associates) and outnumber the income statement's 1,567.71; the cash-flow figure is a
+    reconciliation line, not the reported one."""
+    pnl = [cn(Concept.PROFIT_BEFORE_TAX, "1,567.71", table_id=t) for t in (1, 2)]
+    cash = []
+    for t in (10, 11, 12):
+        cash += [
+            cn(Concept.PROFIT_BEFORE_TAX, "1,567.73", table_id=t),
+            cn(Concept.CASH_FROM_OPERATIONS, "-549.48", table_id=t),
+        ]
+    consensus = {c.concept: c for c in build_consensus([*pnl, *cash])}
+    pbt = consensus[Concept.PROFIT_BEFORE_TAX]
+    assert pbt.chosen.raw == "1,567.71"
+    assert pbt.supporters == 2 and pbt.total == 2
+    # with no income statement at all, the cash-flow reading is better than nothing
+    only_cash = [v for v in cash if v.concept is Concept.PROFIT_BEFORE_TAX]
+    both = {c.concept: c for c in build_consensus([*only_cash, *cash[1::2]])}
+    assert both[Concept.PROFIT_BEFORE_TAX].chosen.raw == "1,567.73"
+
+
 def test_without_any_trusted_value_all_sources_still_count() -> None:
     vals = [cn(Concept.TOTAL_INCOME, "100.00", table_id=t) for t in (1, 2, 3)]
     (c,) = build_consensus(vals, trusted={(99, K26)})

@@ -23,34 +23,40 @@ were written by the maintainer, an AI, with no second reader (`labels/README.md`
 Eleven rules. Regulatory ones now start on 10 Nov 2018 (ICDR 2018) unless a later amendment date
 applies, so a 2005 draft is not judged by 2018 law. The cash-flow rule is not applied to lenders or
 real-estate developers (sector detected from the front of the document). Flags currently raised
-across nine filings: Paytm trade receivables vs revenue (FY2020 to FY2021, checked against source
+across twelve filings: Paytm trade receivables vs revenue (FY2020 to FY2021, checked against source
 rows) and the Tanla 2005 draft's operating cash flow below profit in two of three years.
 
-### Parser, nine documents (parser v10)
+### Parser, twelve documents (parser v14)
 | doc | pages | sec | OCR pages | err pages | % OCR | blocks | raw tbl | logical tbl | multi-pg | transposed? | % tbl w/ unit | printed pg # |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| varyaa_prospectus_2024 | 295 | 20.97 | 0 | 0 | 0.0 | 3111 | 196 | 178 | 18 | 15 | 30.3 | 10 |
-| synoptics_dp_2023 | 304 | 18.97 | 1 | 0 | 0.3 | 2584 | 286 | 226 | 45 | 4 | 38.9 | 4 |
-| runwal_rhp_2026 | 611 | 44.96 | 0 | 0 | 0.0 | 6407 | 589 | 537 | 46 | 71 | 33.7 | 592 |
-| moneyview_prospectus_2026 | 537 | 73.01 | 0 | 0 | 0.0 | 5132 | 320 | 306 | 14 | 0 | 38.2 | 530 |
-| paytm_drhp_2021 | 497 | 48.38 | 1 | 0 | 0.2 | 5324 | 349 | 324 | 24 | 10 | 33.6 | 378 |
-| sebi_draft_2010_probe | 214 | 9.27 | 0 | 0 | 0.0 | 2398 | 128 | 117 | 9 | 6 | 37.6 | 214 |
-| indiqube_rhp_2025 | 607 | 56.91 | 4 | 0 | 0.7 | 5795 | 446 | 419 | 20 | 24 | 30.1 | 354 |
-| vishal_mega_mart_udrhp_2024 | 366 | 33.07 | 0 | 0 | 0.0 | 3904 | 308 | 288 | 19 | 23 | 39.6 | 361 |
-| laxmi_india_finance_rhp_2025 | 527 | 44.05 | 0 | 0 | 0.0 | 4643 | 537 | 503 | 32 | 20 | 52.5 | 515 |
+| varyaa_prospectus_2024 | 295 | 20.72 | 0 | 0 | 0.0 | 3111 | 196 | 178 | 18 | 15 | 34.3 | 10 |
+| synoptics_dp_2023 | 304 | 19.9 | 1 | 0 | 0.3 | 2584 | 286 | 226 | 45 | 4 | 44.7 | 4 |
+| runwal_rhp_2026 | 611 | 49.37 | 0 | 0 | 0.0 | 6407 | 589 | 537 | 46 | 71 | 41.2 | 592 |
+| moneyview_prospectus_2026 | 537 | 72.28 | 0 | 0 | 0.0 | 5132 | 320 | 306 | 14 | 0 | 45.4 | 530 |
+| paytm_drhp_2021 | 497 | 50.1 | 1 | 0 | 0.2 | 5324 | 349 | 324 | 24 | 10 | 47.5 | 378 |
+| sebi_draft_2010_probe | 214 | 9.33 | 0 | 0 | 0.0 | 2398 | 128 | 117 | 9 | 6 | 37.6 | 214 |
+| indiqube_rhp_2025 | 607 | 59.58 | 4 | 0 | 0.7 | 5795 | 446 | 419 | 20 | 24 | 37.7 | 354 |
+| vishal_mega_mart_udrhp_2024 | 366 | 34.85 | 0 | 0 | 0.0 | 3904 | 308 | 288 | 19 | 23 | 50.0 | 361 |
+| laxmi_india_finance_rhp_2025 | 527 | 47.32 | 0 | 0 | 0.0 | 4643 | 537 | 503 | 32 | 20 | 57.5 | 515 |
+| leap_india_rhp_2026 | 474 | 56.42 | 0 | 0 | 0.0 | 4760 | 433 | 387 | 44 | 36 | 37.2 | 461 |
+| shiprocket_udrhp_2025 | 543 | 76.67 | 0 | 0 | 0.0 | 5639 | 428 | 372 | 44 | 17 | 50.8 | 535 |
+| indong_tea_prospectus_2022 | 259 | 20.62 | 0 | 0 | 0.0 | 2367 | 245 | 221 | 19 | 34 | 17.6 | 0 |
 
-### Extraction and checks (`rh analyze`, analysis v11)
+### Extraction and checks (`rh analyze`, analysis v15)
 | doc | values | citation-verified | footing passed | multi-source groups | unanimous | no period | no unit | issue facts verified | rules decisive | flags |
 |---|---|---|---|---|---|---|---|---|---|---|
-| varyaa_prospectus_2024 | 176 | 176/176 (100%) | 6/6 (100%) | 24 | 22/24 (92%) | 23 | 31 | 4/4 (100%) | 3/4 | 0 |
-| synoptics_dp_2023 | 255 | 255/255 (100%) | 7/7 (100%) | 42 | 34/42 (81%) | 36 | 14 | 6/6 (100%) | 4/4 | 0 |
-| runwal_rhp_2026 | 433 | 433/433 (100%) | 15/19 (79%) | 45 | 38/45 (84%) | 27 | 52 | 3/3 (100%) | 2/5 | 0 |
-| moneyview_prospectus_2026 | 342 | 342/342 (100%) | 30/30 (100%) | 67 | 64/67 (96%) | 112 | 24 | 5/5 (100%) | 3/5 | 0 |
-| paytm_drhp_2021 | 237 | 237/237 (100%) | 3/3 (100%) | 22 | 10/22 (45%) | 87 | 41 | 3/3 (100%) | 2/4 | 1 |
+| varyaa_prospectus_2024 | 180 | 180/180 (100%) | 6/6 (100%) | 26 | 24/26 (92%) | 25 | 8 | 4/4 (100%) | 3/4 | 0 |
+| synoptics_dp_2023 | 259 | 259/259 (100%) | 7/7 (100%) | 45 | 37/45 (82%) | 40 | 0 | 6/6 (100%) | 4/4 | 0 |
+| runwal_rhp_2026 | 436 | 436/436 (100%) | 18/22 (82%) | 45 | 38/45 (84%) | 27 | 46 | 4/4 (100%) | 2/5 | 0 |
+| moneyview_prospectus_2026 | 345 | 345/345 (100%) | 30/30 (100%) | 67 | 64/67 (96%) | 112 | 19 | 6/6 (100%) | 3/5 | 0 |
+| paytm_drhp_2021 | 237 | 237/237 (100%) | 3/3 (100%) | 22 | 10/22 (45%) | 87 | 33 | 3/3 (100%) | 2/4 | 1 |
 | sebi_draft_2010_probe | 148 | 148/148 (100%) | 0/0 | 23 | 12/23 (52%) | 55 | 6 | 1/1 (100%) | 1/2 | 1 |
-| indiqube_rhp_2025 | 335 | 335/335 (100%) | 21/21 (100%) | 45 | 39/45 (87%) | 138 | 66 | 4/4 (100%) | 3/6 | 0 |
-| vishal_mega_mart_udrhp_2024 | 379 | 379/379 (100%) | 22/22 (100%) | 33 | 33/33 (100%) | 171 | 154 | 3/3 (100%) | 2/6 | 0 |
+| indiqube_rhp_2025 | 335 | 335/335 (100%) | 21/21 (100%) | 45 | 39/45 (87%) | 138 | 60 | 5/5 (100%) | 3/6 | 0 |
+| vishal_mega_mart_udrhp_2024 | 379 | 379/379 (100%) | 22/22 (100%) | 33 | 33/33 (100%) | 171 | 102 | 4/4 (100%) | 2/6 | 0 |
 | laxmi_india_finance_rhp_2025 | 592 | 592/592 (100%) | 12/12 (100%) | 33 | 24/33 (73%) | 445 | 130 | 1/1 (100%) | 0/5 | 0 |
+| leap_india_rhp_2026 | 296 | 296/296 (100%) | 24/24 (100%) | 43 | 43/43 (100%) | 129 | 24 | 5/5 (100%) | 3/6 | 0 |
+| shiprocket_udrhp_2025 | 552 | 552/552 (100%) | 15/15 (100%) | 38 | 38/38 (100%) | 273 | 82 | 4/4 (100%) | 2/6 | 0 |
+| indong_tea_prospectus_2022 | 160 | 160/160 (100%) | 9/9 (100%) | 36 | 36/36 (100%) | 35 | 21 | 4/4 (100%) | 4/4 | 0 |
 
 ### Known defects (all measured, none hidden)
 - Synoptics prints "31-Mar-22" over two columns of one table (a typo in the filing), so its FY2022

@@ -65,6 +65,7 @@ class PersistentBelow(BaseModel):
     min_periods: int = 3
     min_breaches: int = 2
     require_right_positive: bool = True
+    period_regex: str = r"^FY\d{4}$"  # which period keys count: fiscal years, not stubs
 
 
 class GrowthGap(BaseModel):
@@ -74,6 +75,7 @@ class GrowthGap(BaseModel):
     left: str
     right: str
     min_gap_pp: float
+    period_regex: str = r"^FY\d{4}$"
 
 
 Logic = Annotated[

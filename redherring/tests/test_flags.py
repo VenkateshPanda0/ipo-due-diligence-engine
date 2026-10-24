@@ -237,3 +237,13 @@ def test_shipped_sme_rules_have_non_overlapping_versions() -> None:
         windows = sorted((v.valid_from or date.min, v.valid_to or date.max) for v in versions)
         for (_, end), (start, _) in itertools.pairwise(windows):
             assert end < start, f"{family}: overlapping validity windows"
+
+
+def test_only_fiscal_years_enter_trend_rules_by_default(tmp_path: Path) -> None:
+    """A three-month stub must not count as one of the 'last three years'."""
+    rule = spec(CFO, tmp_path)
+    facts = {
+        **series(CFO_KEY, {"FY2025": "-20", "FY2026": "10", "3M-2026-06-30": "-5"}, 200),
+        **series(PAT_KEY, {"FY2025": "60", "FY2026": "80", "3M-2026-06-30": "9"}, 150),
+    }
+    assert evaluate([rule], facts, platform="sme") == []  # only two fiscal years: not enough

@@ -1,0 +1,37 @@
+"""Turn extraction results into the cited facts the rules consume."""
+
+from __future__ import annotations
+
+from redherring.extract.consensus import Consensus
+from redherring.extract.issue import IssueFact
+from redherring.flags.engine import Citation, Fact
+
+
+def _keep(c: Consensus) -> bool:
+    """A figure enters the rules if it is a lone reading or a strict majority of its sources.
+
+    Two sources that disagree with no majority mean we do not know the figure; a rule must not
+    pick one of them.
+    """
+    return c.total == 1 or c.supporters * 2 > c.total
+
+
+def facts_from(consensus: list[Consensus], issue_facts: list[IssueFact]) -> dict[str, Fact]:
+    facts: dict[str, Fact] = {}
+    for c in consensus:
+        rupees = c.chosen.rupees
+        if rupees is None or not _keep(c):
+            continue
+        key = f"financials.{c.concept.value}.{c.period_key}"
+        facts[key] = Fact(
+            key=key,
+            value=rupees,
+            citations=[Citation(pdf_page=c.chosen.pdf_page, span=c.chosen.span)],
+        )
+    for f in issue_facts:
+        facts[f.key.value] = Fact(
+            key=f.key.value,
+            value=f.value,
+            citations=[Citation(pdf_page=f.pdf_page, span=f.span)],
+        )
+    return facts

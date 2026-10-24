@@ -37,15 +37,26 @@ class Verification:
     reasons: list[str] = field(default_factory=list)
 
 
-def check_cited_number(value: CitedNumber, page_text: PageText) -> Verification:
+def check_evidence(
+    raw: str,
+    span: str,
+    pdf_page: int,
+    page_text: PageText,
+    table_pages: list[int] | None = None,
+) -> Verification:
+    """Does the evidence hold: `raw` in the span, page within the source, `raw` on the page?"""
     reasons: list[str] = []
-    if _squash(value.raw) not in _squash(value.span):
-        reasons.append(f"raw value {value.raw!r} not in cited span")
-    if value.pdf_page not in value.table_pages:
-        reasons.append(f"cited page {value.pdf_page} not in table pages {value.table_pages}")
-    if not number_on_page(value.raw, page_text(value.pdf_page)):
-        reasons.append(f"raw value {value.raw!r} not found on cited page {value.pdf_page}")
+    if _squash(raw) not in _squash(span):
+        reasons.append(f"raw value {raw!r} not in cited span")
+    if table_pages is not None and pdf_page not in table_pages:
+        reasons.append(f"cited page {pdf_page} not in table pages {table_pages}")
+    if not number_on_page(raw, page_text(pdf_page)):
+        reasons.append(f"raw value {raw!r} not found on cited page {pdf_page}")
     return Verification(ok=not reasons, reasons=reasons)
+
+
+def check_cited_number(value: CitedNumber, page_text: PageText) -> Verification:
+    return check_evidence(value.raw, value.span, value.pdf_page, page_text, value.table_pages)
 
 
 class PdfiumPageText:

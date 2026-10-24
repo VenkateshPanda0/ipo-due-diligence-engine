@@ -205,3 +205,25 @@ def test_component_concepts_are_not_compared_for_consensus() -> None:
         cn(Concept.BORROWINGS, "12,865.43", table_id=0),
     ]
     assert build_consensus(vals) == []
+
+
+# ---- generic evidence check (issue facts) ----------------------------------------------------
+
+
+def test_check_evidence_for_text_facts() -> None:
+    from redherring.verify.cited import check_evidence
+
+    ok = check_evidence(
+        "1,117.15", "3. General corporate purposes | 1,117.15", 140, lambda p: "1,117.15"
+    )
+    assert ok.ok
+    missing = check_evidence(
+        "1,117.15", "General corporate purposes | 1,117.15", 140, lambda p: "other"
+    )
+    assert not missing.ok
+    assert "not found on cited page 140" in missing.reasons[0]
+    not_in_span = check_evidence(
+        "9.99", "General corporate purposes | 1,117.15", 140, lambda p: "9.99"
+    )
+    assert not not_in_span.ok
+    assert "not in cited span" in not_in_span.reasons[0]

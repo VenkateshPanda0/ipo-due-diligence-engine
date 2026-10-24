@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable
 from datetime import date
 from decimal import Decimal
@@ -48,7 +49,10 @@ class Flag(BaseModel):
 Facts = dict[str, Fact]
 
 
-def load_rules(directory: Path) -> list[RuleSpec]:
+RULES_DIR = Path(__file__).parent / "rules"
+
+
+def load_rules(directory: Path = RULES_DIR) -> list[RuleSpec]:
     return [load_rule_file(p) for p in sorted(directory.glob("*.toml"))]
 
 
@@ -74,9 +78,14 @@ def _cites(facts: Iterable[Fact]) -> list[Citation]:
     return out
 
 
-def _series(facts: Facts, prefix: str) -> dict[str, Fact]:
+def _series(facts: Facts, prefix: str, period_regex: str) -> dict[str, Fact]:
     p = prefix + "."
-    return {k[len(p) :]: f for k, f in facts.items() if k.startswith(p) and f.citations}
+    pattern = re.compile(period_regex)
+    return {
+        k[len(p) :]: f
+        for k, f in facts.items()
+        if k.startswith(p) and f.citations and pattern.match(k[len(p) :])
+    }
 
 
 def _flag(
@@ -138,7 +147,8 @@ def _required_if(rule: RuleSpec, logic: RequiredIf, facts: Facts) -> list[Flag]:
 
 
 def _persistent_below(rule: RuleSpec, logic: PersistentBelow, facts: Facts) -> list[Flag]:
-    left, right = _series(facts, logic.left), _series(facts, logic.right)
+    left = _series(facts, logic.left, logic.period_regex)
+    right = _series(facts, logic.right, logic.period_regex)
     periods = sorted(set(left) & set(right))[-logic.min_periods :]
     if len(periods) < logic.min_periods:
         return []
@@ -160,7 +170,8 @@ def _persistent_below(rule: RuleSpec, logic: PersistentBelow, facts: Facts) -> l
 
 
 def _growth_gap(rule: RuleSpec, logic: GrowthGap, facts: Facts) -> list[Flag]:
-    left, right = _series(facts, logic.left), _series(facts, logic.right)
+    left = _series(facts, logic.left, logic.period_regex)
+    right = _series(facts, logic.right, logic.period_regex)
     periods = sorted(set(left) & set(right))[-2:]
     if len(periods) < 2:
         return []

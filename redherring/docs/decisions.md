@@ -186,6 +186,46 @@ Mart UDRHP-I 2024). Rule: write the labels first, run the extractor once, report
 they come, and only then fix defects. Fixes made afterwards turn those documents into development
 data; the report says so.
 
+## D-022 — The report is one self-contained HTML page (2026-10-24)
+
+`rh report` writes one page per filing: flags with evidence, issue and objects, annual figures in
+₹ crore, what could not be checked, figures withheld because tables disagree, how far to trust the
+extraction. No script, no external resource; every figure links to `#page=N` of the source PDF; all
+text from the document is HTML-escaped (tested with hostile input). "No flags" is worded as "not a
+clean bill of health" with the count of rules that could be evaluated, because zero flags is mostly
+missing inputs. Rules that never applied (other platform, not yet in force) are collapsed so they
+do not read as gaps.
+
+## D-023 — Rules that do not fit a business are not applied (2026-10-24)
+
+The cash-flow-below-profit heuristic fired on a lender and a developer, for whom negative operating
+cash flow is structural (loan book, inventory). A rule may list `not_for_sectors`; sectors come from
+counting self-description in the first 150 pages (lender: NBFC / housing finance wording at least
+30 times; real estate: RERA / project wording at least 30 times). Thresholds were set on nine
+filings (lenders 61 and 126 mentions, a payments company 15, a developer 9 NBFC mentions). The
+exclusion is shown in the report and the rule audit as "not applied to this kind of business".
+
+## D-024 — ICDR 2018 rules start on 10 Nov 2018 (2026-10-24)
+
+A December 2005 draft was being judged by 2018 thresholds because several rule files had no start
+date. They now start when the regulations came into force (gazette 11 Sep 2018 plus 60 days; the
+consolidated SEBI copy omits the date, so it rests on secondary sources, noted in each rule file).
+Rules for periods before that are not written: the predecessor regulations (2009) are a separate
+primary text that has not been read.
+
+## D-025 — Cash-flow profit is not a confirmation of the income statement (2026-10-24)
+
+Three cash-flow statements starting from "profit before tax" before the share of associates
+outvoted the income statement. In consensus, profit and tax readings from tables that also hold
+cash-from-operations are set aside when an income-statement reading exists.
+
+## D-026 — Daily maintenance run (2026-10-24)
+
+One scheduled task ("RedHerring daily improvement", 03:27 UTC) starts a fresh session each day with
+a standalone prompt carrying these rules. Known limitation: it was created without a repository
+source attached, so whether the fresh session can clone and push depends on the environment's
+defaults; check the first run (2026-10-25) and fix the task if it could not.
+
 ## Open items
 
 - Terms-of-use review for SEBI / BSE / NSE (see D-010).

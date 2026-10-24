@@ -6,7 +6,11 @@ import argparse
 import sys
 from pathlib import Path
 
-from redherring.analyze import Summary, analyze_document
+from redherring.analyze import AnalysisReport, Summary, analyze_document
+from redherring.eval.labels import check_labels, load_labels
+from redherring.eval.metrics import Prediction, score
+from redherring.eval.prefill import draft_from_predictions
+from redherring.eval.report import eval_markdown
 from redherring.ingest.fetch import Fetcher, FetchError
 from redherring.ingest.manifest import DocType, Manifest, load_sources
 from redherring.parse.models import PARSER_VERSION, ParsedDocument
@@ -14,12 +18,12 @@ from redherring.parse.pdf import default_workers, parse_pdf
 from redherring.parse.render import render_tagged
 from redherring.parse.report import compute_stats, stats_markdown
 from redherring.report_text import summary_markdown
+from redherring.verify.cited import PdfiumPageText
 
 NOT_FILINGS = {DocType.REGULATION, DocType.ENFORCEMENT_ORDER}
 
 NOT_YET = {
     "diff": "M3",
-    "eval": "M1",
     "report": "M2",
 }
 
@@ -128,6 +132,92 @@ def _cmd_analyze(args: argparse.Namespace) -> int:
     return 1 if failures else 0
 
 
+def _predictions(data_dir: Path, doc_id: str) -> list[Prediction] | None:
+    path = data_dir / "extracted" / f"{doc_id}.financials.json"
+    if not path.exists():
+        return None
+    report = AnalysisReport.model_validate_json(path.read_text(encoding="utf-8"))
+    return [
+        Prediction(key=f.key, value=f.value, pdf_page=f.pdf_page, span=f.span) for f in report.facts
+    ]
+
+
+def _cmd_label_init(args: argparse.Namespace) -> int:
+    data_dir, labels_dir = Path(args.data_dir), Path(args.labels_dir)
+    manifest = Manifest(data_dir / "manifest.jsonl")
+    entries = [e for e in manifest.entries() if e.doc_type not in NOT_FILINGS]
+    if args.doc_id:
+        entries = [e for e in entries if e.doc_id in args.doc_id]
+    labels_dir.mkdir(parents=True, exist_ok=True)
+    failures = 0
+    for e in entries:
+        preds = _predictions(data_dir, e.doc_id)
+        out = labels_dir / f"{e.doc_id}.draft.json"
+        if preds is None:
+            print(f"FAIL  {e.doc_id}: run `rh analyze` first", file=sys.stderr)
+            failures += 1
+        elif out.exists() and not args.force:
+            print(f"FAIL  {out} exists (use --force to overwrite)", file=sys.stderr)
+            failures += 1
+        else:
+            draft = draft_from_predictions(e.doc_id, e.sha256, preds)
+            out.write_text(draft.model_dump_json(indent=1), encoding="utf-8")
+            print(f"wrote {out} ({len(draft.fields)} fields to review)")
+    return 1 if failures else 0
+
+
+def _cmd_label_check(args: argparse.Namespace) -> int:
+    data_dir, labels_dir = Path(args.data_dir), Path(args.labels_dir)
+    manifest = Manifest(data_dir / "manifest.jsonl")
+    files = load_labels(labels_dir)
+    if not files:
+        print(f"no label files in {labels_dir}", file=sys.stderr)
+        return 1
+    bad = 0
+    for doc_id, lf in files.items():
+        entry = manifest.get(doc_id)
+        if entry is None:
+            print(f"{doc_id}: not in the manifest", file=sys.stderr)
+            bad += 1
+            continue
+        problems = []
+        if lf.doc_sha256 != entry.sha256:
+            problems.append(
+                f"labels are for sha256 {lf.doc_sha256[:12]}…, manifest has {entry.sha256[:12]}…"
+            )
+        with PdfiumPageText(data_dir / entry.local_path) as page_text:
+            problems += check_labels(lf, page_text)
+        for p in problems:
+            print(f"{doc_id}: {p}", file=sys.stderr)
+        bad += bool(problems)
+        if not problems:
+            print(f"ok    {doc_id}: {len(lf.fields)} labels")
+    return 1 if bad else 0
+
+
+def _cmd_eval(args: argparse.Namespace) -> int:
+    data_dir, labels_dir = Path(args.data_dir), Path(args.labels_dir)
+    files = load_labels(labels_dir)
+    if not files:
+        print(f"no label files in {labels_dir}", file=sys.stderr)
+        return 1
+    predictions: dict[str, list[Prediction]] = {}
+    for doc_id in files:
+        preds = _predictions(data_dir, doc_id)
+        if preds is None:
+            print(
+                f"WARN  {doc_id}: no extracted output; every labelled value counts as missed",
+                file=sys.stderr,
+            )
+        predictions[doc_id] = preds or []
+    report = score(files, predictions)
+    out = data_dir / "eval"
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "report.json").write_text(report.model_dump_json(indent=1), encoding="utf-8")
+    print(eval_markdown(report))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="rh", description="RedHerring: IPO offer-document analysis")
     p.add_argument("--data-dir", default="data", help="working data directory (default: data)")
@@ -150,6 +240,20 @@ def build_parser() -> argparse.ArgumentParser:
     ana = sub.add_parser("analyze", help="extract financial values and run verification checks")
     ana.add_argument("--doc-id", action="append", help="limit to this doc_id (repeatable)")
     ana.set_defaults(func=_cmd_analyze)
+
+    lab = sub.add_parser("label-init", help="write draft label files pre-filled from the extractor")
+    lab.add_argument("--doc-id", action="append", help="limit to this doc_id (repeatable)")
+    lab.add_argument("--labels-dir", default="labels")
+    lab.add_argument("--force", action="store_true", help="overwrite an existing draft")
+    lab.set_defaults(func=_cmd_label_init)
+
+    chk = sub.add_parser("label-check", help="validate label files against the PDFs")
+    chk.add_argument("--labels-dir", default="labels")
+    chk.set_defaults(func=_cmd_label_check)
+
+    ev = sub.add_parser("eval", help="score extracted facts against the label files")
+    ev.add_argument("--labels-dir", default="labels")
+    ev.set_defaults(func=_cmd_eval)
 
     for name, milestone in NOT_YET.items():
         stub = sub.add_parser(name, help=f"not implemented yet (planned {milestone})")

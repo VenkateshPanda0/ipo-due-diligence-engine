@@ -53,6 +53,15 @@ class ConsensusRecord(BaseModel):
     alternatives_raw: list[str]
 
 
+class FactRecord(BaseModel):
+    """A figure that reached the rules (and the benchmark): value in rupees, with its evidence."""
+
+    key: str
+    value: Decimal
+    pdf_page: int
+    span: str
+
+
 class Summary(BaseModel):
     doc_id: str
     values_total: int
@@ -79,6 +88,7 @@ class AnalysisReport(BaseModel):
     issue_facts: list[VerifiedIssueFact]
     footing: list[FootingRecord]
     consensus: list[ConsensusRecord]
+    facts: list[FactRecord]
     flags: list[Flag]
     rule_audit: list[RuleAudit]
 
@@ -132,10 +142,11 @@ def analyze_document(
     consensus = build_consensus(unambiguous)
     multi = [c for c in consensus if c.total >= 2]
     good_issue = [f for f, vf in zip(issue, verified_issue, strict=True) if vf.verified]
+    facts = facts_from(consensus, good_issue)
     flags: list[Flag] = []
     rule_audit: list[RuleAudit] = []
     if platform is not None:
-        rules, facts = load_rules(), facts_from(consensus, good_issue)
+        rules = load_rules()
         flags = evaluate(rules, facts, platform=platform, as_of=as_of)
         rule_audit = audit(rules, facts, platform=platform, as_of=as_of)
     summary = Summary(
@@ -165,6 +176,12 @@ def analyze_document(
         issue_facts=verified_issue,
         footing=[_footing_record(c) for c in footing],
         consensus=[_consensus_record(c) for c in consensus],
+        facts=[
+            FactRecord(
+                key=k, value=f.value, pdf_page=f.citations[0].pdf_page, span=f.citations[0].span
+            )
+            for k, f in sorted(facts.items())
+        ],
         flags=flags,
         rule_audit=rule_audit,
     )

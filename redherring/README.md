@@ -4,8 +4,9 @@ Forensic analysis of Indian IPO offer documents (DRHP / RHP / Prospectus): struc
 with page-level citations, a red-flag engine, version diffs, and validation against a labelled
 benchmark and post-listing outcomes.
 
-**Status: milestone M0 (skeleton, ingest, parse). No extraction, flags or metrics exist yet,
-so this README makes no accuracy claims.**
+**Status: early (M1 in progress).** See `docs/status.md` for computed numbers and known
+defects, `docs/roadmap.md` for what is done and what is not, and `docs/CHARTER.md` for how the
+project is run. There is no hand-labelled benchmark yet, so no accuracy is claimed.
 
 > Not investment advice. Automated analysis of public disclosures; verify against the source
 > document.
@@ -13,17 +14,17 @@ so this README makes no accuracy claims.**
 This project lives in the `redherring/` folder of the `ipo-due-diligence-engine` repository and is
 independent of the code around it (see `docs/decisions.md` for why, and how to split it out).
 
-## What works in M0
+## What works
 
 | Command | Does |
 |---|---|
-| `rh ingest` | Downloads the PDFs listed in `data/sources.toml` politely (robots.txt, per-host rate limit, size cap), and records URL, SHA-256, size, fetch time in `data/manifest.jsonl`. Idempotent. |
-| `rh parse` | Parses ingested PDFs into page-tagged blocks and tables (`data/parsed/<doc>.json`), a `[PDF_PAGE_N]`-tagged text rendering, and a parse-quality table. |
+| `rh ingest` | Downloads the PDFs in `data/sources.toml` politely (robots.txt, per-host rate limit, size cap, Range-resume of cut-off transfers, `%%EOF` check) and records URL, SHA-256, size, fetch time in `data/manifest.jsonl`. Idempotent. |
+| `rh parse` | Parses PDFs (in parallel) into page-tagged blocks and tables with units and assembled column headers; writes `data/parsed/` and a parse-quality table. |
+| `rh analyze` | Extracts statement values, issue facts and objects with page citations; re-checks each against the PDF text; runs footing and cross-table consensus; evaluates the red-flag rules in force for the filing's platform and date; writes `data/extracted/` with a per-rule audit. |
 
-Parser features: page numbers come from parser metadata only; per-page text-layer / image check
-flags scanned pages (`needs_ocr`, no OCR is run); table finding (ruled tables, with a conservative
-whitespace fallback); multi-page table stitching; transposed-table detection; unit detection
-(₹ lakh / crore / million / thousand) and Indian-format number parsing.
+Red-flag rules live in `src/redherring/flags/rules/*.toml`. A regulatory threshold names the
+clause, effective date and the date it was checked against SEBI's consolidated text; a heuristic
+threshold says so and cites the literature. Output is diligence flags with evidence, not advice.
 
 ## Develop
 

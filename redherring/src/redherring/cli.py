@@ -122,7 +122,9 @@ def _cmd_analyze(args: argparse.Namespace) -> int:
         )
         rows.append(report.summary)
     if rows:
-        print(summary_markdown(rows))
+        table = summary_markdown(rows)
+        (out_dir / "summary.md").write_text(table + "\n", encoding="utf-8")
+        print(table)
     return 1 if failures else 0
 
 

@@ -123,3 +123,53 @@ def test_inheritance_requires_matching_column_layout_and_proximity() -> None:
     assert other_layout.columns == ["", ""]
     assert far.columns == ["", ""]  # more than two pages away
     assert own_header.columns == ["FY 2024", "FY 2023"]  # keeps its own header
+
+
+# ---- a new statement is not a continuation ------------------------------------------------------
+
+
+def _ruled(
+    page: int, top: float, bottom: float, rows: list[list[str]], columns: list[str], n_header: int
+) -> RawTable:
+    return RawTable(
+        pdf_page=page,
+        bbox=BBox(x0=50, top=top, x1=500, bottom=bottom),
+        rows=rows,
+        strategy="lines",
+        columns=columns,
+        n_header_rows=n_header,
+    )
+
+
+def test_a_table_with_its_own_different_header_starts_a_new_table() -> None:
+    """Balance sheet at the foot of page 1, income statement at the top of page 2."""
+    bs = _ruled(
+        1, 600, 760,
+        [["Particulars", "As at March 31, 2026"], ["Total assets", "100"]],
+        ["As at March 31, 2026"], 1,
+    )  # fmt: skip
+    pnl = _ruled(
+        2, 60, 200,
+        [["Particulars", "For the year ended March 31, 2026"], ["Revenue", "80"]],
+        ["For the year ended March 31, 2026"], 1,
+    )  # fmt: skip
+    tables = stitch_tables([bs, pnl], HEIGHTS)
+    assert len(tables) == 2
+    assert tables[1].columns == ["For the year ended March 31, 2026"]
+
+
+def test_the_same_header_repeated_is_still_a_continuation() -> None:
+    head = ["For the year ended March 31, 2026"]
+    p1 = _ruled(1, 600, 760, [["Particulars", head[0]], ["Revenue", "80"]], head, 1)
+    p2 = _ruled(2, 60, 200, [["Particulars", head[0]], ["Expenses", "50"]], head, 1)
+    (t,) = stitch_tables([p1, p2], HEIGHTS)
+    assert t.stitched_from == 2
+    assert [r[0] for r in t.rows] == ["Particulars", "Revenue", "Expenses"]
+
+
+def test_headerless_continuation_is_still_stitched() -> None:
+    p1 = _ruled(1, 600, 760, [["Particulars", "FY 2026"], ["Revenue", "80"]], ["FY 2026"], 1)
+    p2 = _ruled(2, 60, 200, [["Expenses", "50"], ["PAT", "30"]], [], 0)
+    (t,) = stitch_tables([p1, p2], HEIGHTS)
+    assert t.stitched_from == 2
+    assert t.columns == ["FY 2026"]

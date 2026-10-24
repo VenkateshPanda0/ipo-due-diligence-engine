@@ -135,6 +135,10 @@ def _continues(prev: RawTable, nxt: RawTable, page_heights: dict[int, float]) ->
     next_w = max(widths[1])
     if prev_w != next_w:
         return False
+    # A table with a header of its own that differs from the one above is a new statement (a
+    # balance sheet followed by an income statement), not a tail of it.
+    if nxt.n_header_rows and any(nxt.columns) and any(prev.columns) and nxt.columns != prev.columns:
+        return False
     # If the next table carries a different unit declaration it is a new table, not a tail.
     return not (nxt.unit and prev.unit and nxt.unit != prev.unit)
 

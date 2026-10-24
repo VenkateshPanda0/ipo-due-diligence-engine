@@ -18,7 +18,8 @@ from redherring.parse.units import Unit
 # 6: per-row page numbers on logical tables (citations of stitched tables).
 # 7: header phrases are assigned to columns as units (no split dates).
 # 8: ruled header bands feed the statement below; continuation tables inherit headers.
-PARSER_VERSION = 8
+# 9: a table with its own, different header is a new statement, not a continuation.
+PARSER_VERSION = 9
 
 
 def page_tag(pdf_page: int) -> str:

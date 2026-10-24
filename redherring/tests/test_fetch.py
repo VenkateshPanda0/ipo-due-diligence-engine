@@ -174,6 +174,29 @@ def test_unreachable_robots_txt_is_a_clean_failure_not_a_crash_and_not_permissio
     assert not (tmp_path / "raw").exists() or not list((tmp_path / "raw").iterdir())
 
 
+class _FlakyOpener:
+    """Fails the first `failures` opens with a TLS-style reset, then delegates."""
+
+    def __init__(self, real: urllib.request.OpenerDirector, failures: int) -> None:
+        self.real, self.failures, self.calls = real, failures, 0
+
+    def open(self, *args: object, **kwargs: object) -> object:
+        self.calls += 1
+        if self.calls <= self.failures:
+            raise urllib.error.URLError("[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred")
+        return self.real.open(*args, **kwargs)  # type: ignore[arg-type]
+
+
+def test_a_reset_connection_is_retried_with_backoff(server: str, tmp_path: Path) -> None:
+    real = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    flaky = _FlakyOpener(real, failures=2)
+    sleeps: list[float] = []
+    f = Fetcher(tmp_path, opener=flaky, sleep=sleeps.append, min_interval_s=0)  # type: ignore[arg-type]
+    entry, downloaded = f.fetch(_spec(server, "/ok.pdf"), Manifest(tmp_path / "manifest.jsonl"))
+    assert downloaded and entry.size_bytes == len(PDF)
+    assert [s for s in sleeps if s >= 2.0] == [2.0, 4.0]
+
+
 def test_robots_disallow_blocks_fetch(server: str, tmp_path: Path) -> None:
     f = _fetcher(tmp_path)
     with pytest.raises(FetchError, match="robots"):

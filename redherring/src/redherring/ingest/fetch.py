@@ -22,6 +22,7 @@ import urllib.request
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 from urllib.parse import urlsplit
 from urllib.robotparser import RobotFileParser
 
@@ -30,6 +31,7 @@ from redherring.ingest.manifest import Manifest, ManifestEntry, SourceSpec, sha2
 DEFAULT_USER_AGENT = "RedHerring-research/0.1 (+https://github.com/VenkateshPanda0)"
 MAX_BYTES = 600 * 1024 * 1024
 MAX_RESUMES = 8
+TRANSPORT_ATTEMPTS = 3
 _CONTENT_RANGE = re.compile(r"bytes (\d+)-(\d+)/(\d+|\*)")
 
 
@@ -81,6 +83,24 @@ class Fetcher:
                 self._sleep(wait)
         self._last_hit[host] = self._clock()
 
+    def _open(self, request: urllib.request.Request, host: str) -> Any:
+        """Open `request`, retrying a dropped or half-negotiated connection a few times.
+
+        Some hosts reset the TLS handshake now and then. Every attempt is throttled like any other
+        request; an HTTP error status is an answer, not a transport failure, and is not retried.
+        """
+        for attempt in range(1, TRANSPORT_ATTEMPTS + 1):
+            try:
+                return self._opener.open(request, timeout=self.timeout_s)
+            except urllib.error.HTTPError:
+                raise
+            except (urllib.error.URLError, http.client.HTTPException, OSError):
+                if attempt == TRANSPORT_ATTEMPTS:
+                    raise
+                self._sleep(2.0 * attempt)
+                self._throttle(host)
+        raise AssertionError("unreachable")  # pragma: no cover
+
     def _request(self, url: str, extra: dict[str, str] | None = None) -> urllib.request.Request:
         return urllib.request.Request(url, headers={"User-Agent": self.user_agent, **(extra or {})})
 
@@ -90,9 +110,7 @@ class Fetcher:
             self._throttle(host)
             parser: RobotFileParser | None = None
             try:
-                with self._opener.open(
-                    self._request(f"{key}/robots.txt"), timeout=self.timeout_s
-                ) as resp:
+                with self._open(self._request(f"{key}/robots.txt"), host) as resp:
                     text = resp.read(256 * 1024).decode("utf-8", errors="replace")
                 # Some sites return their HTML app shell for /robots.txt: no rules.
                 if "user-agent" in text.lower() and "<html" not in text.lower()[:500]:
@@ -128,7 +146,7 @@ class Fetcher:
             self._throttle(host)
             extra = {"Range": f"bytes={have}-"} if have else None
             try:
-                resp = self._opener.open(self._request(url, extra), timeout=self.timeout_s)
+                resp = self._open(self._request(url, extra), host)
             except urllib.error.HTTPError as e:
                 if e.code == 416 and have and expected == have:
                     return content_type  # already have every byte

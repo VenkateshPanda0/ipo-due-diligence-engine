@@ -120,3 +120,23 @@ doc_type = "prospectus"
 platform = "sme"
 filing_date = 2022-09-22
 notes = "Held-out set 2. SME prospectus hosted by SEBI (filings/public-issues/sep-2022/prospectus-of-indong-tea-company-limited-sme-ipo_63249.html); filing date from the SEBI file timestamp, to be confirmed on page 1. An NSE Emerge draft prospectus (Accufast Metals, June 2026) was dropped: nsearchives.nseindia.com resets connections that identify this tool, and the tool will not disguise itself."
+
+# Version-diff pairs, added 2026-10-24 (for `rh diff`): an earlier or later version of a filing above.
+# (A Runwal prospectus of Oct 2026 was listed by a search engine but the SEBI URL returned 404.)
+[[document]]
+doc_id = "vishal_mega_mart_rhp_2024"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/dec-2024/1733387815715.pdf"
+issuer = "Vishal Mega Mart Limited"
+doc_type = "rhp"
+platform = "mainboard"
+filing_date = 2024-12-04
+notes = "RHP following the UDRHP-I in vishal_mega_mart_udrhp_2024. SEBI listing: filings/public-issues/dec-2024/vishal-mega-mart-red-herring-prospectus_89311.html"
+
+[[document]]
+doc_id = "indiqube_drhp_2024"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/dec-2024/1735543813606_617.pdf"
+issuer = "Indiqube Spaces Limited"
+doc_type = "drhp"
+platform = "mainboard"
+filing_date = 2024-12-30
+notes = "Draft offer document filed with SEBI (filings/public-issues/dec-2024/indiqube-spaces-limited_90321.html); the RHP in indiqube_rhp_2025 cut the issue (press: 850 crore to 700 crore)."

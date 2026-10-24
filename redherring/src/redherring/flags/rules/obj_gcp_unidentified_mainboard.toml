@@ -4,6 +4,7 @@ rationale = "Money earmarked for general purposes and for acquisitions not yet i
 platforms = ["mainboard"]
 severity = "medium"
 heuristic = false
+valid_from = 2022-01-14
 citation_requirement = "Cite the rows for general corporate purposes, for the unidentified acquisition object, and for the amount being raised."
 
 [logic]

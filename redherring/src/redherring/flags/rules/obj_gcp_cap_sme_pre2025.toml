@@ -1,0 +1,23 @@
+id = "OBJ-GCP-CAP-SME-PRE2025"
+name = "General corporate purposes close to the regulatory cap (SME, before 8 March 2025)"
+rationale = "Before March 2025 the SME general-purposes bucket was capped at 25% of the raise, so a figure near that cap was worth a look."
+platforms = ["sme"]
+severity = "medium"
+heuristic = false
+valid_to = 2025-03-07
+citation_requirement = "Cite the objects-of-the-issue row for general corporate purposes and the row giving the amount being raised."
+
+[logic]
+kind = "ratio_vs_cap"
+numerators = ["objects.gcp_amount"]
+denominator = "issue.fresh_issue_amount"
+cap = 0.25
+near_cap_fraction = 0.9
+
+[[sources]]
+kind = "regulation"
+ref = "SEBI (Issue of Capital and Disclosure Requirements) Regulations, 2018, Chapter IX (SME issues)"
+clause = "Regulation 230(2) before substitution"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/mar-2026/1774592300989.pdf"
+checked_on = 2026-10-24
+note = "Footnote 417 in SEBI's consolidated copy (amended upto March 21, 2026) records that 'fifteen' was substituted w.e.f. 08.03.2025 for the words 'twenty five'; the Rs 10 crore limb was inserted by footnote 418 on the same date. The window end is the day before that date."

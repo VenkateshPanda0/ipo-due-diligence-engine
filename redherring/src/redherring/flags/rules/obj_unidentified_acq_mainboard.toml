@@ -4,6 +4,7 @@ rationale = "Raising money for an acquisition target that is not named gives inv
 platforms = ["mainboard"]
 severity = "medium"
 heuristic = false
+valid_from = 2022-01-14
 citation_requirement = "Cite the objects row for the unidentified acquisition or strategic investment and the amount being raised."
 
 [logic]

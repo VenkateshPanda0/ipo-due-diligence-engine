@@ -4,6 +4,7 @@ rationale = "On the SME platform the unallocated general-purposes bucket is capp
 platforms = ["sme"]
 severity = "medium"
 heuristic = false
+valid_from = 2025-03-08
 citation_requirement = "Cite the objects-of-the-issue row for general corporate purposes and the row giving the amount being raised."
 
 [logic]

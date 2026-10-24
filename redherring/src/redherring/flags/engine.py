@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from datetime import date
 from decimal import Decimal
 from pathlib import Path
 
@@ -179,11 +180,18 @@ def _growth_gap(rule: RuleSpec, logic: GrowthGap, facts: Facts) -> list[Flag]:
     return [_flag(rule, rule.severity, text, numbers, [left[p0], left[p1], right[p0], right[p1]])]
 
 
-def evaluate(rules: Iterable[RuleSpec], facts: Facts, *, platform: str) -> list[Flag]:
-    """Run every rule that applies to `platform`; return the flags raised."""
+def evaluate(
+    rules: Iterable[RuleSpec], facts: Facts, *, platform: str, as_of: date | None = None
+) -> list[Flag]:
+    """Run every rule that applies to `platform`; return the flags raised.
+
+    `as_of` is the document's date: only rule versions in force that day are applied. Without it
+    only rules in force today are used, so a superseded threshold is never applied by accident.
+    """
+    day = as_of or date.today()
     flags: list[Flag] = []
     for rule in rules:
-        if platform not in rule.platforms:
+        if platform not in rule.platforms or not rule.applies_on(day):
             continue
         logic = rule.logic
         if isinstance(logic, RatioVsCap):

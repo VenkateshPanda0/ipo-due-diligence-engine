@@ -4,6 +4,7 @@ rationale = "On the SME platform the monitoring-agency requirement starts at a l
 platforms = ["sme"]
 severity = "high"
 heuristic = false
+valid_from = 2025-03-08
 citation_requirement = "Cite the issue size excluding offer for sale and the statement on appointment of a monitoring agency."
 
 [logic]

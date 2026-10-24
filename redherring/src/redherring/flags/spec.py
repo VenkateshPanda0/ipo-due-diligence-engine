@@ -90,9 +90,25 @@ class RuleSpec(BaseModel):
     platforms: list[Platform]
     severity: Severity
     heuristic: bool  # True: the threshold is ours, not the regulator's
+    # Window in which this version of the rule was in force (inclusive). A threshold that the
+    # regulator changed gets one rule file per version, so an older filing is judged by the rules
+    # that applied when it was filed, not by today's.
+    valid_from: date | None = None
+    valid_to: date | None = None
     citation_requirement: str
     logic: Logic
     sources: list[Source] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def _window_is_ordered(self) -> RuleSpec:
+        if self.valid_from and self.valid_to and self.valid_to < self.valid_from:
+            raise ValueError("valid_to must not precede valid_from")
+        return self
+
+    def applies_on(self, day: date) -> bool:
+        return (self.valid_from is None or day >= self.valid_from) and (
+            self.valid_to is None or day <= self.valid_to
+        )
 
     @model_validator(mode="after")
     def _sources_match_kind(self) -> RuleSpec:

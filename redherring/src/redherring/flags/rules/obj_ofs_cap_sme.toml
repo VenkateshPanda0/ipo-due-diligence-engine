@@ -4,6 +4,7 @@ rationale = "A large selling-shareholder component means much of an SME issue's 
 platforms = ["sme"]
 severity = "medium"
 heuristic = false
+valid_from = 2025-03-08
 citation_requirement = "Cite the offer-for-sale size and the total issue size."
 
 [logic]

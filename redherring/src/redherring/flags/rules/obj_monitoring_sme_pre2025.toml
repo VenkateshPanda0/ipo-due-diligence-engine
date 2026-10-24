@@ -1,0 +1,22 @@
+id = "OBJ-MONITORING-AGENCY-SME-PRE2025"
+name = "No monitoring agency although the issue is above the threshold (SME, before 8 March 2025)"
+rationale = "Before March 2025 the SME monitoring-agency requirement started at a larger size, and its absence above that size was a compliance gap."
+platforms = ["sme"]
+severity = "high"
+heuristic = false
+valid_to = 2025-03-07
+citation_requirement = "Cite the issue size excluding offer for sale and the statement on appointment of a monitoring agency."
+
+[logic]
+kind = "required_if"
+trigger = "issue.fresh_issue_amount"
+threshold = 1000000000.0
+required = "objects.monitoring_agency_appointed"
+
+[[sources]]
+kind = "regulation"
+ref = "SEBI (Issue of Capital and Disclosure Requirements) Regulations, 2018, Chapter IX (SME issues)"
+clause = "Regulation 262(1) before substitution"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/mar-2026/1774592300989.pdf"
+checked_on = 2026-10-24
+note = "Footnote 478 in SEBI's consolidated copy records that Rs 50 crores was substituted w.e.f. 08.03.2025 for the words 'one hundred crore rupees' (1,000,000,000 rupees). The window end is the day before that date."

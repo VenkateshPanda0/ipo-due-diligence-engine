@@ -1,3 +1,4 @@
+import itertools
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
@@ -182,3 +183,57 @@ def test_persistent_below_needs_enough_periods_and_ignores_losses(tmp_path: Path
         **series(PAT_KEY, {"FY2024": "-4", "FY2025": "-6", "FY2026": "-8"}, 150),
     }
     assert evaluate([rule], losses, platform="sme") == []  # loss-making: right is not positive
+
+
+# ---- validity windows ----------------------------------------------------------------------------
+
+WINDOWED = GCP.replace('severity = "medium"', 'severity = "medium"\nvalid_from = 2025-03-08')
+
+
+def _gcp_facts() -> dict[str, Fact]:
+    return {
+        "objects.gcp_amount": fact("objects.gcp_amount", "300"),
+        "issue.fresh_issue_amount": fact("issue.fresh_issue_amount", "1000"),
+    }
+
+
+def test_rule_not_applied_before_its_effective_date(tmp_path: Path) -> None:
+    rule = spec(WINDOWED, tmp_path)
+    before = evaluate([rule], _gcp_facts(), platform="mainboard", as_of=date(2024, 4, 12))
+    assert before == []
+    on = evaluate([rule], _gcp_facts(), platform="mainboard", as_of=date(2025, 3, 8))
+    assert len(on) == 1
+
+
+def test_rule_not_applied_after_it_was_superseded(tmp_path: Path) -> None:
+    old = spec(
+        GCP.replace('severity = "medium"', 'severity = "medium"\nvalid_to = 2025-03-07'), tmp_path
+    )
+    assert evaluate([old], _gcp_facts(), platform="mainboard", as_of=date(2025, 3, 8)) == []
+    assert len(evaluate([old], _gcp_facts(), platform="mainboard", as_of=date(2025, 3, 7))) == 1
+
+
+def test_without_as_of_only_currently_valid_rules_apply(tmp_path: Path) -> None:
+    superseded = spec(
+        GCP.replace('severity = "medium"', 'severity = "medium"\nvalid_to = 2025-03-07'), tmp_path
+    )
+    assert evaluate([superseded], _gcp_facts(), platform="mainboard") == []
+
+
+def test_spec_rejects_an_inverted_window(tmp_path: Path) -> None:
+    bad = GCP.replace(
+        'severity = "medium"', 'severity = "medium"\nvalid_from = 2025-03-08\nvalid_to = 2025-03-07'
+    )
+    with pytest.raises(ValueError, match="valid_to"):
+        spec(bad, tmp_path)
+
+
+def test_shipped_sme_rules_have_non_overlapping_versions() -> None:
+    rules = load_rules(RULES_DIR)
+    by_family: dict[str, list[RuleSpec]] = {}
+    for r in rules:
+        by_family.setdefault(r.id.removesuffix("-PRE2025"), []).append(r)
+    for family, versions in by_family.items():
+        windows = sorted((v.valid_from or date.min, v.valid_to or date.max) for v in versions)
+        for (_, end), (start, _) in itertools.pairwise(windows):
+            assert end < start, f"{family}: overlapping validity windows"

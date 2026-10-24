@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 
 from redherring.extract.models import STOCK_CONCEPTS, CitedNumber, Concept
-from redherring.extract.periods import fiscal_key
+from redherring.extract.periods import fiscal_key, period_key
 from redherring.parse.units import MULTIPLIER
 from redherring.verify.footing import quantum
 
@@ -68,14 +68,19 @@ def drop_ambiguous(values: list[CitedNumber]) -> tuple[list[CitedNumber], int]:
     return kept, len(values) - len(kept)
 
 
+def _column(v: CitedNumber) -> tuple[int, str] | None:
+    return (v.table_id, period_key(v.period)) if v.period is not None else None
+
+
 def build_consensus(
-    values: list[CitedNumber], trusted_tables: set[int] | None = None
+    values: list[CitedNumber], trusted: set[tuple[int, str]] | None = None
 ) -> list[Consensus]:
     """One Consensus per (concept, period) among values with a known unit and period.
 
-    When `trusted_tables` is given and a group has readings from them, only those readings are
-    compared (the others are counted in `untrusted_ignored`): a figure from a table whose own
-    totals foot is preferred to repeated agreement among tables that cannot be validated.
+    When `trusted` (table, period) columns are given and a group has readings from them, only
+    those readings are compared (the others are counted in `untrusted_ignored`): a figure from a
+    column whose own totals foot is preferred to repeated agreement among columns that cannot be
+    validated.
     """
     groups: dict[tuple[Concept, str], list[CitedNumber]] = defaultdict(list)
     for v in values:
@@ -90,10 +95,10 @@ def build_consensus(
     out: list[Consensus] = []
     for (concept, key), members in sorted(groups.items(), key=lambda kv: (kv[0][0], kv[0][1])):
         ignored = 0
-        if trusted_tables:
-            trusted = [m for m in members if m.table_id in trusted_tables]
-            if trusted:
-                ignored, members = len(members) - len(trusted), trusted
+        if trusted:
+            kept = [m for m in members if _column(m) in trusted]
+            if kept:
+                ignored, members = len(members) - len(kept), kept
         clusters: list[list[CitedNumber]] = []
         for v in sorted(members, key=lambda m: m.rupees or Decimal(0)):
             for cluster in clusters:

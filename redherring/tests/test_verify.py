@@ -3,13 +3,14 @@ from decimal import Decimal
 
 from redherring.extract.consensus import build_consensus
 from redherring.extract.models import CitedNumber, Concept
-from redherring.extract.periods import Period
+from redherring.extract.periods import Period, period_key
 from redherring.parse.units import Unit
 from redherring.verify.cited import check_cited_number, number_on_page
 from redherring.verify.footing import run_footing
 
 FY26 = Period(end=date(2026, 3, 31), months=12, instant=False)
 FY25 = Period(end=date(2025, 3, 31), months=12, instant=False)
+K26 = period_key(FY26)
 
 
 def cn(
@@ -294,28 +295,38 @@ def test_values_ambiguous_within_one_table_are_dropped() -> None:
 # ---- trusted tables: figures from tables whose own identities hold win over agreeing noise -------
 
 
-def test_trusted_tables_outweigh_agreeing_untrusted_noise() -> None:
+def test_trusted_columns_outweigh_agreeing_untrusted_noise() -> None:
     noise = [cn(Concept.PROFIT_AFTER_TAX, "(0.06)", table_id=t) for t in (10, 11, 12, 13, 14)]
     real = [cn(Concept.PROFIT_AFTER_TAX, "556.48", table_id=t) for t in (1, 2)]
     (plain,) = build_consensus([*noise, *real])
     assert plain.chosen.raw == "(0.06)"  # without trust, the larger noise cluster wins
-    (trusted,) = build_consensus([*noise, *real], trusted_tables={1, 2})
+    (trusted,) = build_consensus([*noise, *real], trusted={(1, K26), (2, K26)})
     assert trusted.chosen.raw == "556.48"
     assert trusted.supporters == 2
     assert trusted.total == 2
     assert trusted.untrusted_ignored == 5
 
 
+def test_a_column_that_foots_beats_agreeing_untrusted_columns_in_the_same_table_family() -> None:
+    """Runwal: PBT before associate share (2,239.30) printed in three cash-flow tables outvotes the
+    P&L's 2,239.15 unless trust is per column; the P&L's other year fails (sign convention)."""
+    real = cn(Concept.PROFIT_BEFORE_TAX, "2,239.15", table_id=58)
+    echoes = [cn(Concept.PROFIT_BEFORE_TAX, "2,239.30", table_id=t) for t in (59, 249, 277)]
+    (c,) = build_consensus([real, *echoes], trusted={(58, K26)})
+    assert c.chosen.raw == "2,239.15"
+    assert c.untrusted_ignored == 3
+
+
 def test_without_any_trusted_value_all_sources_still_count() -> None:
     vals = [cn(Concept.TOTAL_INCOME, "100.00", table_id=t) for t in (1, 2, 3)]
-    (c,) = build_consensus(vals, trusted_tables={99})
+    (c,) = build_consensus(vals, trusted={(99, K26)})
     assert c.chosen.raw == "100.00"
     assert c.total == 3
     assert c.untrusted_ignored == 0
 
 
-def test_trusted_tables_are_those_that_foot_and_never_fail() -> None:
-    from redherring.verify.footing import trusted_tables
+def test_trusted_columns_are_those_that_foot_and_never_fail() -> None:
+    from redherring.verify.footing import trusted_columns
 
     ok = [
         cn(Concept.REVENUE_FROM_OPERATIONS, "100.00", table_id=1),
@@ -327,7 +338,7 @@ def test_trusted_tables_are_those_that_foot_and_never_fail() -> None:
         cn(Concept.OTHER_INCOME, "10.00", table_id=2),
         cn(Concept.TOTAL_INCOME, "999.00", table_id=2),
     ]
-    mixed = [  # foots in one period, fails in another: not trusted
+    mixed = [  # foots in one period, fails in another: only the footing column is trusted
         cn(Concept.REVENUE_FROM_OPERATIONS, "100.00", table_id=3, period=FY26),
         cn(Concept.OTHER_INCOME, "10.00", table_id=3, period=FY26),
         cn(Concept.TOTAL_INCOME, "110.00", table_id=3, period=FY26),
@@ -335,4 +346,4 @@ def test_trusted_tables_are_those_that_foot_and_never_fail() -> None:
         cn(Concept.OTHER_INCOME, "9.00", table_id=3, period=FY25),
         cn(Concept.TOTAL_INCOME, "1.00", table_id=3, period=FY25),
     ]
-    assert trusted_tables(run_footing([*ok, *bad, *mixed])) == {1}
+    assert trusted_columns(run_footing([*ok, *bad, *mixed])) == {(1, K26), (3, K26)}

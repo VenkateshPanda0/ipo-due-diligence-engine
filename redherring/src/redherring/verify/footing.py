@@ -102,12 +102,14 @@ def run_footing(values: list[CitedNumber]) -> list[FootingCheck]:
     return checks
 
 
-def trusted_tables(checks: list[FootingCheck]) -> set[int]:
-    """Tables with at least one passing identity and no failing one.
+def trusted_columns(checks: list[FootingCheck]) -> set[tuple[int, str]]:
+    """(table, period) columns with a passing identity and no failing one.
 
-    A table whose totals foot is evidently a genuine statement read correctly; subsidiary and
+    A column whose totals foot is evidently a genuine statement read correctly; subsidiary and
     segment tables, which cannot be validated this way, should not outvote it by repetition.
+    Trust is per column, not per table: one year printed with a different sign convention (a tax
+    "(credit)/charge" line, say) must not discredit the years that do foot.
     """
-    passed = {c.table_id for c in checks if c.ok}
-    failed = {c.table_id for c in checks if not c.ok}
+    passed = {(c.table_id, c.period_key) for c in checks if c.ok}
+    failed = {(c.table_id, c.period_key) for c in checks if not c.ok}
     return passed - failed

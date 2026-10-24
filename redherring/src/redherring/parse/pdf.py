@@ -31,7 +31,7 @@ from redherring.parse.models import (
 from redherring.parse.statements import build_statement_tables, looks_numeric_tabular
 from redherring.parse.statements import group_lines as _group_lines
 from redherring.parse.statements import line_bbox as _line_bbox
-from redherring.parse.tables import clean_rows, header_info, stitch_tables
+from redherring.parse.tables import clean_rows, header_info, inherit_headers, stitch_tables
 from redherring.parse.units import detect_unit, parse_amount
 
 MIN_ALNUM_FOR_TEXT_LAYER = 25
@@ -390,6 +390,7 @@ def parse_pdf(
 
     heights = {p.pdf_page: p.height for p in parsed_pages}
     raw_tables = [t for p in parsed_pages for t in p.tables]
+    inherit_headers(raw_tables)
     return ParsedDocument(
         doc_id=doc_id or path.stem,
         sha256=sha256,

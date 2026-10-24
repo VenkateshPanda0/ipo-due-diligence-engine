@@ -1,5 +1,5 @@
 from redherring.parse.models import BBox, RawTable
-from redherring.parse.tables import looks_transposed, stitch_tables, transpose
+from redherring.parse.tables import inherit_headers, looks_transposed, stitch_tables, transpose
 from redherring.parse.units import Unit
 
 HEIGHTS = {1: 792.0, 2: 792.0, 3: 792.0}
@@ -85,3 +85,41 @@ def test_stitched_table_remembers_the_page_of_every_row() -> None:
 def test_single_page_table_row_pages_default_to_its_page() -> None:
     (t,) = stitch_tables([_raw(3, 100, 300, [HEADER, ["Revenue", "100", "90"]])], HEIGHTS)
     assert t.row_pages == [3, 3]
+
+
+# ---- header inheritance for continuation statements --------------------------------------------
+
+
+def _stmt(
+    page: int, top: float, columns: list[str], anchors: list[float], unit: Unit | None = None
+) -> RawTable:
+    return RawTable(
+        pdf_page=page,
+        bbox=BBox(x0=50, top=top, x1=500, bottom=top + 100),
+        rows=[["Total income", *["1.00"] * len(anchors)]],
+        strategy="numeric_rows",
+        columns=columns,
+        anchors=anchors,
+        unit=unit,
+    )
+
+
+def test_headerless_statement_inherits_header_from_matching_table_above() -> None:
+    head = _stmt(1, 100, ["FY 2026", "FY 2025"], [300.0, 400.0], Unit.MILLION)
+    tail = _stmt(2, 80, ["", ""], [301.5, 399.0])
+    inherit_headers([head, tail])
+    assert tail.columns == ["FY 2026", "FY 2025"]
+    assert tail.unit is Unit.MILLION
+    assert tail.header_inherited_from == 1
+    assert head.header_inherited_from is None
+
+
+def test_inheritance_requires_matching_column_layout_and_proximity() -> None:
+    head = _stmt(1, 100, ["FY 2026", "FY 2025"], [300.0, 400.0])
+    other_layout = _stmt(2, 80, ["", ""], [300.0, 450.0])
+    far = _stmt(5, 80, ["", ""], [300.0, 400.0])
+    own_header = _stmt(2, 300, ["FY 2024", "FY 2023"], [300.0, 400.0])
+    inherit_headers([head, other_layout, far, own_header])
+    assert other_layout.columns == ["", ""]
+    assert far.columns == ["", ""]  # more than two pages away
+    assert own_header.columns == ["FY 2024", "FY 2023"]  # keeps its own header

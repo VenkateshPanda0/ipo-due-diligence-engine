@@ -88,6 +88,40 @@ def transpose(rows: list[list[str]]) -> list[list[str]]:
     return [list(col) for col in zip(*padded, strict=True)]
 
 
+ANCHOR_TOLERANCE = 4.0  # points: same column layout if every right edge is this close
+MAX_INHERIT_PAGES = 2  # look back at most this many pages for a header
+
+
+def _same_layout(a: list[float], b: list[float]) -> bool:
+    return len(a) == len(b) > 0 and all(
+        abs(x - y) <= ANCHOR_TOLERANCE for x, y in zip(a, b, strict=True)
+    )
+
+
+def inherit_headers(raw: list[RawTable]) -> None:
+    """Give headerless statement tables the header of the nearest table above with the same layout.
+
+    A statement continuing onto the next page (or below a page-break of its own) has no header
+    lines; the table above it with identical column positions is the one it continues. The source
+    page is recorded in `header_inherited_from` so the inference is never silent.
+    """
+    ordered = sorted(
+        (t for t in raw if t.strategy == "numeric_rows"), key=lambda t: (t.pdf_page, t.bbox.top)
+    )
+    for i, t in enumerate(ordered):
+        if t.anchors and not any(t.columns):
+            for prev in reversed(ordered[:i]):
+                if t.pdf_page - prev.pdf_page > MAX_INHERIT_PAGES:
+                    break
+                if any(prev.columns) and _same_layout(prev.anchors, t.anchors):
+                    t.columns = list(prev.columns)
+                    t.label_header = t.label_header or prev.label_header
+                    t.unit = t.unit or prev.unit
+                    t.unit_text = t.unit_text or prev.unit_text
+                    t.header_inherited_from = prev.pdf_page
+                    break
+
+
 def _continues(prev: RawTable, nxt: RawTable, page_heights: dict[int, float]) -> bool:
     """Does `nxt` (top of page p+1) look like the continuation of `prev` (bottom of page p)?"""
     if nxt.pdf_page != prev.pdf_page + 1:
@@ -138,6 +172,9 @@ def stitch_tables(raw: list[RawTable], page_heights: dict[int, float]) -> list[T
                 columns=next((t.columns for t in g if t.columns), []),
                 label_header=next((t.label_header for t in g if t.label_header), ""),
                 n_header_rows=g[0].n_header_rows,
+                header_inherited_from=next(
+                    (t.header_inherited_from for t in g if t.header_inherited_from), None
+                ),
                 transposed_suspect=looks_transposed(rows),
                 stitched_from=len(g),
             )

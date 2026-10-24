@@ -17,7 +17,8 @@ from redherring.parse.units import Unit
 # 5: column headers for ruled tables and for headers separated by label-only lines.
 # 6: per-row page numbers on logical tables (citations of stitched tables).
 # 7: header phrases are assigned to columns as units (no split dates).
-PARSER_VERSION = 7
+# 8: ruled header bands feed the statement below; continuation tables inherit headers.
+PARSER_VERSION = 8
 
 
 def page_tag(pdf_page: int) -> str:
@@ -55,6 +56,12 @@ class RawTable(BaseModel):
     # ruled/text tables: how many leading rows of `rows` are header rows (already folded into
     # `columns`/`label_header`, but left in `rows` as found). numeric_rows tables have none.
     n_header_rows: int = 0
+    anchors: list[float] = Field(
+        default_factory=list, description="numeric_rows: right edge of each value column (points)"
+    )
+    header_inherited_from: int | None = Field(
+        default=None, description="PDF page whose table supplied `columns` (continuation tables)"
+    )
 
 
 class Table(BaseModel):
@@ -70,6 +77,7 @@ class Table(BaseModel):
     columns: list[str] = Field(default_factory=list)  # see RawTable.columns
     label_header: str = ""
     n_header_rows: int = 0
+    header_inherited_from: int | None = None
     # True if periods appear to run down the first column. `rows` are kept AS FOUND; the flag is
     # unvalidated (see M0 report) so nothing is flipped silently. Use `tables.transpose` to flip.
     transposed_suspect: bool = False

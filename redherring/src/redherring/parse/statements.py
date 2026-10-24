@@ -297,6 +297,7 @@ def build_statement_tables(pdf_page: int, words: list[dict[str, Any]]) -> list[R
                 rows=rows,
                 strategy="numeric_rows",
                 columns=columns if anchored else [],
+                anchors=anchors if anchored else [],
                 label_header=label_header,
             )
         )

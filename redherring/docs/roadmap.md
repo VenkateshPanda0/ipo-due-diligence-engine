@@ -1,39 +1,41 @@
 # Roadmap
 
-Status key: done / partial / not started. Updated whenever a milestone moves; the numbers behind
-"partial" live in `status.md`.
+Status key: done / partial / not started. The numbers behind "partial" live in `status.md`.
+Updated 2026-10-24.
 
-## Foundation (M0) — done
+## Foundation (M0): done
 Fetcher with integrity checks, page-tagged parser, tables, units, CLI, CI, decision log.
 
 ## Extraction (M1)
 | Item | State |
 |---|---|
-| Parser quality on real filings (headers, fused cells, bands, continuations) | partial, improving; see `status.md` |
-| Period parsing from column headers | done |
-| Financial statement extractor with citations | partial: income, balance and cash-flow lines; ranking of duplicates by consensus |
-| Label-free correctness checks (citation re-read, footing, cross-table consensus) | done for the three identities; more identities to add |
-| Issue facts from the cover page and "Summary of the Offer" | not started |
-| Objects of the issue (amounts, schedule, monitoring agency, GCP) | not started |
+| Parser quality on real filings | partial: nine filings, 0 error pages; unit missing on ~60% of tables |
+| Period parsing | done (fiscal labels, "As at" mislabels, reversed years) |
+| Financial statement extractor with citations | partial: seven concepts plus borrowings/net worth (unreliable) |
+| Label-free checks (citation re-read, footing, cross-table consensus, column trust) | done |
+| Issue facts and objects (amounts, GCP, unidentified acquisitions, monitoring agency) | done for stated amounts; placeholders never read |
+| Sector detection (lender, real estate) | done, calibrated on nine filings |
 | Segmenter (map pages to ICDR sections) | not started |
-| LLM layer: one interface, hard cost cap, on-disk cache, schema-checked output, injection defence | not started (no API key in this environment; will be built against a fake provider) |
-| Labelling: JSON labels, validator, pre-fill from extractor | not started |
-| RH-Bench harness: per-field accuracy, citation accuracy, hallucination rate | not started; needs labels |
+| LLM layer behind a hard cost cap, cache, schema-checked output, injection-safe prompts | built and tested against a fake provider; no API key here, so no LLM number exists |
+| Labels, validator, eval harness with dev and held-out splits | done; 133 fields on nine filings |
+| OCR for scanned pages | not started; no scanned test document yet |
 
 ## Red flags (M2)
 | Item | State |
 |---|---|
-| Rule specs (TOML) and engine | done: ratio-vs-cap, required-if, persistent-below, growth-gap |
-| Shipped rules citing primary text | nine rules (seven regulatory with clause and date, two heuristic with literature) |
-| Rules needing facts not yet extracted (objects, issue size, OFS) | blocked on issue and objects extraction |
-| Further rules: related-party, concentration, pledges, auditor, litigation, valuation vs peers | not started |
-| Single-page HTML report with page citations | not started |
-| Prompt-injection red-team set | not started |
+| Rule specs (TOML), engine, audit, validity windows, sector exclusions | done |
+| Shipped rules | eleven (nine regulatory with clause and date, two heuristic with literature) |
+| One-page HTML report per filing, figures linked to PDF pages | done (`rh report`) |
+| Further rules: related-party, concentration, pledges, auditor, litigation, valuation | not started |
+| Prompt-injection red-team set (hostile PDFs through parse and extract) | not started; prompt-level defences are tested |
 
-## Version diff (M3)
-DRHP to RHP to Prospectus, and abridged-prospectus consistency. Count post-March-2026 filings
-first. Not started.
+## Next, in order
+1. A second held-out set (three more filings, labels first), to measure what the fixes bought.
+2. Rules from Schedule VI sections already parsed (related-party and promoter pledges first).
+3. Segmenter, so rules can cite sections and the report can show them.
+4. Red-team PDFs.
+5. Version diff (count post-March-2026 filings before promising abridged-vs-full checks).
+6. Outcome backtest only with written hypotheses and a price source whose terms allow it.
 
-## Outcomes (M4)
-Backtest only after hypotheses are written down; cut the SME backtest first if time is short.
-Price data source must have terms that permit this use. Not started.
+## Version diff (M3) and Outcomes (M4)
+Not started; see above.

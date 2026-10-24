@@ -155,6 +155,25 @@ def test_refetch_when_local_file_is_corrupted(server: str, tmp_path: Path) -> No
     assert downloaded
 
 
+class _DroppingOpener:
+    """An opener whose connection is closed without a response, as some CDNs do."""
+
+    def open(self, *_a: object, **_k: object) -> object:
+        import http.client
+
+        raise http.client.RemoteDisconnected("Remote end closed connection without response")
+
+
+def test_unreachable_robots_txt_is_a_clean_failure_not_a_crash_and_not_permission(
+    tmp_path: Path,
+) -> None:
+    f = Fetcher(tmp_path, opener=_DroppingOpener(), sleep=lambda _s: None)  # type: ignore[arg-type]
+    manifest = Manifest(tmp_path / "manifest.jsonl")
+    with pytest.raises(FetchError, match="robots.txt unreachable"):
+        f.fetch(_spec("http://example.invalid", "/ok.pdf"), manifest)
+    assert not (tmp_path / "raw").exists() or not list((tmp_path / "raw").iterdir())
+
+
 def test_robots_disallow_blocks_fetch(server: str, tmp_path: Path) -> None:
     f = _fetcher(tmp_path)
     with pytest.raises(FetchError, match="robots"):

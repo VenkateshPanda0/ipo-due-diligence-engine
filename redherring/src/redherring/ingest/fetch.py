@@ -98,8 +98,14 @@ class Fetcher:
                 if "user-agent" in text.lower() and "<html" not in text.lower()[:500]:
                     parser = RobotFileParser()
                     parser.parse(text.splitlines())
-            except (urllib.error.URLError, TimeoutError):
-                parser = None
+            except urllib.error.HTTPError as e:
+                if e.code >= 500:  # RFC 9309: an unreachable robots.txt means "do not crawl yet"
+                    raise FetchError(
+                        f"{key}/robots.txt unavailable (HTTP {e.code}); not fetching"
+                    ) from e
+                parser = None  # 4xx: no robots.txt, no rules
+            except (urllib.error.URLError, http.client.HTTPException, OSError) as e:
+                raise FetchError(f"{key}/robots.txt unreachable ({e}); not fetching") from e
             self._robots[key] = parser
         return self._robots[key]
 

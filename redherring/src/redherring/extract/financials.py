@@ -51,7 +51,8 @@ _HEADS: tuple[tuple[Concept, str], ...] = (
     (
         Concept.PROFIT_AFTER_TAX,
         r"(?:restated )?(?:net )?(?:profit|loss)(?:/\(?(?:loss|profit)\)?)?"
-        r"(?: for the (?:year|period)(?:/(?:year|period))?| after tax(?: but before extra[- ]?ordinary items)?"
+        r"(?: for the (?:year|period)(?:/(?:year|period))?"
+        r"| after tax(?: but before extra[- ]?ordinary items)?"
         r"| after adjustments)",
     ),
     (Concept.ADJUSTED_EBITDA, r"adjusted ebitda"),

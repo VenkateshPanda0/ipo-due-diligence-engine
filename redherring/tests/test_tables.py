@@ -230,3 +230,10 @@ def test_an_inherited_unit_is_not_passed_on_again() -> None:
     inherit_units([a, b, c])
     assert b.unit is Unit.CRORE
     assert c.unit is None  # three pages from the caption: out of range, and b is not a source
+
+
+def test_a_note_column_does_not_stop_the_periods_from_matching() -> None:
+    pnl = _periods(150, Unit.LAKH, ["Note No.", "31-Mar-22", "31-Mar-21"])
+    cash = _periods(151, None, ["For the Year ended on 31-Mar-22", "31-Mar-21"])
+    inherit_units([pnl, cash])
+    assert cash.unit is Unit.LAKH

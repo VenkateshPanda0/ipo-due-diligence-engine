@@ -4,10 +4,11 @@ Forensic analysis of Indian IPO offer documents (DRHP / RHP / Prospectus): struc
 with page-level citations, a red-flag engine, version diffs, and validation against a labelled
 benchmark and post-listing outcomes.
 
-**Status: early.** On three filings it had never seen, the first run read 76% of 41 labelled
-figures correctly (4 wrong, 6 abstained, 0 invented); after fixing what that exposed, a fresh
-held-out set is needed to know the new number. Labels were written by an AI with no second reader.
-See `docs/status.md` for all numbers and known defects, `docs/heldout-run-1.md` for what went
+**Status: early.** On filings it had never seen, the first run read about 76% of labelled figures
+correctly, twice in a row (6 filings; 2 to 4 wrong values per 41, none invented, the rest
+withheld); after fixing what each run exposed the same filings score 99%, which is development
+data, not a promise. Labels were written by an AI with no second reader. See `docs/status.md` for
+all numbers and known defects, `docs/heldout-run-1.md` and `docs/heldout-run-2.md` for what went
 wrong, `docs/roadmap.md` for what is done, and `docs/CHARTER.md` for how the project is run.
 
 > Not investment advice. Automated analysis of public disclosures; verify against the source

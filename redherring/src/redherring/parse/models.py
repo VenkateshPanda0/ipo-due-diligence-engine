@@ -21,7 +21,8 @@ from redherring.parse.units import Unit
 # 9: a table with its own, different header is a new statement, not a continuation.
 # 10: label-less ruled boxes over part of a statement are re-read with the statement.
 # 11: a captionless statement takes the unit of a sibling statement with the same periods.
-PARSER_VERSION = 11
+# 12: ...also when a "Note No." column sits among the period columns.
+PARSER_VERSION = 12
 
 
 def page_tag(pdf_page: int) -> str:

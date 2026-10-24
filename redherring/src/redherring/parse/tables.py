@@ -128,8 +128,8 @@ MAX_UNIT_PAGES = 2  # a caption counts for statements at most this many pages af
 
 def _period_signature(columns: list[str]) -> tuple[str, ...]:
     """The fiscal period each column header names, e.g. ('2022-03-31', '2021-03-31')."""
-    sig = [p.end.isoformat() if (p := parse_period(c)) else "" for c in columns]
-    return tuple(sig) if all(sig) else ()
+    sig = [p.end.isoformat() for c in columns if (p := parse_period(c))]  # "Note No." has none
+    return tuple(sig) if len(sig) >= 2 else ()
 
 
 def inherit_units(raw: list[RawTable]) -> None:

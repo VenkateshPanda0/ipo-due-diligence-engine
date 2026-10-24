@@ -30,7 +30,7 @@ Fetcher with integrity checks, page-tagged parser, tables, units, CLI, CI, decis
 | Prompt-injection red-team set (hostile PDFs through parse and extract) | not started; prompt-level defences are tested |
 
 ## Next, in order
-1. A second held-out set (three more filings, labels first), to measure what the fixes bought.
+1. A third held-out set (three more filings, labels first). Sets 1 and 2 are now development data.
 2. Rules from Schedule VI sections already parsed (related-party and promoter pledges first).
 3. Segmenter, so rules can cite sections and the report can show them.
 4. Red-team PDFs.

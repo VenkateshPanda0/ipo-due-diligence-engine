@@ -5,19 +5,19 @@ filings in `data/sources.toml`; nothing is estimated.
 
 ## 2026-10-24 (evening)
 
-### Benchmark (`rh eval`, 133 labelled fields over nine filings)
+### Benchmark (`rh eval`, 182 labelled fields over twelve filings)
 | set | docs | fields (present/absent) | value accuracy | citation accuracy | abstained | wrong | hallucinated |
 |---|---|---|---|---|---|---|---|
-| development (extractor built against these) | 6 | 82 (70/12) | 69/70 (99%) | 68/69 | 1 | 0 | 0/12 |
-| held-out, **first run, before any fix** | 3 | 51 (41/10) | 31/41 (76%) | 29/31 | 6 | 4 | 0/10 |
-| the same three after the fixes made in response | 3 | 51 (41/10) | 41/41 | 38/41 | 0 | 0 | 0/10 |
+| held-out set 1, **first run** | 3 | 51 (41/10) | 31/41 (76%) | 29/31 | 6 | 4 | 0/10 |
+| held-out set 2, **first run** (after set-1 fixes) | 3 | 49 (42/7) | 32/42 (76%) | 30/32 | 8 | 2 | 0/7 |
+| all twelve filings now (every one has driven a fix) | 12 | 182 (153/29) | 152/153 (99%) | 143/152 | 1 | 0 | 0/29 |
 
-Read the middle row, not the last. The held-out filings stopped being held out the moment I fixed
-the defects they exposed (`docs/heldout-run-1.md` lists each miss and its cause), so the last row
-is development data. The honest generalisation figure is 76% value accuracy with 10% wrong
-values on filings the extractor had never seen, and a fresh held-out set is needed to know what the
-fixes bought. Labels were written by the maintainer, an AI, with no second reader
-(`labels/README.md`).
+Read the first two rows, not the last. A filing stops being held out the moment a defect it exposed
+is fixed, so the last row is development data and overstates what a new filing will get. Two
+independent first runs both gave 76% value accuracy, 2 to 4 wrong values in 41 to 42 and nothing
+invented; the fixes between them did not move the number because each new filing fails in new
+ways. `docs/heldout-run-1.md` and `docs/heldout-run-2.md` list every miss and its cause. Labels
+were written by the maintainer, an AI, with no second reader (`labels/README.md`).
 
 ### Rules
 Eleven rules. Regulatory ones now start on 10 Nov 2018 (ICDR 2018) unless a later amendment date

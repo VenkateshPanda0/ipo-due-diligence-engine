@@ -185,6 +185,18 @@ def test_flow_identities_are_not_applied_to_balance_sheet_columns() -> None:
     assert run_footing(vals) == []
 
 
+def test_total_income_identity_also_checks_an_income_statement_headed_as_at_31_march() -> None:
+    """Synoptics prints its P&L under "As at 31-March-2022": revenue and other income exist only in
+    an income statement, so the column is one, whatever its header says."""
+    vals = [
+        cn(Concept.REVENUE_FROM_OPERATIONS, "5,092.32", period=AT26),
+        cn(Concept.OTHER_INCOME, "4.75", period=AT26),
+        cn(Concept.TOTAL_INCOME, "5,097.07", period=AT26),
+    ]
+    (check,) = run_footing(vals)
+    assert check.ok
+
+
 def test_balance_identity_needs_a_balance_sheet_column() -> None:
     vals = [
         cn(Concept.TOTAL_ASSETS, "500.00", period=AT26),

@@ -84,3 +84,14 @@ def test_fiscal_key_aligns_year_end_figures_however_the_header_dated_them() -> N
     )
     dec = Period(end=date(2023, 12, 31), months=None, instant=False)
     assert fiscal_key(dec) == period_key(dec)
+
+
+def test_fiscal_year_range_written_backwards_is_the_later_year_not_the_next_century() -> None:
+    """Synoptics heads a cash-flow column "FY 2022-21" (a typo for 2021-22); it must not become
+    31 March 2121."""
+    p = parse_period("FY 2022-21")
+    assert p is not None
+    assert p.end == date(2022, 3, 31)
+    q = parse_period("FY 1999-00")  # the century really does turn over here
+    assert q is not None
+    assert q.end == date(2000, 3, 31)

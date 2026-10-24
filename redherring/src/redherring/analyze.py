@@ -21,7 +21,7 @@ from redherring.verify.cited import PdfiumPageText, check_cited_number, check_ev
 from redherring.verify.footing import FootingCheck, run_footing, trusted_columns
 
 # Bump when AnalysisReport changes shape or meaning; older files are refused with a clear message.
-ANALYSIS_VERSION = 7
+ANALYSIS_VERSION = 9
 
 
 class VerifiedNumber(CitedNumber):

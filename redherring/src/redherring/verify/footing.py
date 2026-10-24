@@ -18,10 +18,12 @@ from redherring.extract.periods import Period, period_key
 # (name, kind, target, [(sign, part), ...]): the target should equal the signed sum of the parts.
 # kind "flow" applies to period columns (income statement), "stock" to "as at" columns (balance
 # sheet): "profit for the year" inside a balance sheet is an equity line, not the P&L result.
+# kind "income" is "flow" plus 31-March "as at" columns: revenue exists only in an income
+# statement, which some filings head "As at 31-March" all the same.
 _IDENTITIES: tuple[tuple[str, str, Concept, tuple[tuple[int, Concept], ...]], ...] = (
     (
         "total_income = revenue_from_operations + other_income",
-        "flow",
+        "income",
         Concept.TOTAL_INCOME,
         ((1, Concept.REVENUE_FROM_OPERATIONS), (1, Concept.OTHER_INCOME)),
     ),
@@ -45,6 +47,8 @@ def _applies(kind: str, period: Period | None) -> bool:
         return True  # unknown column: cannot rule it out
     if kind == "stock":
         return period.instant or period.months is None
+    if kind == "income" and (period.end.month, period.end.day) == (3, 31):
+        return True
     return not period.instant
 
 

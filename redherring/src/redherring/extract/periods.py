@@ -89,7 +89,9 @@ def _first_date(text: str) -> tuple[int, date, bool] | None:
             end_year = first_year
         elif len(second) == 2:
             end_year = (first_year // 100) * 100 + int(second)
-            if end_year < first_year:
+            if first_year - end_year == 1:  # "FY 2022-21": years written in reverse order
+                end_year = first_year
+            elif end_year < first_year:  # "1999-00": the century turns over
                 end_year += 100
         else:
             end_year = int(second)

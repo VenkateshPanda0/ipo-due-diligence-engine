@@ -226,6 +226,25 @@ a standalone prompt carrying these rules. Known limitation: it was created witho
 source attached, so whether the fresh session can clone and push depends on the environment's
 defaults; check the first run (2026-10-25) and fix the task if it could not.
 
+## D-027 — Text a reader cannot see (2026-10-24)
+
+The text layer is what the extractor reads, but a reader sees what is drawn. Characters under one
+point or wholly off the page are dropped; white characters with no coloured shape, curve or image
+behind them are kept (white on a coloured header is normal) and counted. A page with 15 or more
+such characters, or any dropped, is "hidden-text": the report warns, cites of it carry a mark, and
+any fact whose every citation is on such a page stays out of the rules. The 15-character floor and
+the curve/image test come from sampling nine pages where a first, rectangle-only version flagged
+chart labels and arrows. Full model in `docs/security.md`.
+
+## D-028 — A captionless statement may borrow a sibling's unit (2026-10-24)
+
+Indong Tea prints "(Amount Rs. In Lakh)" over the balance sheet and income statement but not the
+cash-flow statement, so its figures could never be converted or compared. A statement without a
+unit takes the unit of tables within two pages whose columns name exactly the same period dates,
+only if all such tables agree and never from a table that itself borrowed; the page is recorded in
+`unit_inherited_from`. A wrong scale would be worse than none, hence the three conditions. It also
+raised the share of tables with a unit from about 34% to 45% on the nine older filings.
+
 ## Open items
 
 - Terms-of-use review for SEBI / BSE / NSE (see D-010).

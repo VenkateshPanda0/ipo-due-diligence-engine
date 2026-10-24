@@ -12,7 +12,7 @@ table{border-collapse:collapse;width:100%;font-size:.95rem} th,td{padding:.3rem 
 td.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums} thead th{color:var(--mute);font-weight:600}
 .flag{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:.4rem .9rem;margin:.8rem 0}
 .flag h3{font-size:1rem;margin:.4rem 0} .badge{font-size:.75rem;border:1px solid currentColor;border-radius:4px;padding:0 .3rem;margin-left:.4rem}
-.sev-high .badge{color:var(--hi)} .sev-medium .badge{color:var(--med)} .sev-low .badge,.sev-info .badge{color:var(--lo)}
+.warn{color:var(--hi)} .sev-high .badge{color:var(--hi)} .sev-medium .badge{color:var(--med)} .sev-low .badge,.sev-info .badge{color:var(--lo)}
 code{font-size:.85rem;word-break:break-word} .table-wrap{overflow-x:auto}
 </style></head><body>
 <h1>Tanla Solutions Limited</h1>
@@ -20,6 +20,7 @@ code{font-size:.85rem;word-break:break-word} .table-wrap{overflow-x:auto}
 Source: <a href="https://www.sebi.gov.in/sebi_data/attachdocs/1292989425401.pdf">https://www.sebi.gov.in/sebi_data/attachdocs/1292989425401.pdf</a><br>
 SHA-256 <code>b3e807e42ebb2303bf824f1650c96fbd4e1aad57960c9d1b3305b4e1aa7c54b2</code></p>
 <div class=banner><strong>Not investment advice. Automated analysis of public disclosures; verify against the source document.</strong></div>
+
 <h2>Flags</h2>
 <article class="flag sev-medium"><h3>Operating cash flow persistently below reported profit <span class=badge>medium</span></h3><p>Operating cash flow persistently below reported profit: below in 2 of the last 3 years (FY2004, FY2005).</p><p class=kind>heuristic: threshold chosen by this project</p><details open><summary>Evidence</summary><ul><li><a href="https://www.sebi.gov.in/sebi_data/attachdocs/1292989425401.pdf#page=122">p.122</a> <code>Net Cash from operating activities (A) | -111.94 | -25.58 | 93.04 | 286.09 | 231.37 | 487.27</code></li><li><a href="https://www.sebi.gov.in/sebi_data/attachdocs/1292989425401.pdf#page=130">p.130</a> <code>Profit after Tax (Rs.in lacs) | -103.68 | -18.60 | 5.93 | 304.19 | 475.69 | 1107.78</code></li></ul></details><details><summary>Basis</summary><ul><li>Sloan, R. G. (1996), &#x27;Do stock prices fully reflect information in accruals and cash flows about future earnings?&#x27;, The Accounting Review 71(3), 289-315 (checked 2026-10-24)</li></ul></details></article>
 <h2>Issue and objects</h2>
@@ -29,7 +30,7 @@ SHA-256 <code>b3e807e42ebb2303bf824f1650c96fbd4e1aad57960c9d1b3305b4e1aa7c54b2</
 <h2>What could and could not be checked</h2>
 <div class=table-wrap><table><tbody><tr><td><code>FIN-CFO-BELOW-PAT</code></td><td>flagged</td></tr><tr><td><code>FIN-RECEIVABLES-OUTGROW-REVENUE</code></td><td>could not be checked: figures not extracted (financials.trade_receivables, financials.revenue_from_operations)</td></tr></tbody></table></div>
 <details><summary>9 rules set aside (other platform or not in force on the filing date)</summary><table><tbody><tr><td><code>OBJ-GCP-CAP-MAINBOARD</code></td><td>not in force on the filing date</td></tr><tr><td><code>OBJ-GCP-CAP-SME</code></td><td>applies to the other platform</td></tr><tr><td><code>OBJ-GCP-CAP-SME-PRE2025</code></td><td>applies to the other platform</td></tr><tr><td><code>OBJ-GCP-UNIDENTIFIED-35-MAINBOARD</code></td><td>not in force on the filing date</td></tr><tr><td><code>OBJ-MONITORING-AGENCY-MAINBOARD</code></td><td>not in force on the filing date</td></tr><tr><td><code>OBJ-MONITORING-AGENCY-SME</code></td><td>applies to the other platform</td></tr><tr><td><code>OBJ-MONITORING-AGENCY-SME-PRE2025</code></td><td>applies to the other platform</td></tr><tr><td><code>ISSUE-OFS-CAP-SME</code></td><td>applies to the other platform</td></tr><tr><td><code>OBJ-UNIDENTIFIED-ACQ-25-MAINBOARD</code></td><td>not in force on the filing date</td></tr></tbody></table></details>
-<h2>Figures withheld because the document's tables disagree</h2><ul><li>total expenses FY2001: readings 112.15, 132.51 (p.21 and others)</li><li>total income FY2001: readings 7.57, 30.20, 140.05 (p.154 and others)</li><li>total income FY2002: readings 86.74, 81.08 (p.154 and others)</li><li>total income FY2003: readings 157.02, 140.05 (p.154 and others)</li></ul>
+<h2>Figures withheld because the document's tables disagree</h2><ul><li>total expenses FY2001: 2 different readings, e.g. 112.15, 132.51</li><li>total income FY2001: 3 different readings, e.g. 7.57, 30.20, 140.05</li><li>total income FY2002: 2 different readings, e.g. 86.74, 81.08</li><li>total income FY2003: 2 different readings, e.g. 157.02, 140.05</li></ul>
 <h2>How far to trust the extraction</h2>
 <ul>
 <li>148 of 148 extracted numbers were found again in the PDF's own text layer on the cited page.</li>

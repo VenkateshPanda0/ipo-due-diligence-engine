@@ -154,6 +154,58 @@ def _without_overlapping_spaces(page: Any) -> Any:
     )
 
 
+_WHITE = ((1,), (1.0,), (1, 1, 1), (1.0, 1.0, 1.0), (0, 0, 0, 0), (0.0, 0.0, 0.0, 0.0))
+MIN_VISIBLE_SIZE = 1.0  # points: below this no reader can read a character
+OFF_PAGE_MARGIN = 5.0
+
+
+def _is_white(color: Any) -> bool:
+    if isinstance(color, (int, float)):
+        color = (color,)
+    return isinstance(color, (tuple, list)) and tuple(color) in _WHITE
+
+
+def _hidden_text(page: Any) -> tuple[Any, int, int]:
+    """(page without unreadable characters, number removed, number of invisible white characters).
+
+    A filing's text layer is what the extractor reads, but a reader sees only what is drawn. Text
+    far smaller than a point or entirely outside the page cannot be seen and is dropped (a
+    document could otherwise carry "our Company has appointed X as the monitoring agency" where
+    nobody will look). White text is common on coloured headers, so it is kept, and counted only
+    when nothing coloured sits behind it: the page is then reported as carrying invisible text.
+    """
+    width, height = float(page.width), float(page.height)
+    boxes = [
+        (r["x0"], r["top"], r["x1"], r["bottom"])
+        for r in [*page.rects, *page.curves]  # charts and arrows are curves, not rectangles
+        if r.get("fill") and not _is_white(r.get("non_stroking_color"))
+    ]
+    boxes += [(i["x0"], i["top"], i["x1"], i["bottom"]) for i in page.images]
+    removed: set[tuple[float, float]] = set()
+    invisible = 0
+    for c in page.chars:
+        if c["text"].isspace():
+            continue
+        off = (
+            c["x1"] < -OFF_PAGE_MARGIN
+            or c["x0"] > width + OFF_PAGE_MARGIN
+            or c["bottom"] < -OFF_PAGE_MARGIN
+            or c["top"] > height + OFF_PAGE_MARGIN
+        )
+        if c["size"] < MIN_VISIBLE_SIZE or off:
+            removed.add((c["x0"], c["top"]))
+        elif _is_white(c.get("non_stroking_color")):
+            cx, cy = (c["x0"] + c["x1"]) / 2, (c["top"] + c["bottom"]) / 2
+            if not any(x0 <= cx <= x1 and y0 <= cy <= y1 for x0, y0, x1, y1 in boxes):
+                invisible += 1
+    if not removed:
+        return page, 0, invisible
+    kept = page.filter(
+        lambda o: not (o.get("object_type") == "char" and (o["x0"], o["top"]) in removed)
+    )
+    return kept, len(removed), invisible
+
+
 def _overlaps_vertically(a: BBox, b: BBox) -> bool:
     inter = min(a.bottom, b.bottom) - max(a.top, b.top)
     return inter > 0.5 * min(a.bottom - a.top, b.bottom - b.top)
@@ -344,7 +396,8 @@ def _attach_units(tables: list[RawTable], words: list[dict[str, Any]]) -> None:
 
 
 def _parse_one_page(pdfium_doc: Any, raw_page: Any, n: int) -> ParsedPage:
-    plumber_page = _without_overlapping_spaces(raw_page)
+    visible_page, hidden_removed, invisible = _hidden_text(raw_page)
+    plumber_page = _without_overlapping_spaces(visible_page)
     words = plumber_page.extract_words(keep_blank_chars=False, use_text_flow=False)
     n_images, coverage = _page_image_stats(pdfium_doc[n - 1])
     alnum = sum(ch.isalnum() for w in words for ch in w["text"])
@@ -363,6 +416,8 @@ def _parse_one_page(pdfium_doc: Any, raw_page: Any, n: int) -> ParsedPage:
         needs_ocr=alnum < MIN_ALNUM_FOR_TEXT_LAYER and n_images > 0,
         blocks=_blocks_from_words(n, words, [t.bbox for t in tables]),
         tables=tables,
+        hidden_chars_removed=hidden_removed,
+        invisible_chars=invisible,
     )
 
 

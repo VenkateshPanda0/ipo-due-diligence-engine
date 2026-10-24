@@ -75,13 +75,19 @@ def _page_link(url: str, page: int) -> str:
     return f"{escape(url, quote=True)}#page={page}"
 
 
-def _cite(url: str, page: int) -> str:
-    return f'<a href="{_page_link(url, page)}">p.{page}</a>'
+def _cite(url: str, page: int, hidden: frozenset[int] = frozenset()) -> str:
+    mark = (
+        ' <span title="this page has text a reader cannot see" class=warn>⚠</span>'
+        if page in hidden
+        else ""
+    )
+    return f'<a href="{_page_link(url, page)}">p.{page}</a>{mark}'
 
 
-def _flag_html(f: Flag, url: str) -> str:
+def _flag_html(f: Flag, url: str, hidden: frozenset[int]) -> str:
     cites = "".join(
-        f"<li>{_cite(url, c.pdf_page)} <code>{escape(c.span)}</code></li>" for c in f.citations
+        f"<li>{_cite(url, c.pdf_page, hidden)} <code>{escape(c.span)}</code></li>"
+        for c in f.citations
     )
     srcs = "".join(
         f"<li>{escape(s.ref)}{', ' + escape(s.clause) if s.clause else ''}"
@@ -108,7 +114,7 @@ def _audit_row(a: RuleAudit) -> str:
     return f"<tr><td><code>{escape(a.rule_id)}</code></td><td>{escape(why)}{extra}</td></tr>"
 
 
-def _fy_table(facts: dict[str, FactRecord], url: str) -> str:
+def _fy_table(facts: dict[str, FactRecord], url: str, hidden: frozenset[int]) -> str:
     years = sorted(
         {m.group(1) for k in facts if (m := _FY.match(k.rsplit(".", 1)[-1]))}, reverse=True
     )[:5]
@@ -121,7 +127,7 @@ def _fy_table(facts: dict[str, FactRecord], url: str) -> str:
         for y in years:
             f = facts.get(f"financials.{concept}.FY{y}")
             cells.append(
-                f"<td class=num>{_crore(f.value)} <small>{_cite(url, f.pdf_page)}</small></td>"
+                f"<td class=num>{_crore(f.value)} <small>{_cite(url, f.pdf_page, hidden)}</small></td>"
                 if f
                 else "<td class=num>–</td>"
             )
@@ -134,7 +140,7 @@ def _fy_table(facts: dict[str, FactRecord], url: str) -> str:
     )
 
 
-def _issue_table(report: AnalysisReport, url: str) -> str:
+def _issue_table(report: AnalysisReport, url: str, hidden: frozenset[int]) -> str:
     by_key = {f.key.value: f for f in report.issue_facts if f.verified}
     rows = []
     for key, title in _ISSUE_ROWS:
@@ -142,13 +148,13 @@ def _issue_table(report: AnalysisReport, url: str) -> str:
         if f:
             rows.append(
                 f"<tr><th>{title}</th><td class=num>{_crore(f.value)} "
-                f"<small>{_cite(url, f.pdf_page)}</small></td></tr>"
+                f"<small>{_cite(url, f.pdf_page, hidden)}</small></td></tr>"
             )
     ma = by_key.get("objects.monitoring_agency_appointed")
     if ma:
         word = "appointed" if ma.value == 1 else "stated as not appointed or not required"
         rows.append(
-            f"<tr><th>Monitoring agency</th><td>{word} <small>{_cite(url, ma.pdf_page)}</small>"
+            f"<tr><th>Monitoring agency</th><td>{word} <small>{_cite(url, ma.pdf_page, hidden)}</small>"
             "</td></tr>"
         )
     if not rows:
@@ -180,7 +186,8 @@ def report_html(report: AnalysisReport, entry: ManifestEntry) -> str:
     s = report.summary
     facts = {f.key: f for f in report.facts}
     url = entry.url
-    flags = "".join(_flag_html(f, url) for f in report.flags)
+    hidden = frozenset(report.pages_with_hidden_text)
+    flags = "".join(_flag_html(f, url, hidden) for f in report.flags)
     if not flags:
         flags = (
             f"<p>No flags raised. That is <strong>not</strong> a clean bill of health: "
@@ -200,6 +207,23 @@ def report_html(report: AnalysisReport, entry: ManifestEntry) -> str:
     withheld = _withheld(report)
     sectors = ", ".join(escape(x.sector.replace("_", " ")) for x in report.sectors)
     date_text = entry.filing_date.isoformat() if entry.filing_date else "not recorded"
+    hidden_html = (
+        "<div class=banner><strong>Text a reader cannot see.</strong> The text layer of page"
+        f"{'s' if len(hidden) > 1 else ''} {', '.join(str(n) for n in sorted(hidden)[:12])}"
+        f"{' and others' if len(hidden) > 12 else ''} contains characters that are not visible when "
+        "the page is read (white text on nothing, or text too small to read). Figures cited from "
+        "those pages are marked ⚠; check them against the rendered page."
+        + (
+            " Kept out of the red-flag rules for that reason: "
+            + ", ".join(escape(k) for k in report.facts_held_back_hidden_text)
+            + "."
+            if report.facts_held_back_hidden_text
+            else ""
+        )
+        + "</div>"
+        if hidden
+        else ""
+    )
     withheld_html = (
         "<h2>Figures withheld because the document's tables disagree</h2><ul>"
         + "".join(withheld)
@@ -221,7 +245,7 @@ table{{border-collapse:collapse;width:100%;font-size:.95rem}} th,td{{padding:.3r
 td.num{{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}} thead th{{color:var(--mute);font-weight:600}}
 .flag{{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:.4rem .9rem;margin:.8rem 0}}
 .flag h3{{font-size:1rem;margin:.4rem 0}} .badge{{font-size:.75rem;border:1px solid currentColor;border-radius:4px;padding:0 .3rem;margin-left:.4rem}}
-.sev-high .badge{{color:var(--hi)}} .sev-medium .badge{{color:var(--med)}} .sev-low .badge,.sev-info .badge{{color:var(--lo)}}
+.warn{{color:var(--hi)}} .sev-high .badge{{color:var(--hi)}} .sev-medium .badge{{color:var(--med)}} .sev-low .badge,.sev-info .badge{{color:var(--lo)}}
 code{{font-size:.85rem;word-break:break-word}} .table-wrap{{overflow-x:auto}}
 </style></head><body>
 <h1>{escape(entry.issuer)}</h1>
@@ -229,12 +253,13 @@ code{{font-size:.85rem;word-break:break-word}} .table-wrap{{overflow-x:auto}}
 Source: <a href="{escape(entry.url, quote=True)}">{escape(entry.url)}</a><br>
 SHA-256 <code>{escape(entry.sha256)}</code></p>
 <div class=banner><strong>{escape(DISCLAIMER)}</strong></div>
+{hidden_html}
 <h2>Flags</h2>
 {flags}
 <h2>Issue and objects</h2>
-<div class=table-wrap>{_issue_table(report, url)}</div>
+<div class=table-wrap>{_issue_table(report, url, hidden)}</div>
 <h2>Annual figures</h2>
-<div class=table-wrap>{_fy_table(facts, url)}</div>
+<div class=table-wrap>{_fy_table(facts, url, hidden)}</div>
 <h2>What could and could not be checked</h2>
 <div class=table-wrap><table><tbody>{audit}</tbody></table></div>
 {audit_aside}

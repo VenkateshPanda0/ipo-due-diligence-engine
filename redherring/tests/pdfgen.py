@@ -19,9 +19,14 @@ class PageSpec:
     ops: list[str] = field(default_factory=list)
     has_image: bool = False
 
-    def text(self, x: float, top: float, s: str, size: float = 10) -> PageSpec:
+    def text(self, x: float, top: float, s: str, size: float = 10, gray: float = 0.0) -> PageSpec:
+        """Text at (x, top); `gray` is the fill (0 black, 1 white)."""
         y = PAGE_H - top - size
-        self.ops.append(f"BT /F1 {size} Tf {x} {y} Td ({_esc(s)}) Tj ET")
+        self.ops.append(f"{gray} g BT /F1 {size} Tf {x} {y} Td ({_esc(s)}) Tj ET 0 g")
+        return self
+
+    def fill_rect(self, x: float, top: float, w: float, h: float, gray: float) -> PageSpec:
+        self.ops.append(f"{gray} g {x} {PAGE_H - top - h} {w} {h} re f 0 g")
         return self
 
     def grid(

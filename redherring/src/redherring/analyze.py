@@ -22,7 +22,12 @@ from redherring.verify.cited import PdfiumPageText, check_cited_number, check_ev
 from redherring.verify.footing import FootingCheck, run_footing, trusted_columns
 
 # Bump when AnalysisReport changes shape or meaning; older files are refused with a clear message.
-ANALYSIS_VERSION = 12
+ANALYSIS_VERSION = 14
+
+# A page is reported as carrying invisible text from this many white-on-nothing characters up: a
+# sentence worth planting is longer, while chart labels and the odd figure on a coloured shape that
+# the parser did not recognise as one (11, 9 and 3 characters on nine sampled pages) stay below.
+INVISIBLE_PAGE_THRESHOLD = 15
 
 
 class VerifiedNumber(CitedNumber):
@@ -96,6 +101,9 @@ class AnalysisReport(BaseModel):
     consensus: list[ConsensusRecord]
     facts: list[FactRecord]
     sectors: list[SectorEvidence] = []
+    # pages whose text layer holds characters a reader of the page cannot see (see parse.pdf)
+    pages_with_hidden_text: list[int] = []
+    facts_held_back_hidden_text: list[str] = []  # keys kept out of the rules for that reason
     flags: list[Flag]
     rule_audit: list[RuleAudit]
 
@@ -116,6 +124,14 @@ def _consensus_record(c: Consensus) -> ConsensusRecord:
         unanimous=c.unanimous,
         alternatives_raw=[a.raw for a in c.alternatives],
     )
+
+
+def _hidden_pages(doc: ParsedDocument) -> set[int]:
+    return {
+        pg.pdf_page
+        for pg in doc.pages
+        if pg.hidden_chars_removed or pg.invisible_chars >= INVISIBLE_PAGE_THRESHOLD
+    }
 
 
 def analyze_document(
@@ -149,7 +165,16 @@ def analyze_document(
     consensus = build_consensus(unambiguous, trusted_columns(footing))
     multi = [c for c in consensus if c.total >= 2]
     good_issue = [f for f, vf in zip(issue, verified_issue, strict=True) if vf.verified]
+    hidden_pages = _hidden_pages(doc)
     facts = facts_from(consensus, good_issue)
+    # A rule must not rest on text a reader cannot see: a fact whose every citation sits on such a
+    # page is kept out of the rules (it still appears in the report, marked).
+    held_back = sorted(
+        k
+        for k, f in facts.items()
+        if f.citations and all(c.pdf_page in hidden_pages for c in f.citations)
+    )
+    facts = {k: f for k, f in facts.items() if k not in held_back}
     sectors = detect_sectors(doc)
     flags: list[Flag] = []
     rule_audit: list[RuleAudit] = []
@@ -197,6 +222,8 @@ def analyze_document(
             for k, f in sorted(facts.items())
         ],
         sectors=sectors,
+        pages_with_hidden_text=sorted(hidden_pages),
+        facts_held_back_hidden_text=held_back,
         flags=flags,
         rule_audit=rule_audit,
     )

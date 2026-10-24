@@ -22,7 +22,9 @@ from redherring.parse.units import Unit
 # 10: label-less ruled boxes over part of a statement are re-read with the statement.
 # 11: a captionless statement takes the unit of a sibling statement with the same periods.
 # 12: ...also when a "Note No." column sits among the period columns.
-PARSER_VERSION = 12
+# 13: text no reader can see is dropped (tiny, off-page) or counted (white on nothing).
+# 14: coloured curves (charts, arrows) count as something behind white text.
+PARSER_VERSION = 14
 
 
 def page_tag(pdf_page: int) -> str:
@@ -104,6 +106,14 @@ class ParsedPage(BaseModel):
     blocks: list[Block] = Field(default_factory=list)
     tables: list[RawTable] = Field(default_factory=list)
     error: str | None = Field(default=None, description="Set if this page failed to parse")
+    hidden_chars_removed: int = Field(
+        default=0, description="Characters dropped because no reader could see them (tiny/off-page)"
+    )
+    invisible_chars: int = Field(
+        default=0,
+        description="White characters with no coloured box or image behind them: kept, but a "
+        "reader of the page cannot see them",
+    )
 
 
 class ParsedDocument(BaseModel):

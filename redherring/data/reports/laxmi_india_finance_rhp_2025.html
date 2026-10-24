@@ -12,7 +12,7 @@ table{border-collapse:collapse;width:100%;font-size:.95rem} th,td{padding:.3rem 
 td.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums} thead th{color:var(--mute);font-weight:600}
 .flag{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:.4rem .9rem;margin:.8rem 0}
 .flag h3{font-size:1rem;margin:.4rem 0} .badge{font-size:.75rem;border:1px solid currentColor;border-radius:4px;padding:0 .3rem;margin-left:.4rem}
-.sev-high .badge{color:var(--hi)} .sev-medium .badge{color:var(--med)} .sev-low .badge,.sev-info .badge{color:var(--lo)}
+.warn{color:var(--hi)} .sev-high .badge{color:var(--hi)} .sev-medium .badge{color:var(--med)} .sev-low .badge,.sev-info .badge{color:var(--lo)}
 code{font-size:.85rem;word-break:break-word} .table-wrap{overflow-x:auto}
 </style></head><body>
 <h1>Laxmi India Finance Limited</h1>
@@ -20,6 +20,7 @@ code{font-size:.85rem;word-break:break-word} .table-wrap{overflow-x:auto}
 Source: <a href="https://www.sebi.gov.in/sebi_data/attachdocs/jul-2025/1753185412594.pdf">https://www.sebi.gov.in/sebi_data/attachdocs/jul-2025/1753185412594.pdf</a><br>
 SHA-256 <code>1686db7dce9e647d36fb26d4428c166e9fc7401d950f1a1e8d328e1cd969ec30</code></p>
 <div class=banner><strong>Not investment advice. Automated analysis of public disclosures; verify against the source document.</strong></div>
+<div class=banner><strong>Text a reader cannot see.</strong> The text layer of pages 2, 138 contains characters that are not visible when the page is read (white text on nothing, or text too small to read). Figures cited from those pages are marked ⚠; check them against the rendered page.</div>
 <h2>Flags</h2>
 <p>No flags raised. That is <strong>not</strong> a clean bill of health: 0 of 5 applicable rules could be evaluated; the others lacked figures the extractor could read with confidence (see below).</p>
 <h2>Issue and objects</h2>
@@ -29,7 +30,7 @@ SHA-256 <code>1686db7dce9e647d36fb26d4428c166e9fc7401d950f1a1e8d328e1cd969ec30</
 <h2>What could and could not be checked</h2>
 <div class=table-wrap><table><tbody><tr><td><code>FIN-CFO-BELOW-PAT</code></td><td>not applied to this kind of business (not applied to this sector: lender)</td></tr><tr><td><code>FIN-RECEIVABLES-OUTGROW-REVENUE</code></td><td>could not be checked: figures not extracted (financials.trade_receivables, financials.revenue_from_operations)</td></tr><tr><td><code>OBJ-GCP-CAP-MAINBOARD</code></td><td>could not be checked: figures not extracted (objects.gcp_amount, issue.fresh_issue_amount)</td></tr><tr><td><code>OBJ-GCP-UNIDENTIFIED-35-MAINBOARD</code></td><td>could not be checked: figures not extracted (objects.gcp_amount, objects.unidentified_acquisition_amount, issue.fresh_issue_amount)</td></tr><tr><td><code>OBJ-MONITORING-AGENCY-MAINBOARD</code></td><td>could not be checked: figures not extracted (issue.fresh_issue_amount)</td></tr><tr><td><code>OBJ-UNIDENTIFIED-ACQ-25-MAINBOARD</code></td><td>could not be checked: figures not extracted (objects.unidentified_acquisition_amount, issue.fresh_issue_amount)</td></tr></tbody></table></div>
 <details><summary>5 rules set aside (other platform or not in force on the filing date)</summary><table><tbody><tr><td><code>OBJ-GCP-CAP-SME</code></td><td>applies to the other platform</td></tr><tr><td><code>OBJ-GCP-CAP-SME-PRE2025</code></td><td>applies to the other platform</td></tr><tr><td><code>OBJ-MONITORING-AGENCY-SME</code></td><td>applies to the other platform</td></tr><tr><td><code>OBJ-MONITORING-AGENCY-SME-PRE2025</code></td><td>applies to the other platform</td></tr><tr><td><code>ISSUE-OFS-CAP-SME</code></td><td>applies to the other platform</td></tr></tbody></table></details>
-<h2>Figures withheld because the document's tables disagree</h2><ul><li>total equity FY2023: readings 1,523.27, 1,525.46, 1,525.46, 2,017.31 (p.389 and others)</li><li>total equity FY2025: readings 2,574.65, 1.50, 2,578.94, 2,578.94 (p.389 and others)</li></ul>
+<h2>Figures withheld because the document's tables disagree</h2><ul><li>total equity FY2023: 4 different readings, e.g. 1,523.27, 1,525.46, 1,525.46, 2,017.31</li><li>total equity FY2025: 4 different readings, e.g. 2,574.65, 1.50, 2,578.94, 2,578.94</li></ul>
 <h2>How far to trust the extraction</h2>
 <ul>
 <li>592 of 592 extracted numbers were found again in the PDF's own text layer on the cited page.</li>

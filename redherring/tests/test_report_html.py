@@ -128,3 +128,24 @@ def test_rules_that_never_applied_are_collapsed_not_listed_as_gaps() -> None:
     head, _, aside = html.partition("rules set aside")
     assert "R-LIVE" in head and "R-SME" not in head
     assert "R-SME" in aside and "R-OLD" in aside
+
+
+def test_pages_with_invisible_text_are_called_out_and_their_citations_marked() -> None:
+    html = report_html(_report(flags=[_flag()], pages_with_hidden_text=[12, 40]), _entry())
+    assert "Text a reader cannot see" in html
+    assert "pages 12, 40" in html
+    assert html.count("⚠") >= 2  # the banner text and the mark next to the cited page 12
+    clean = report_html(_report(flags=[_flag()]), _entry())
+    assert "cannot see" not in clean
+
+
+def test_report_names_the_figures_kept_out_of_the_rules_because_of_invisible_text() -> None:
+    html = report_html(
+        _report(
+            pages_with_hidden_text=[3],
+            facts_held_back_hidden_text=["objects.monitoring_agency_appointed"],
+        ),
+        _entry(),
+    )
+    assert "Kept out of the red-flag rules" in html
+    assert "objects.monitoring_agency_appointed" in html

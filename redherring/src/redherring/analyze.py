@@ -18,10 +18,10 @@ from redherring.flags.engine import Flag, RuleAudit, audit, evaluate, load_rules
 from redherring.flags.facts import facts_from
 from redherring.parse.models import ParsedDocument
 from redherring.verify.cited import PdfiumPageText, check_cited_number, check_evidence
-from redherring.verify.footing import FootingCheck, run_footing
+from redherring.verify.footing import FootingCheck, run_footing, trusted_tables
 
 # Bump when AnalysisReport changes shape or meaning; older files are refused with a clear message.
-ANALYSIS_VERSION = 2
+ANALYSIS_VERSION = 3
 
 
 class VerifiedNumber(CitedNumber):
@@ -61,6 +61,7 @@ class FactRecord(BaseModel):
 
     key: str
     value: Decimal
+    step: Decimal  # printed precision in rupees
     pdf_page: int
     span: str
 
@@ -141,9 +142,9 @@ def analyze_document(
                 VerifiedIssueFact(**f.model_dump(), verified=res.ok, failures=res.reasons)
             )
     good_values = [v for v, vv in zip(values, verified, strict=True) if vv.verified]
-    footing = run_footing(values)
+    footing = run_footing(good_values)
     unambiguous, ambiguous_dropped = drop_ambiguous(good_values)
-    consensus = build_consensus(unambiguous)
+    consensus = build_consensus(unambiguous, trusted_tables(footing))
     multi = [c for c in consensus if c.total >= 2]
     good_issue = [f for f, vf in zip(issue, verified_issue, strict=True) if vf.verified]
     facts = facts_from(consensus, good_issue)
@@ -183,7 +184,11 @@ def analyze_document(
         consensus=[_consensus_record(c) for c in consensus],
         facts=[
             FactRecord(
-                key=k, value=f.value, pdf_page=f.citations[0].pdf_page, span=f.citations[0].span
+                key=k,
+                value=f.value,
+                step=f.step,
+                pdf_page=f.citations[0].pdf_page,
+                span=f.citations[0].span,
             )
             for k, f in sorted(facts.items())
         ],

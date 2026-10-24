@@ -1,0 +1,221 @@
+{
+ "schema_version": 1,
+ "doc_id": "runwal_rhp_2026",
+ "doc_sha256": "2c3477d154791ebf2ac05cb71b66b77cfcb05cfc6aefc359690f5c701c56005f",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-24",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "present",
+   "value_rupees": "5000000000.00",
+   "raw": "5,000.00",
+   "pages": [
+    3,
+    10,
+    103,
+    104,
+    536
+   ],
+   "span": "[●] PER EQUITY SHARE) (THE “ISSUE PRICE”) AGGREGATING UP TO ₹ 5,000.00 MILLION (THE “ISSUE” OR “FRESH ISSUE”)",
+   "note": ""
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "absent",
+   "note": "The Issue is a Fresh Issue only; no offer for sale is described (searched pages 1-80)."
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "present",
+   "value_rupees": "5000000000.00",
+   "raw": "5,000.00",
+   "pages": [
+    3,
+    10,
+    103,
+    104,
+    536
+   ],
+   "span": "[●] PER EQUITY SHARE) (THE “ISSUE PRICE”) AGGREGATING UP TO ₹ 5,000.00 MILLION (THE “ISSUE” OR “FRESH ISSUE”)",
+   "note": ""
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "absent",
+   "note": "Combined object 'funding acquisitions of future real estate projects and general corporate purposes' is shown as [●] on pages 104-105."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "Same combined object, amount shown as [●]."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "1",
+   "raw": "has appointed Crisil Ratings Limited",
+   "pages": [
+    87
+   ],
+   "span": "Our Company has appointed Crisil Ratings Limited, a SEBI registered credit rating agency as the monitoring agency in",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2026",
+   "status": "present",
+   "value_rupees": "18507930000.00",
+   "raw": "18,507.93",
+   "pages": [
+    76,
+    293,
+    425,
+    426
+   ],
+   "span": "III. Total Revenue (I + II) 18,507.93 10,507.14 24,366.75",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2025",
+   "status": "present",
+   "value_rupees": "10507140000.00",
+   "raw": "10,507.14",
+   "pages": [
+    76,
+    293,
+    425,
+    426,
+    427
+   ],
+   "span": "III. Total Revenue (I + II) 18,507.93 10,507.14 24,366.75",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "17989490000.00",
+   "raw": "17,989.49",
+   "pages": [
+    76,
+    120,
+    191,
+    293,
+    399,
+    408,
+    425,
+    426
+   ],
+   "span": "I. I Revenue from Operations 17,989.49 10,077.66 24,088.65",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "10077660000.00",
+   "raw": "10,077.66",
+   "pages": [
+    76,
+    120,
+    191,
+    293,
+    399,
+    408,
+    425,
+    426
+   ],
+   "span": "I. I Revenue from Operations 17,989.49 10,077.66 24,088.65",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2026",
+   "status": "present",
+   "value_rupees": "2239150000.00",
+   "raw": "2,239.15",
+   "pages": [
+    76,
+    293
+   ],
+   "span": "IX. Restated Profit/ (Loss) before tax (VII+VIII) 2,239.15 975.56 1,567.71",
+   "note": ""
+  },
+  {
+   "key": "financials.tax_expense.FY2026",
+   "status": "present",
+   "value_rupees": "381520000.00",
+   "raw": "381.52",
+   "pages": [
+    76,
+    293,
+    426,
+    427
+   ],
+   "span": "Total Tax Expenses (1+2) 381.52 419.08 (630.71)",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2026",
+   "status": "present",
+   "value_rupees": "1857630000.00",
+   "raw": "1,857.63",
+   "pages": [
+    76,
+    293,
+    427
+   ],
+   "span": "XI. Restated Net Profit/(loss) for the year (IX+X) 1,857.63 556.48 937.00",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2025",
+   "status": "present",
+   "value_rupees": "556480000.00",
+   "raw": "556.48",
+   "pages": [
+    76,
+    293,
+    428
+   ],
+   "span": "XI. Restated Net Profit/(loss) for the year (IX+X) 1,857.63 556.48 937.00",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2026",
+   "status": "present",
+   "value_rupees": "102544960000.00",
+   "raw": "1,02,544.96",
+   "pages": [
+    292
+   ],
+   "span": "Total assets 1,02,544.96 83,281.39 70,797.38",
+   "note": "The summary balance sheet text layer on page 75 garbles this figure to 10,254,4.96; page 292 prints it as 1,02,544.96."
+  },
+  {
+   "key": "financials.total_assets.FY2025",
+   "status": "present",
+   "value_rupees": "83281390000.00",
+   "raw": "83,281.39",
+   "pages": [
+    55,
+    75,
+    292
+   ],
+   "span": "Total assets (A) 102,544.96 83,281.39 70,797.38",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "-1807130000.00",
+   "raw": "(1,807.13)",
+   "pages": [
+    35,
+    77,
+    294,
+    428
+   ],
+   "span": "Net cash generated from / (used in) operating activities (1,807.13) (1,981.36) (5,494.82)",
+   "note": ""
+  }
+ ]
+}

@@ -52,12 +52,28 @@ _FRESH = re.compile(
 _OFS = re.compile(
     rf"{_NOT_DEFINED}offer\s+for\s+sale\b{_GAP}aggregat\w*\s*(?:to\s+|up\s+to\s+)?{_AMT}", re.I
 )
-# "aggregating to Rs. 10,916.80* million (the "Offer")": the total is stated outright. A quoted
-# "Offer Price" does not match because the closing parenthesis must follow "Offer"/"Issue".
-_TOTAL_STATED = re.compile(
-    rf"aggregat\w*\s*(?:to\s+|up\s+to\s+)?{_AMT}\s*\(\s*(?:the\s+)?[“\"]?(?:offer|issue)[”\"]?\s*\)",
-    re.I,
+# "... aggregating to Rs. 5,000.00 million (the "Issue" or "Fresh Issue")": the amount comes first
+# and the defined term after it says what the amount is. `_roles` reads that term; "Offer Price"
+# and other terms are not roles.
+_DEFINED_AFTER = re.compile(
+    rf"aggregat\w*\s*(?:to\s+|up\s+to\s+)?{_AMT}\s*\(([^)]{{1,80}})\)", re.I
 )
+
+
+def _roles(term: str) -> set[IssueKey]:
+    words = re.sub(r"[“”\"'*]", "", term).lower().split()
+    if words[:1] == ["the"]:
+        words = words[1:]
+    roles: set[IssueKey] = set()
+    if words in (["offer"], ["issue"]) or (words[:1] in (["offer"], ["issue"]) and "or" in words):
+        roles.add(IssueKey.TOTAL_ISSUE_AMOUNT)
+    if "fresh issue" in " ".join(words):
+        roles.add(IssueKey.FRESH_ISSUE_AMOUNT)
+    if " ".join(words) == "offer for sale":
+        roles.add(IssueKey.OFS_AMOUNT)
+    return roles
+
+
 _NOT_APPLICABLE = re.compile(r"\bN\.?\s?A\.?\b|\bnil\b", re.I)
 
 _UNIT_WORDS = {
@@ -118,22 +134,27 @@ def _segments(doc: ParsedDocument, max_page: int) -> list[tuple[int, str]]:
 def _cover_amounts(doc: ParsedDocument, max_page: int) -> list[IssueFact]:
     found: dict[IssueKey, IssueFact] = {}
     row_na: dict[int, bool] = {}
-    stated_total: IssueFact | None = None
     for page, text in _segments(doc, max_page):
-        if stated_total is None and (tm := _TOTAL_STATED.search(text)):
-            amount = _amount(tm)
-            if amount:
-                value, raw, unit = amount
-                stated_total = IssueFact(
-                    key=IssueKey.TOTAL_ISSUE_AMOUNT,
-                    value=value,
-                    raw=raw,
-                    unit=unit,
-                    pdf_page=page,
-                    span=text[max(0, tm.start() - 40) : tm.end() + 20],
-                    method="regex",
-                    confidence=0.85,
+        for dm in _DEFINED_AFTER.finditer(text):
+            amount = _amount(dm)
+            if not amount:
+                continue
+            value, raw, unit = amount
+            for role in _roles(dm.group(3)):
+                found.setdefault(
+                    role,
+                    IssueFact(
+                        key=role,
+                        value=value,
+                        raw=raw,
+                        unit=unit,
+                        pdf_page=page,
+                        span=text[max(0, dm.start() - 40) : dm.end() + 20],
+                        method="regex",
+                        confidence=0.85,
+                    ),
                 )
+    for page, text in _segments(doc, max_page):
         for key, pattern in ((IssueKey.FRESH_ISSUE_AMOUNT, _FRESH), (IssueKey.OFS_AMOUNT, _OFS)):
             if key in found:
                 continue
@@ -154,8 +175,8 @@ def _cover_amounts(doc: ParsedDocument, max_page: int) -> list[IssueFact]:
                 row_na[page] = bool(_NOT_APPLICABLE.search(text[m.end() :]))
     fresh, ofs = found.get(IssueKey.FRESH_ISSUE_AMOUNT), found.get(IssueKey.OFS_AMOUNT)
     facts = list(found.values())
-    if stated_total:
-        facts.append(stated_total)
+    if IssueKey.TOTAL_ISSUE_AMOUNT in found:
+        pass  # the total is stated outright; never derive over it
     elif fresh and ofs:
         facts.append(_total(fresh, ofs.value, f"{fresh.span} + {ofs.span}"))
     elif fresh and not ofs and row_na.get(fresh.pdf_page):

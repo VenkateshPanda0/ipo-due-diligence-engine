@@ -209,3 +209,27 @@ def test_explicit_total_is_preferred_to_the_derived_sum_and_cites_its_own_page()
     assert total.raw == "10,916.80"
     assert facts[IssueKey.FRESH_ISSUE_AMOUNT].value == Decimal(7_500_000_000)
     assert facts[IssueKey.OFS_AMOUNT].value == Decimal(3_416_800_000)
+
+
+def test_issue_or_fresh_issue_defined_after_the_amount_is_both_fresh_and_total() -> None:
+    """Runwal-style cover: a fresh-issue-only offer, defined as (the “Issue” or “Fresh Issue”)."""
+    text = (
+        "[●] PER EQUITY SHARE) (THE “ISSUE PRICE”) AGGREGATING UP TO Rs. 5,000.00 MILLION "
+        "(THE “ISSUE” OR “FRESH ISSUE”) THE ISSUE INCLUDES A RESERVATION OF UP TO [●] EQUITY "
+        "SHARES AGGREGATING UP TO Rs. 35.00 MILLION (CONSTITUTING UP TO [●]% OF THE POST-ISSUE)"
+    )
+    facts = _facts(_doc(_page(3, text)))
+    assert facts[IssueKey.FRESH_ISSUE_AMOUNT] == (Decimal(5_000_000_000), 3)
+    assert facts[IssueKey.TOTAL_ISSUE_AMOUNT] == (Decimal(5_000_000_000), 3)
+    assert IssueKey.OFS_AMOUNT not in facts
+
+
+def test_defined_term_roles() -> None:
+    fresh_only = _facts(_doc(_page(1, "aggregating to Rs. 7,500 million (“Fresh Issue”)")))
+    assert IssueKey.FRESH_ISSUE_AMOUNT in fresh_only
+    assert IssueKey.TOTAL_ISSUE_AMOUNT not in fresh_only
+    ofs_only = _facts(_doc(_page(1, "aggregating to Rs. 1896.00 lakhs (“Offer for Sale”)")))
+    assert ofs_only[IssueKey.OFS_AMOUNT][0] == Decimal(189_600_000)
+    assert IssueKey.FRESH_ISSUE_AMOUNT not in ofs_only
+    price = _facts(_doc(_page(1, "aggregating to Rs. 34 million (the “Offer Price”)")))
+    assert price == {}  # a price is not an issue size

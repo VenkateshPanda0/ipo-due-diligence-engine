@@ -30,6 +30,7 @@ class Consensus:
     total: int  # all comparable values for this concept and period
     alternatives: list[CitedNumber]  # values that disagree with `chosen`
     cluster_sizes: list[int]  # sizes of all agreement clusters, largest first
+    untrusted_ignored: int = 0  # readings set aside because trusted tables had the figure
 
     @property
     def unanimous(self) -> bool:
@@ -67,8 +68,15 @@ def drop_ambiguous(values: list[CitedNumber]) -> tuple[list[CitedNumber], int]:
     return kept, len(values) - len(kept)
 
 
-def build_consensus(values: list[CitedNumber]) -> list[Consensus]:
-    """One Consensus per (concept, period) among values with a known unit and period."""
+def build_consensus(
+    values: list[CitedNumber], trusted_tables: set[int] | None = None
+) -> list[Consensus]:
+    """One Consensus per (concept, period) among values with a known unit and period.
+
+    When `trusted_tables` is given and a group has readings from them, only those readings are
+    compared (the others are counted in `untrusted_ignored`): a figure from a table whose own
+    totals foot is preferred to repeated agreement among tables that cannot be validated.
+    """
     groups: dict[tuple[Concept, str], list[CitedNumber]] = defaultdict(list)
     for v in values:
         if (
@@ -81,6 +89,11 @@ def build_consensus(values: list[CitedNumber]) -> list[Consensus]:
 
     out: list[Consensus] = []
     for (concept, key), members in sorted(groups.items(), key=lambda kv: (kv[0][0], kv[0][1])):
+        ignored = 0
+        if trusted_tables:
+            trusted = [m for m in members if m.table_id in trusted_tables]
+            if trusted:
+                ignored, members = len(members) - len(trusted), trusted
         clusters: list[list[CitedNumber]] = []
         for v in sorted(members, key=lambda m: m.rupees or Decimal(0)):
             for cluster in clusters:
@@ -106,6 +119,7 @@ def build_consensus(values: list[CitedNumber]) -> list[Consensus]:
                 total=len(members),
                 alternatives=others,
                 cluster_sizes=sorted((len(c) for c in clusters), reverse=True),
+                untrusted_ignored=ignored,
             )
         )
     return out

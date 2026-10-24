@@ -146,7 +146,8 @@ def _predictions(data_dir: Path, doc_id: str) -> list[Prediction] | None:
         raise StaleOutput(f"{path.name} was written by an older analyzer")
     report = AnalysisReport.model_validate(raw)
     return [
-        Prediction(key=f.key, value=f.value, pdf_page=f.pdf_page, span=f.span) for f in report.facts
+        Prediction(key=f.key, value=f.value, pdf_page=f.pdf_page, span=f.span, step=f.step)
+        for f in report.facts
     ]
 
 

@@ -23,8 +23,8 @@ def lfile(*labels: Label, doc_id: str = "d1") -> LabelFile:
     )  # fmt: skip
 
 
-def pred(key: str, value: str, page: int = 5) -> Prediction:
-    return Prediction(key=key, value=Decimal(value), pdf_page=page, span="row")
+def pred(key: str, value: str, page: int = 5, step: str = "1") -> Prediction:
+    return Prediction(key=key, value=Decimal(value), pdf_page=page, span="row", step=Decimal(step))
 
 
 # ---- label validation -------------------------------------------------------------------------
@@ -122,12 +122,26 @@ def test_missing_prediction_for_a_present_label_is_an_abstention() -> None:
     assert r.abstention_rate == 1.0
 
 
-def test_tolerance_accepts_rounding_but_not_real_differences() -> None:
+def test_tolerance_is_the_rounding_of_the_printed_figures() -> None:
     labels = {"d1": lfile(lab("financials.total_income.FY2026", value="18507930000"))}
-    near = {"d1": [pred("financials.total_income.FY2026", "18508000000")]}  # 18,508 mn vs 18,507.93
-    far = {"d1": [pred("financials.total_income.FY2026", "18900000000")]}
+    # a prediction read from a table that prints whole millions (step 1,000,000) may differ by that
+    near = {"d1": [pred("financials.total_income.FY2026", "18508000000", step="1000000")]}
+    far = {"d1": [pred("financials.total_income.FY2026", "18900000000", step="1000000")]}
     assert score(labels, near).correct == 1
     assert score(labels, far).wrong == 1
+
+
+def test_a_different_line_item_a_hair_away_is_not_a_match() -> None:
+    """2,239.30 (before share of associates) is not 2,239.15, though only 0.007% apart."""
+    f = Label.model_validate(
+        {"key": "financials.profit_before_tax.FY2026", "status": "present",
+         "value_rupees": "2239150000", "raw": "2,239.15", "pages": [76], "span": "x | 2,239.15"}
+    )  # fmt: skip
+    labels = {"d1": lfile(f)}
+    other_line = {"d1": [pred("financials.profit_before_tax.FY2026", "2239300000", step="10000")]}
+    assert score(labels, other_line).wrong == 1  # both print two decimals of a million: exact only
+    same = {"d1": [pred("financials.profit_before_tax.FY2026", "2239150000", step="10000")]}
+    assert score(labels, same).correct == 1
 
 
 def test_per_family_breakdown_and_unsure_labels_are_excluded() -> None:

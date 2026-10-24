@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+from decimal import Decimal
+
 from redherring.extract.consensus import Consensus
 from redherring.extract.issue import IssueFact
 from redherring.flags.engine import Citation, Fact
+from redherring.parse.units import MULTIPLIER
+from redherring.verify.footing import quantum
 
 
 def _keep(c: Consensus) -> bool:
@@ -31,11 +35,13 @@ def facts_from(consensus: list[Consensus], issue_facts: list[IssueFact]) -> dict
             key=key,
             value=rupees,
             citations=[Citation(pdf_page=c.chosen.pdf_page, span=c.chosen.span)],
+            step=quantum(c.chosen.raw) * MULTIPLIER[c.chosen.unit] if c.chosen.unit else Decimal(1),
         )
     for f in issue_facts:
         facts[f.key.value] = Fact(
             key=f.key.value,
             value=f.value,
             citations=[Citation(pdf_page=f.pdf_page, span=f.span)],
+            step=quantum(f.raw) * MULTIPLIER[f.unit] if f.unit else Decimal(1),
         )
     return facts

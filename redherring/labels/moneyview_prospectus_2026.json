@@ -1,0 +1,255 @@
+{
+ "schema_version": 1,
+ "doc_id": "moneyview_prospectus_2026",
+ "doc_sha256": "b29ea6b6c7474d91da14d3be2492f02df9501c8346bb61e429b0d29d0c03555f",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-24",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "present",
+   "value_rupees": "7500000000",
+   "raw": "7,500",
+   "pages": [
+    3,
+    12,
+    92,
+    139
+   ],
+   "span": "A FRESH ISSUE OF 220,588,235* EQUITY SHARES OF FACE VALUE OF ₹ 1 EACH BY OUR COMPANY AGGREGATING TO ₹ 7,500* MILLION (“FRESH ISSUE”) AND AN OFFER FOR SALE OF 100,494,200*",
+   "note": ""
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "present",
+   "value_rupees": "3416800000.00",
+   "raw": "3,416.80",
+   "pages": [
+    3,
+    12,
+    92,
+    139,
+    473
+   ],
+   "span": "EQUITY SHARES OF FACE VALUE OF ₹ 1 EACH AGGREGATING TO ₹ 3,416.80* MILLION (“OFFER FOR SALE”) COMPRISING AN OFFER FOR SALE OF 13,548,300* EQUITY SHARES OF FACE VALUE OF",
+   "note": ""
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "present",
+   "value_rupees": "10916800000.00",
+   "raw": "10,916.80",
+   "pages": [
+    3,
+    12,
+    92,
+    112,
+    473
+   ],
+   "span": "OF ₹ 34 PER EQUITY SHARE INCLUDING A SECURITIES PREMIUM OF ₹ 33 PER EQUITY SHARE (THE “OFFER PRICE”) AGGREGATING TO ₹ 10,916.80* MILLION (THE “OFFER”). THE OFFER COMPRISES",
+   "note": ""
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "present",
+   "value_rupees": "1117150000.00",
+   "raw": "1,117.15",
+   "pages": [
+    139,
+    140
+   ],
+   "span": "3. General corporate purposes(1) 1,117.15",
+   "note": ""
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "Objects are DLG-linked loan growth, investment in WFPL, and general corporate purposes only."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "1",
+   "raw": "has appointed CARE Ratings Limited as the monitoring agency",
+   "pages": [
+    57,
+    146
+   ],
+   "span": "Our Company has appointed CARE Ratings Limited as the monitoring agency for monitoring the utilization of",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2026",
+   "status": "present",
+   "value_rupees": "34042740000.00",
+   "raw": "34,042.74",
+   "pages": [
+    36,
+    96,
+    152,
+    155,
+    156,
+    322,
+    393,
+    394,
+    406
+   ],
+   "span": "Total income (B) 10,650.92 7,029.16 34,042.74 23,785.29 13,892.41",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2025",
+   "status": "present",
+   "value_rupees": "23785290000.00",
+   "raw": "23,785.29",
+   "pages": [
+    36,
+    96,
+    152,
+    155,
+    156,
+    322,
+    393,
+    394,
+    406
+   ],
+   "span": "Total income (B) 10,650.92 7,029.16 34,042.74 23,785.29 13,892.41",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "33511580000.00",
+   "raw": "33,511.58",
+   "pages": [
+    96,
+    322,
+    397
+   ],
+   "span": "Total revenue from operations (a) 10,411.13 6,930.46 33,511.58 23,391.46 13,423.70",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "23391460000.00",
+   "raw": "23,391.46",
+   "pages": [
+    34,
+    96,
+    322,
+    397,
+    401
+   ],
+   "span": "(“UPI”). Our total revenue from operations grew by 74.25% from ₹13,423.70 million in Fiscal 2024 to ₹23,391.46",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2026",
+   "status": "present",
+   "value_rupees": "3273540000.00",
+   "raw": "3,273.54",
+   "pages": [
+    96,
+    97,
+    322,
+    325,
+    394,
+    409
+   ],
+   "span": "Restated profit before tax (V) = (III-IV) 2,329.81 897.27 3,273.54 3,192.11 1,983.03",
+   "note": ""
+  },
+  {
+   "key": "financials.tax_expense.FY2026",
+   "status": "present",
+   "value_rupees": "846490000.00",
+   "raw": "846.49",
+   "pages": [
+    96,
+    322,
+    394,
+    400,
+    407
+   ],
+   "span": "Total tax expense (VII) 591.85 225.75 846.49 789.36 271.56",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2026",
+   "status": "present",
+   "value_rupees": "2427050000.00",
+   "raw": "2,427.05",
+   "pages": [
+    96,
+    322,
+    324,
+    361,
+    394,
+    400,
+    407
+   ],
+   "span": "Restated profit for the period/year (VIII) = (V-VII) 1,737.96 671.52 2,427.05 2,402.75 1,711.47",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2025",
+   "status": "present",
+   "value_rupees": "2402750000.00",
+   "raw": "2,402.75",
+   "pages": [
+    96,
+    322,
+    323,
+    361,
+    394,
+    403,
+    405,
+    407
+   ],
+   "span": "Restated profit for the period/year (VIII) = (V-VII) 1,737.96 671.52 2,427.05 2,402.75 1,711.47",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2026",
+   "status": "present",
+   "value_rupees": "81048540000.00",
+   "raw": "81,048.54",
+   "pages": [
+    95,
+    221,
+    321,
+    403
+   ],
+   "span": "Total assets 86,418.90 64,048.22 81,048.54 56,324.20 35,195.01",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2025",
+   "status": "present",
+   "value_rupees": "56324200000.00",
+   "raw": "56,324.20",
+   "pages": [
+    95,
+    221,
+    321,
+    403
+   ],
+   "span": "Total assets 86,418.90 64,048.22 81,048.54 56,324.20 35,195.01",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "-9509020000.00",
+   "raw": "(9,509.02)",
+   "pages": [
+    97,
+    325
+   ],
+   "span": "Net cash flow generated from/ (used in) operating activities (A) 1,171.15 (5,426.44) (9,509.02) (14,207.05) (16,327.36)",
+   "note": ""
+  }
+ ]
+}

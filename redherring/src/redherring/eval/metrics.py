@@ -6,19 +6,21 @@ Definitions (all over *labelled* fields; `unsure` labels are not scored):
 - abstention rate     present labels with no prediction / present labels
 - hallucination rate  absent labels with a prediction / absent labels (the document states no such
                       value, yet one was reported)
-Tolerance: the larger of 0.05% of the label and one rupee, enough for rounding between units.
+Tolerance: the coarser of the two printed precisions. A label printed as "2,239.15" (million) is
+exact to 10,000 rupees; a prediction read from a table printing whole millions is exact to
+1,000,000. Two different line items a hair apart (2,239.30 vs 2,239.15) are therefore not a match.
 """
 
 from __future__ import annotations
 
+import re
 from collections import defaultdict
 from decimal import Decimal
 
 from pydantic import BaseModel, computed_field
 
-from redherring.eval.labels import LabelFile
-
-TOLERANCE = Decimal("0.0005")
+from redherring.eval.labels import Label, LabelFile
+from redherring.parse.units import parse_amount
 
 
 class Prediction(BaseModel):
@@ -26,6 +28,18 @@ class Prediction(BaseModel):
     value: Decimal
     pdf_page: int
     span: str
+    step: Decimal = Decimal(1)  # printed precision in rupees (0.01 million = 10,000)
+
+
+def label_step(f: Label) -> Decimal:
+    """Printed precision of a label in rupees, from its raw text and rupee value."""
+    if f.raw and f.value_rupees:
+        parsed = parse_amount(f.raw)
+        match = re.search(r"\.(\d+)", f.raw)
+        if parsed:
+            quantum = Decimal(1).scaleb(-len(match.group(1))) if match else Decimal(1)
+            return quantum * abs(f.value_rupees / parsed)
+    return Decimal(1)
 
 
 def family_of(key: str) -> str:
@@ -78,8 +92,9 @@ class EvalReport(_Counts):
     families: list[FamilyScore]
 
 
-def _within(pred: Decimal, label: Decimal) -> bool:
-    return abs(pred - label) <= max(abs(label) * TOLERANCE, Decimal(1))
+def _within(pred: Prediction, label: Label) -> bool:
+    assert label.value_rupees is not None
+    return abs(pred.value - label.value_rupees) <= max(label_step(label), pred.step)
 
 
 def score(labels: dict[str, LabelFile], predictions: dict[str, list[Prediction]]) -> EvalReport:
@@ -98,7 +113,7 @@ def score(labels: dict[str, LabelFile], predictions: dict[str, list[Prediction]]
                     c.n_present += 1
                     if pred is None:
                         c.abstained += 1
-                    elif _within(pred.value, f.value_rupees):
+                    elif _within(pred, f):
                         c.correct += 1
                         c.citation_correct += pred.pdf_page in f.pages
                     else:

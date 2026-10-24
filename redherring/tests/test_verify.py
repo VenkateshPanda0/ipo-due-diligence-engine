@@ -289,3 +289,50 @@ def test_values_ambiguous_within_one_table_are_dropped() -> None:
     assert dropped == 2
     assert {v.table_id for v in kept if v.concept is Concept.TRADE_RECEIVABLES} == {4}
     assert len([v for v in kept if v.concept is Concept.TOTAL_INCOME]) == 2  # equal readings agree
+
+
+# ---- trusted tables: figures from tables whose own identities hold win over agreeing noise -------
+
+
+def test_trusted_tables_outweigh_agreeing_untrusted_noise() -> None:
+    noise = [cn(Concept.PROFIT_AFTER_TAX, "(0.06)", table_id=t) for t in (10, 11, 12, 13, 14)]
+    real = [cn(Concept.PROFIT_AFTER_TAX, "556.48", table_id=t) for t in (1, 2)]
+    (plain,) = build_consensus([*noise, *real])
+    assert plain.chosen.raw == "(0.06)"  # without trust, the larger noise cluster wins
+    (trusted,) = build_consensus([*noise, *real], trusted_tables={1, 2})
+    assert trusted.chosen.raw == "556.48"
+    assert trusted.supporters == 2
+    assert trusted.total == 2
+    assert trusted.untrusted_ignored == 5
+
+
+def test_without_any_trusted_value_all_sources_still_count() -> None:
+    vals = [cn(Concept.TOTAL_INCOME, "100.00", table_id=t) for t in (1, 2, 3)]
+    (c,) = build_consensus(vals, trusted_tables={99})
+    assert c.chosen.raw == "100.00"
+    assert c.total == 3
+    assert c.untrusted_ignored == 0
+
+
+def test_trusted_tables_are_those_that_foot_and_never_fail() -> None:
+    from redherring.verify.footing import trusted_tables
+
+    ok = [
+        cn(Concept.REVENUE_FROM_OPERATIONS, "100.00", table_id=1),
+        cn(Concept.OTHER_INCOME, "10.00", table_id=1),
+        cn(Concept.TOTAL_INCOME, "110.00", table_id=1),
+    ]
+    bad = [
+        cn(Concept.REVENUE_FROM_OPERATIONS, "100.00", table_id=2),
+        cn(Concept.OTHER_INCOME, "10.00", table_id=2),
+        cn(Concept.TOTAL_INCOME, "999.00", table_id=2),
+    ]
+    mixed = [  # foots in one period, fails in another: not trusted
+        cn(Concept.REVENUE_FROM_OPERATIONS, "100.00", table_id=3, period=FY26),
+        cn(Concept.OTHER_INCOME, "10.00", table_id=3, period=FY26),
+        cn(Concept.TOTAL_INCOME, "110.00", table_id=3, period=FY26),
+        cn(Concept.REVENUE_FROM_OPERATIONS, "90.00", table_id=3, period=FY25),
+        cn(Concept.OTHER_INCOME, "9.00", table_id=3, period=FY25),
+        cn(Concept.TOTAL_INCOME, "1.00", table_id=3, period=FY25),
+    ]
+    assert trusted_tables(run_footing([*ok, *bad, *mixed])) == {1}

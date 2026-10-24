@@ -34,6 +34,7 @@ class Fact(BaseModel):
     key: str
     value: Decimal
     citations: list[Citation] = Field(default_factory=list)
+    step: Decimal = Decimal(1)  # printed precision in rupees
 
 
 class Flag(BaseModel):

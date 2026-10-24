@@ -100,3 +100,14 @@ def run_footing(values: list[CitedNumber]) -> list[FootingCheck]:
                 )
             )
     return checks
+
+
+def trusted_tables(checks: list[FootingCheck]) -> set[int]:
+    """Tables with at least one passing identity and no failing one.
+
+    A table whose totals foot is evidently a genuine statement read correctly; subsidiary and
+    segment tables, which cannot be validated this way, should not outvote it by repetition.
+    """
+    passed = {c.table_id for c in checks if c.ok}
+    failed = {c.table_id for c in checks if not c.ok}
+    return passed - failed

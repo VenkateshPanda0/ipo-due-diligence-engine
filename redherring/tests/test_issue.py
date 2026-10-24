@@ -170,3 +170,21 @@ def test_monitoring_agency_silence_gives_no_fact() -> None:
         )
         == []
     )
+
+
+def test_defined_term_mention_does_not_steal_the_next_amount() -> None:
+    """Synoptics-style cover: the offer for sale amount comes after a long list of sellers, and
+    the defined term "(Offer for Sale)" is followed by an unrelated market-maker amount."""
+    sellers = " and ".join(f"Selling Shareholder Number {i} Private Limited" for i in range(1, 9))
+    text = (
+        "Public issue of equity shares aggregating to Rs. 5403.60 lakhs (“the offer”), comprising "
+        "a fresh issue of up to 14,80,000 equity shares aggregating to Rs. 3507.60 lakhs by our "
+        "company (“Fresh Issue”) and an offer for sale of up to 8,00,000 equity shares of face "
+        f"value of Rs. 10.00 each by {sellers} (the “Selling Shareholders”) aggregating to "
+        "Rs. 1896.00 lakhs (“Offer for Sale”); of the offer, 1,14,000 equity shares aggregating to "
+        "Rs. 270.18 lakhs will be reserved for subscription by market maker."
+    )
+    facts = _facts(_doc(_page(20, text)))
+    assert facts[IssueKey.FRESH_ISSUE_AMOUNT][0] == Decimal(350_760_000)
+    assert facts[IssueKey.OFS_AMOUNT][0] == Decimal(189_600_000)  # 1896.00 lakhs, not 270.18
+    assert facts[IssueKey.TOTAL_ISSUE_AMOUNT][0] == Decimal(540_360_000)

@@ -41,10 +41,17 @@ class IssueFact(BaseModel):
 
 
 _AMT = r"(?:₹|rs\.?|inr)\s*([\d,]+(?:\.\d+)?)\s*\**\s*(million|mn|lakhs?|lacs?|crores?|cr)\b"
-# Up to 400 characters without crossing a sentence end (". " + capital), so "Rs. 150.00" is fine.
-_GAP = r"(?:(?!\.\s+[A-Z]).){0,400}?"
-_FRESH = re.compile(rf"fresh\s+issue\b{_GAP}aggregat\w*\s*(?:to\s+|up\s+to\s+)?{_AMT}", re.I)
-_OFS = re.compile(rf"offer\s+for\s+sale\b{_GAP}aggregat\w*\s*(?:to\s+|up\s+to\s+)?{_AMT}", re.I)
+# Up to 1200 characters, never crossing a sentence end (". " + capital) or another "aggregating":
+# the first "aggregating" after the phrase belongs to it. A mention that is itself a quoted
+# defined term, as in (“Offer for Sale”), is skipped: the amount precedes it, not follows it.
+_GAP = r"(?:(?!\.\s+[A-Z])(?!aggregat).){0,1200}?"
+_NOT_DEFINED = r"(?<![“\"(])"
+_FRESH = re.compile(
+    rf"{_NOT_DEFINED}fresh\s+issue\b{_GAP}aggregat\w*\s*(?:to\s+|up\s+to\s+)?{_AMT}", re.I
+)
+_OFS = re.compile(
+    rf"{_NOT_DEFINED}offer\s+for\s+sale\b{_GAP}aggregat\w*\s*(?:to\s+|up\s+to\s+)?{_AMT}", re.I
+)
 _NOT_APPLICABLE = re.compile(r"\bN\.?\s?A\.?\b|\bnil\b", re.I)
 
 _UNIT_WORDS = {

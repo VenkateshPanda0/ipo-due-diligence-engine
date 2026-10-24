@@ -1,0 +1,256 @@
+{
+ "schema_version": 1,
+ "doc_id": "leap_india_rhp_2026",
+ "doc_sha256": "25543f664eebb171de8c639d8876c9bac6d40223c19ca629f2d804ef2d32f0b5",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-24",
+ "split": "heldout",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "present",
+   "value_rupees": "4800000000.00",
+   "raw": "4,800.00",
+   "pages": [
+    3,
+    12,
+    13,
+    49,
+    121,
+    419
+   ],
+   "span": "PREMIUM OF ₹[●] PER EQUITY SHARE) (“OFFER PRICE”) AGGREGATING UP TO ₹24,800.00 MILLION (THE “OFFER”) COMPRISING A FRESH ISSUE OF UP TO [●] EQUITY SHARES OF FACE VALUE OF ₹1 EACH AGGREGATING",
+   "note": ""
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "present",
+   "value_rupees": "20000000000.00",
+   "raw": "20,000.00",
+   "pages": [
+    3,
+    13,
+    49
+   ],
+   "span": "UP TO ₹4,800.00 MILLION BY OUR COMPANY (“FRESH ISSUE”) AND AN OFFER FOR SALE OF UP TO [●] EQUITY SHARES OF FACE VALUE OF ₹1 EACH AGGREGATING UP TO ₹20,000.00 MILLION (THE “OFFER FOR SALE”),",
+   "note": ""
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "present",
+   "value_rupees": "24800000000.00",
+   "raw": "24,800.00",
+   "pages": [
+    3,
+    13,
+    419
+   ],
+   "span": "PREMIUM OF ₹[●] PER EQUITY SHARE) (“OFFER PRICE”) AGGREGATING UP TO ₹24,800.00 MILLION (THE “OFFER”) COMPRISING A FRESH ISSUE OF UP TO [●] EQUITY SHARES OF FACE VALUE OF ₹1 EACH AGGREGATING",
+   "note": ""
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "absent",
+   "note": "General corporate purposes shown as [●]; the text only says it will not exceed 25% of Gross Proceeds (p121)."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "No unidentified-acquisition object (objects: repayment of borrowings, general corporate purposes)."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "1",
+   "raw": "has appointed India Ratings and Research Private",
+   "pages": [
+    76,
+    129
+   ],
+   "span": "Our Company has appointed India Ratings and Research Private Limited for monitoring the utilization of gross proceeds from",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2026",
+   "status": "present",
+   "value_rupees": "7473550000.00",
+   "raw": "7,473.55",
+   "pages": [
+    26,
+    65,
+    216,
+    285,
+    362,
+    369,
+    370
+   ],
+   "span": "Total income (₹ million) 7,473.55 4,850.31 3,719.44",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2025",
+   "status": "present",
+   "value_rupees": "4850310000.00",
+   "raw": "4,850.31",
+   "pages": [
+    26,
+    65,
+    216,
+    285,
+    362,
+    364,
+    369,
+    370
+   ],
+   "span": "Total income (₹ million) 7,473.55 4,850.31 3,719.44",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "7295330000.00",
+   "raw": "7,295.33",
+   "pages": [
+    26,
+    33,
+    65,
+    285,
+    328,
+    362
+   ],
+   "span": "Revenue from operations (₹ million) 7,295.33 4,664.72 3,649.71",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "4664720000.00",
+   "raw": "4,664.72",
+   "pages": [
+    26,
+    33,
+    65,
+    285,
+    328,
+    362,
+    364
+   ],
+   "span": "Revenue from operations (₹ million) 7,295.33 4,664.72 3,649.71",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2026",
+   "status": "present",
+   "value_rupees": "808520000.00",
+   "raw": "808.52",
+   "pages": [
+    65,
+    66,
+    285,
+    286,
+    362,
+    367,
+    369,
+    370
+   ],
+   "span": "Profit before tax (I - II) 808.52 520.57 467.07",
+   "note": ""
+  },
+  {
+   "key": "financials.tax_expense.FY2026",
+   "status": "present",
+   "value_rupees": "185110000.00",
+   "raw": "185.11",
+   "pages": [
+    65,
+    285,
+    308,
+    362
+   ],
+   "span": "Total tax expense 185.11 144.99 95.33",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2026",
+   "status": "present",
+   "value_rupees": "623410000.00",
+   "raw": "623.41",
+   "pages": [
+    26,
+    65,
+    133,
+    216,
+    222,
+    285,
+    290,
+    346,
+    352,
+    362,
+    369,
+    370
+   ],
+   "span": "Net profit for the year (₹ million) 623.41 375.58 371.74",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2025",
+   "status": "present",
+   "value_rupees": "375580000.00",
+   "raw": "375.58",
+   "pages": [
+    26,
+    65,
+    133,
+    216,
+    222,
+    285,
+    290,
+    346,
+    352,
+    362,
+    369,
+    370
+   ],
+   "span": "Net profit for the year (₹ million) 623.41 375.58 371.74",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2026",
+   "status": "present",
+   "value_rupees": "24010460000.00",
+   "raw": "24,010.46",
+   "pages": [
+    64,
+    284
+   ],
+   "span": "Total assets (A+B) 24,010.46 20,424.59 14,002.76",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2025",
+   "status": "present",
+   "value_rupees": "20424590000.00",
+   "raw": "20,424.59",
+   "pages": [
+    64,
+    284
+   ],
+   "span": "Total assets (A+B) 24,010.46 20,424.59 14,002.76",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "2682660000.00",
+   "raw": "2,682.66",
+   "pages": [
+    66,
+    286,
+    367
+   ],
+   "span": "Net cash generated from operating activities (A) 2,682.66 2,550.20 1,491.06",
+   "note": ""
+  }
+ ]
+}

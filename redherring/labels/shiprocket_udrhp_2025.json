@@ -1,0 +1,246 @@
+{
+ "schema_version": 1,
+ "doc_id": "shiprocket_udrhp_2025",
+ "doc_sha256": "b1bcb28b1698c63a5e1e7b9324cdae642c596a77aa87dd544d91986306c6ff34",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-24",
+ "split": "heldout",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "present",
+   "value_rupees": "11000000000.00",
+   "raw": "11,000.00",
+   "pages": [
+    3,
+    13,
+    37,
+    61,
+    141
+   ],
+   "span": "VALUE OF ₹ 10 EACH AGGREGATING UP TO ₹ 11,000.00 MILLION BY OUR COMPANY (“FRESH ISSUE”) AND AN OFFER FOR SALE OF UP TO [●] EQUITY SHARES OF FACE VALUE OF ₹ 10 EACH AGGREGATING UP TO",
+   "note": ""
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "present",
+   "value_rupees": "12423530000.00",
+   "raw": "12,423.53",
+   "pages": [
+    3,
+    15,
+    37,
+    141
+   ],
+   "span": "₹ 12,423.53 MILLION (“OFFERED SHARES”) BY THE SELLING SHAREHOLDERS (“OFFER FOR SALE”, AND TOGETHER WITH THE FRESH ISSUE, THE “OFFER”). FOR DETAILS OF THE SELLING SHAREHOLDERS, SEE",
+   "note": ""
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "present",
+   "value_rupees": "23423530000.00",
+   "raw": "23,423.53",
+   "pages": [
+    3,
+    14,
+    37,
+    111,
+    465
+   ],
+   "span": "PER EQUITY SHARE (INCLUDING A SHARE PREMIUM OF ₹ [●] PER EQUITY SHARE) (“OFFER PRICE”) AGGREGATING UP TO ₹ 23,423.53 MILLION COMPRISING A FRESH ISSUE OF UP TO [●] EQUITY SHARES OF FACE",
+   "note": ""
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "absent",
+   "note": "Combined object 'unidentified inorganic acquisitions and general corporate purposes' is [●] (p37)."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "Same combined object, amount shown as [●]."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "absent",
+   "note": "Updated DRHP: 'We will appoint a Monitoring Agency' (p54); agency shown as [●]. Nothing is stated as appointed."
+  },
+  {
+   "key": "financials.total_income.FY2025",
+   "status": "present",
+   "value_rupees": "16748210000.00",
+   "raw": "16,748.21",
+   "pages": [
+    38,
+    100,
+    232,
+    316,
+    403
+   ],
+   "span": "Total Income 9,707.87 8,371.98 16,748.21 13,578.33 11,268.98",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2024",
+   "status": "present",
+   "value_rupees": "13578330000.00",
+   "raw": "13,578.33",
+   "pages": [
+    38,
+    100,
+    232,
+    316,
+    403
+   ],
+   "span": "Total Income 9,707.87 8,371.98 16,748.21 13,578.33 11,268.98",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "16320120000.00",
+   "raw": "16,320.12",
+   "pages": [
+    51,
+    53,
+    61,
+    72,
+    73,
+    100,
+    143,
+    147,
+    159,
+    180,
+    184,
+    217,
+    232,
+    251,
+    316,
+    372,
+    401,
+    410
+   ],
+   "span": "Revenue from Operations (A) 9,426.74 8,170.08 16,320.12 13,159.76 10,888.27",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2024",
+   "status": "present",
+   "value_rupees": "13159760000.00",
+   "raw": "13,159.76",
+   "pages": [
+    51,
+    53,
+    61,
+    72,
+    73,
+    100,
+    143,
+    147,
+    159,
+    180,
+    184,
+    216,
+    232,
+    251,
+    316,
+    372,
+    401,
+    410
+   ],
+   "span": "Revenue from Operations (A) 9,426.74 8,170.08 16,320.12 13,159.76 10,888.27",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2025",
+   "status": "present",
+   "value_rupees": "-744490000.00",
+   "raw": "(744.49)",
+   "pages": [
+    100,
+    102,
+    180,
+    232,
+    316,
+    317,
+    332,
+    368,
+    410
+   ],
+   "span": "(383.23) (423.07) (744.49) (5,951.81) (3,590.17)",
+   "note": "The statement wraps its labels: 'Restated Loss before tax' is on one text line and its figures on the next; label pages are those lines."
+  },
+  {
+   "key": "financials.profit_after_tax.FY2025",
+   "status": "present",
+   "value_rupees": "-744490000.00",
+   "raw": "(744.49)",
+   "pages": [
+    100,
+    232,
+    316,
+    413
+   ],
+   "span": "Restated Loss for the period/year (383.23) (423.07) (744.49) (5,951.81) (3,593.08)",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2024",
+   "status": "present",
+   "value_rupees": "-5951810000.00",
+   "raw": "(5,951.81)",
+   "pages": [
+    100,
+    232,
+    316
+   ],
+   "span": "Restated Loss for the period/year (383.23) (423.07) (744.49) (5,951.81) (3,593.08)",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2025",
+   "status": "present",
+   "value_rupees": "23086220000.00",
+   "raw": "23,086.22",
+   "pages": [
+    52,
+    98,
+    315,
+    408,
+    412
+   ],
+   "span": "Total assets (B) 23,933.53 19,895.55 23,086.22 20,512.18 23,867.83",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2024",
+   "status": "present",
+   "value_rupees": "20512180000.00",
+   "raw": "20,512.18",
+   "pages": [
+    52,
+    98,
+    315,
+    412
+   ],
+   "span": "Total assets (B) 23,933.53 19,895.55 23,086.22 20,512.18 23,867.83",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "18970000.00",
+   "raw": "18.97",
+   "pages": [
+    34,
+    40,
+    57,
+    317,
+    414
+   ],
+   "span": "with net cash flows from operating activities of ₹ 237.61 million, ₹ 235.70 million and ₹ 18.97 million in the six",
+   "note": ""
+  }
+ ]
+}

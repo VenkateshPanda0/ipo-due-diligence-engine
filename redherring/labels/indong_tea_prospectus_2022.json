@@ -1,0 +1,199 @@
+{
+ "schema_version": 1,
+ "doc_id": "indong_tea_prospectus_2022",
+ "doc_sha256": "62998a7ff4487a10fc6498d399286a3301057dcef8425cc21b086713ca462a47",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-24",
+ "split": "heldout",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "present",
+   "value_rupees": "130104000.00",
+   "raw": "1,301.04",
+   "pages": [
+    1
+   ],
+   "span": "Fresh Issue ₹1,301.04 Lakhs Nil ₹1,301.04 Lakhs SEBI ICDR Regulations, As the Company's post issue",
+   "note": ""
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "absent",
+   "note": "OFS size shown as Nil (p1)."
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "present",
+   "value_rupees": "130104000.00",
+   "raw": "1301.04",
+   "pages": [
+    2,
+    8,
+    18,
+    60,
+    224
+   ],
+   "span": "PREMIUM OF ₹16/- PER EQUITY SHARE (THE “ISSUE PRICE”), AGGREGATING TO ₹1301.04 LAKHS (“THE ISSUE”), OF WHICH 2,52,000",
+   "note": ""
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "present",
+   "value_rupees": "10000000.00",
+   "raw": "100.00",
+   "pages": [
+    19,
+    60
+   ],
+   "span": "D General corporate purposes 100.00 7.69% 100.00",
+   "note": ""
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "Objects are capital expenditure on the estate, working capital and general corporate purposes."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "0",
+   "raw": "has not appointed any",
+   "pages": [
+    40
+   ],
+   "span": "Issue size is below Rs.10,000 Lakhs. Since the Issue size is only of ₹1301.04 Lakhs, our Company has not appointed any",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2022",
+   "status": "present",
+   "value_rupees": "199297000.00",
+   "raw": "1,992.97",
+   "pages": [
+    19,
+    36,
+    152,
+    185
+   ],
+   "span": "Total Revenue 1,992.97 2,313.00 1,672.64",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2021",
+   "status": "present",
+   "value_rupees": "231300000.00",
+   "raw": "2,313.00",
+   "pages": [
+    19,
+    36,
+    152,
+    185
+   ],
+   "span": "Total Revenue 1,992.97 2,313.00 1,672.64",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2022",
+   "status": "present",
+   "value_rupees": "194866000.00",
+   "raw": "1,948.66",
+   "pages": [
+    36,
+    152,
+    185
+   ],
+   "span": "Revenue from Operations II.1 1,948.66 2,306.74 1,549.17",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2021",
+   "status": "present",
+   "value_rupees": "230674000.00",
+   "raw": "2,306.74",
+   "pages": [
+    36,
+    152,
+    185
+   ],
+   "span": "Revenue from Operations II.1 1,948.66 2,306.74 1,549.17",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2022",
+   "status": "present",
+   "value_rupees": "11274000.00",
+   "raw": "112.74",
+   "pages": [
+    36,
+    152,
+    185
+   ],
+   "span": "Profit/Loss before Taxation 112.74 124.72 (121.46)",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2022",
+   "status": "present",
+   "value_rupees": "13162000.00",
+   "raw": "131.62",
+   "pages": [
+    36,
+    152,
+    185
+   ],
+   "span": "Net Profit /Loss after adjustments 131.62 127.56 (121.29)",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2021",
+   "status": "present",
+   "value_rupees": "12756000.00",
+   "raw": "127.56",
+   "pages": [
+    36,
+    152,
+    185
+   ],
+   "span": "Net Profit /Loss after adjustments 131.62 127.56 (121.29)",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2022",
+   "status": "present",
+   "value_rupees": "432496000.00",
+   "raw": "4,324.96",
+   "pages": [
+    35,
+    151
+   ],
+   "span": "Total Assets 4,324.96 4,059.79 4,136.26",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2021",
+   "status": "present",
+   "value_rupees": "405979000.00",
+   "raw": "4,059.79",
+   "pages": [
+    35,
+    151
+   ],
+   "span": "Total Assets 4,324.96 4,059.79 4,136.26",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2022",
+   "status": "present",
+   "value_rupees": "19740000.00",
+   "raw": "197.40",
+   "pages": [
+    37,
+    153
+   ],
+   "span": "Net cash flow from/(used in) operating activities (A) 197.40 407.32 (45.28)",
+   "note": ""
+  }
+ ]
+}

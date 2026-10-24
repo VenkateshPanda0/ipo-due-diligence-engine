@@ -317,6 +317,19 @@ def test_a_column_that_foots_beats_agreeing_untrusted_columns_in_the_same_table_
     assert c.untrusted_ignored == 3
 
 
+def test_within_a_cluster_the_figure_most_tables_print_exactly_is_chosen() -> None:
+    """Varyaa: 538.03 in the statements and 538.02 in one MD&A table agree to a printed step; the
+    reported figure must be the statements', whichever table happened to come first."""
+    vals = [
+        cn(Concept.TOTAL_INCOME, "538.02", table_id=1),
+        cn(Concept.TOTAL_INCOME, "538.03", table_id=2),
+        cn(Concept.TOTAL_INCOME, "538.03", table_id=3),
+    ]
+    (c,) = build_consensus(vals)
+    assert c.chosen.raw == "538.03"
+    assert c.supporters == 3
+
+
 def test_without_any_trusted_value_all_sources_still_count() -> None:
     vals = [cn(Concept.TOTAL_INCOME, "100.00", table_id=t) for t in (1, 2, 3)]
     (c,) = build_consensus(vals, trusted={(99, K26)})

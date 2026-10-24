@@ -1,0 +1,36 @@
+{
+ "schema_version": 1,
+ "doc_id": "sebi_draft_2010_probe",
+ "doc_sha256": "b3e807e42ebb2303bf824f1650c96fbd4e1aad57960c9d1b3305b4e1aa7c54b2",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-24",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "absent",
+   "note": "Price band blank in draft; no amount stated."
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "absent",
+   "note": "No amount stated."
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "absent",
+   "note": "No amount stated."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "1",
+   "raw": "appointed UTI Bank",
+   "pages": [
+    49
+   ],
+   "span": "The Company has appointed UTI Bank Limited, Jubilee Hills Branch, Hyderabad as the Monitoring Agency",
+   "note": ""
+  }
+ ]
+}

@@ -8,11 +8,11 @@ in rupees, within the rounding of the coarser printed figure.
 
 from __future__ import annotations
 
-from collections import defaultdict
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from decimal import Decimal
 
-from redherring.extract.models import STOCK_CONCEPTS, CitedNumber, Concept
+from redherring.extract.models import CitedNumber, Concept
 from redherring.extract.periods import fiscal_key, period_key
 from redherring.parse.units import MULTIPLIER
 from redherring.verify.footing import quantum
@@ -59,7 +59,7 @@ def drop_ambiguous(values: list[CitedNumber]) -> tuple[list[CitedNumber], int]:
     def key(v: CitedNumber) -> tuple[int, Concept, str] | None:
         if v.period is None:
             return None
-        return (v.table_id, v.concept, fiscal_key(v.period, stock=v.concept in STOCK_CONCEPTS))
+        return (v.table_id, v.concept, fiscal_key(v.period))
 
     for v in values:
         if (k := key(v)) is not None:
@@ -90,7 +90,7 @@ def build_consensus(
             and v.period is not None
             and v.rupees is not None
         ):
-            groups[(v.concept, fiscal_key(v.period, stock=v.concept in STOCK_CONCEPTS))].append(v)
+            groups[(v.concept, fiscal_key(v.period))].append(v)
 
     out: list[Consensus] = []
     for (concept, key), members in sorted(groups.items(), key=lambda kv: (kv[0][0], kv[0][1])):
@@ -113,7 +113,10 @@ def build_consensus(
             clusters,
             key=lambda c: (len(c), sum(m.confidence for m in c) / len(c)),
         )
-        chosen = min(best, key=lambda m: (_step(m), -m.confidence))
+        # inside a cluster the readings may differ by a printed step (538.02 vs 538.03): report the
+        # one most tables print exactly, then the finest, then the most confident.
+        exact = Counter(m.value for m in best)
+        chosen = min(best, key=lambda m: (-exact[m.value], _step(m), -m.confidence))
         others = [m for c in clusters if c is not best for m in c]
         out.append(
             Consensus(

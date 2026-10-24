@@ -10,3 +10,4 @@ data/raw/
 data/parsed/
 data/*.part
 data/extracted/
+data/eval/

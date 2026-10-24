@@ -1,0 +1,221 @@
+{
+ "schema_version": 1,
+ "doc_id": "paytm_drhp_2021",
+ "doc_sha256": "021a7be034472fd44799de4ef2e4ee36520f3efd85126c8b19750a439c6e4449",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-24",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "present",
+   "value_rupees": "83000000000",
+   "raw": "83,000",
+   "pages": [
+    1,
+    10,
+    28,
+    76,
+    115
+   ],
+   "span": "83,000 MILLION (THE “FRESH ISSUE”) AND AN OFFER FOR SALE OF UP TO [●] EQUITY SHARES AGGREGATING UP TO ₹ 83,000 MILLION, COMPRISING UP TO [●] EQUITY SHARES AGGREGATING TO ₹ [●] MILLION BY MR. VIJAY",
+   "note": ""
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "present",
+   "value_rupees": "83000000000",
+   "raw": "83,000",
+   "pages": [
+    1,
+    11,
+    28,
+    76,
+    115,
+    445
+   ],
+   "span": "83,000 MILLION (THE “FRESH ISSUE”) AND AN OFFER FOR SALE OF UP TO [●] EQUITY SHARES AGGREGATING UP TO ₹ 83,000 MILLION, COMPRISING UP TO [●] EQUITY SHARES AGGREGATING TO ₹ [●] MILLION BY MR. VIJAY",
+   "note": ""
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "present",
+   "value_rupees": "166000000000",
+   "raw": "166,000",
+   "pages": [
+    1,
+    28,
+    76,
+    94,
+    445
+   ],
+   "span": "EQUITY SHARE (INCLUDING A SHARE PREMIUM OF ₹ [●] PER EQUITY SHARE) (THE “OFFER PRICE”) AGGREGATING UP TO ₹ 166,000 MILLION, COMPRISING A FRESH ISSUE OF UP TO [●] EQUITY SHARES AGGREGATING TO ₹",
+   "note": ""
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "absent",
+   "note": "Amount shown as [●] in a DRHP."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "Amount shown as [●]."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "absent",
+   "note": "DRHP: monitoring agency to be appointed."
+  },
+  {
+   "key": "financials.total_income.FY2021",
+   "status": "present",
+   "value_rupees": "31868000000",
+   "raw": "31,868",
+   "pages": [
+    30,
+    81,
+    271,
+    393,
+    394
+   ],
+   "span": "Total income 31,868 35,407 35,797",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2020",
+   "status": "present",
+   "value_rupees": "35407000000",
+   "raw": "35,407",
+   "pages": [
+    30,
+    81,
+    271,
+    393,
+    394,
+    398
+   ],
+   "span": "Total income 31,868 35,407 35,797",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2021",
+   "status": "present",
+   "value_rupees": "28024000000",
+   "raw": "28,024",
+   "pages": [
+    166,
+    271,
+    389,
+    393,
+    394,
+    401,
+    402
+   ],
+   "span": "Revenue from operations ₹ million 32,320 32,808 28,024",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2020",
+   "status": "present",
+   "value_rupees": "32808000000",
+   "raw": "32,808",
+   "pages": [
+    166,
+    271,
+    389,
+    393,
+    394,
+    398,
+    401,
+    402
+   ],
+   "span": "Revenue from operations ₹ million 32,320 32,808 28,024",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2021",
+   "status": "present",
+   "value_rupees": "-17010000000",
+   "raw": "(17,010)",
+   "pages": [
+    81,
+    271,
+    273,
+    377,
+    394,
+    402
+   ],
+   "span": "Restated loss for the year from continuing operations (17,010) (29,424) (42,256)",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2020",
+   "status": "present",
+   "value_rupees": "-29424000000",
+   "raw": "(29,424)",
+   "pages": [
+    81,
+    271,
+    273,
+    377,
+    394,
+    402
+   ],
+   "span": "Restated loss for the year from continuing operations (17,010) (29,424) (42,256)",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2021",
+   "status": "present",
+   "value_rupees": "91513000000",
+   "raw": "91,513",
+   "pages": [
+    79,
+    270
+   ],
+   "span": "TOTAL ASSETS 91,513 103,031 87,668",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2020",
+   "status": "present",
+   "value_rupees": "103031000000",
+   "raw": "103,031",
+   "pages": [
+    79,
+    270
+   ],
+   "span": "TOTAL ASSETS 91,513 103,031 87,668",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2021",
+   "status": "present",
+   "value_rupees": "-20825000000",
+   "raw": "(20,825)",
+   "pages": [
+    43,
+    82,
+    274,
+    402
+   ],
+   "span": "Net cash (outflow) from operating activities (20,825) (23,766) (44,759)",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2020",
+   "status": "present",
+   "value_rupees": "-23766000000",
+   "raw": "(23,766)",
+   "pages": [
+    43,
+    82,
+    274,
+    402
+   ],
+   "span": "Net cash (outflow) from operating activities (20,825) (23,766) (44,759)",
+   "note": ""
+  }
+ ]
+}

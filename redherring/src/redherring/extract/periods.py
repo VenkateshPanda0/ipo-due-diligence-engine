@@ -128,13 +128,14 @@ def period_key(p: Period) -> str:
     return f"{prefix}-{p.end.isoformat()}"
 
 
-def fiscal_key(p: Period, *, stock: bool) -> str:
-    """Like `period_key`, but a balance-sheet figure dated 31 March gets the fiscal-year key.
+def fiscal_key(p: Period) -> str:
+    """Like `period_key`, but a year-end figure dated 31 March gets the fiscal-year key.
 
-    A stock (total assets, trade receivables, net worth ...) at 31 March 2026 is the year-end
-    figure of FY2026, so it must line up with flow figures (revenue, profit) of FY2026 and with a
-    "FY2026" column in a KPI table. Anything else keeps its `period_key`.
+    A stock (total assets, net worth ...) at 31 March 2026 is the year-end figure of FY2026, so it
+    must line up with flow figures (revenue, profit) of FY2026 and with a "FY2026" column in a KPI
+    table. A flow printed under an "As at 31 March" header (some SME filings do this) is likewise
+    the year's figure: a flow cannot be an instant. Quarters and stubs keep their `period_key`.
     """
-    if stock and (p.end.month, p.end.day) == (3, 31) and (p.instant or p.months in (None, 12)):
+    if (p.end.month, p.end.day) == (3, 31) and (p.instant or p.months in (None, 12)):
         return f"FY{p.end.year}"
     return period_key(p)

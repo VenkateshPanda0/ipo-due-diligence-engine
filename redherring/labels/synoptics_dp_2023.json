@@ -1,0 +1,218 @@
+{
+ "schema_version": 1,
+ "doc_id": "synoptics_dp_2023",
+ "doc_sha256": "b8eb73ef75f80c34be7201086a759eff341c35f5bfa8898562c9904ae0f27279",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-24",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "present",
+   "value_rupees": "350760000.00",
+   "raw": "3507.60",
+   "pages": [
+    2,
+    20,
+    66,
+    232
+   ],
+   "span": "TO 14,80,000 EQUITY SHARES AGGREGATING TO RS. 3507.60 LAKHS BY OUR COMPANY (“FRESH ISSUE”) AND AN OFFER FOR SALE OF",
+   "note": ""
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "present",
+   "value_rupees": "189600000.00",
+   "raw": "1896.00",
+   "pages": [
+    2,
+    8,
+    20,
+    232
+   ],
+   "span": "SHAREHOLDERS” OR “THE SELLING SHAREHOLDERS”) AGGREGATING TO RS. 1896.00 LAKHS (“OFFER FOR SALE”); OF THE OFFER,",
+   "note": ""
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "present",
+   "value_rupees": "540360000.00",
+   "raw": "5403.60",
+   "pages": [
+    1,
+    2,
+    8,
+    20,
+    42,
+    51,
+    55,
+    232
+   ],
+   "span": "Rs 5403.60 Lakhs Regulations, as the Company's post issue paid",
+   "note": ""
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "present",
+   "value_rupees": "67000000.00",
+   "raw": "670.00",
+   "pages": [
+    21,
+    66,
+    67
+   ],
+   "span": "4. General Corporate Purpose 670.00",
+   "note": ""
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "present",
+   "value_rupees": "53000000.00",
+   "raw": "530.00",
+   "pages": [
+    21,
+    66
+   ],
+   "span": "3. Investment in Strategic Acquisition / Joint Venture 530.00",
+   "note": "'Investment in Strategic Acquisition / Joint Venture' with no target named; labelled as an unidentified acquisition amount."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "0",
+   "raw": "no monitoring agency",
+   "pages": [
+    36
+   ],
+   "span": "38. There is no monitoring agency appointed by our Company and the deployment of funds are at the discretion",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2022",
+   "status": "present",
+   "value_rupees": "509707000.00",
+   "raw": "5,097.07",
+   "pages": [
+    44,
+    153,
+    196
+   ],
+   "span": "2 Total Income (1a+1b) 2,377.39 5,097.07 3,479.91 2,211.43",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2021",
+   "status": "present",
+   "value_rupees": "347991000.00",
+   "raw": "3,479.91",
+   "pages": [
+    44,
+    153,
+    196
+   ],
+   "span": "2 Total Income (1a+1b) 2,377.39 5,097.07 3,479.91 2,211.43",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2022",
+   "status": "present",
+   "value_rupees": "509232000.00",
+   "raw": "5,092.32",
+   "pages": [
+    44,
+    104,
+    153,
+    196
+   ],
+   "span": "(a) Revenue From Operations 22 2,375.73 5,092.32 3,475.86 2,207.81",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2021",
+   "status": "present",
+   "value_rupees": "347586000.00",
+   "raw": "3,475.86",
+   "pages": [
+    44,
+    104,
+    153,
+    196
+   ],
+   "span": "(a) Revenue From Operations 22 2,375.73 5,092.32 3,475.86 2,207.81",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2022",
+   "status": "present",
+   "value_rupees": "58340000.00",
+   "raw": "583.40",
+   "pages": [
+    44,
+    45,
+    153,
+    154,
+    161,
+    183,
+    197,
+    198,
+    212
+   ],
+   "span": "5 Profit/(Loss) Before Tax (2-4) 431.64 583.40 330.07 241.80",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2022",
+   "status": "present",
+   "value_rupees": "42931000.00",
+   "raw": "429.31",
+   "pages": [
+    21,
+    44,
+    76,
+    104,
+    153,
+    164,
+    181,
+    197,
+    198
+   ],
+   "span": "Profit after Tax 356.72 429.31 242.89 203.79",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2021",
+   "status": "present",
+   "value_rupees": "24289000.00",
+   "raw": "242.89",
+   "pages": [
+    21,
+    44,
+    76,
+    104,
+    153,
+    164,
+    181,
+    197,
+    198,
+    199
+   ],
+   "span": "Profit after Tax 356.72 429.31 242.89 203.79",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2022",
+   "status": "present",
+   "value_rupees": "82388000.00",
+   "raw": "823.88",
+   "pages": [
+    28,
+    45,
+    154,
+    200
+   ],
+   "span": "Net cash generated from / (used in) operating activities (108.24) 823.88 274.40 143.45",
+   "note": ""
+  }
+ ]
+}

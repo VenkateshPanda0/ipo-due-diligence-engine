@@ -2,7 +2,7 @@ from datetime import date
 
 import pytest
 
-from redherring.extract.periods import Period, parse_period, period_key
+from redherring.extract.periods import Period, fiscal_key, parse_period, period_key
 
 
 @pytest.mark.parametrize(
@@ -69,3 +69,18 @@ def test_period_key(header: str, key: str) -> None:
     p = parse_period(header)
     assert p is not None
     assert period_key(p) == key
+
+
+def test_fiscal_key_aligns_year_end_figures_however_the_header_dated_them() -> None:
+    """Varyaa prints an income statement under an "As at 31-March-2023" header; a flow cannot be an
+    instant, so it still belongs to FY2023 and must line up with the other tables' FY2023."""
+    mar = date(2026, 3, 31)
+    assert fiscal_key(Period(end=mar, months=12, instant=False)) == "FY2026"
+    assert fiscal_key(Period(end=mar, months=None, instant=True)) == "FY2026"
+    assert fiscal_key(Period(end=mar, months=None, instant=False)) == "FY2026"
+    # a nine-month stub or a quarter is not a fiscal year
+    assert fiscal_key(Period(end=mar, months=3, instant=False)) == period_key(
+        Period(end=mar, months=3, instant=False)
+    )
+    dec = Period(end=date(2023, 12, 31), months=None, instant=False)
+    assert fiscal_key(dec) == period_key(dec)

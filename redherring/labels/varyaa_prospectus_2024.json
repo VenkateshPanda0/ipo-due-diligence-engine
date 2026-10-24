@@ -1,0 +1,188 @@
+{
+ "schema_version": 1,
+ "doc_id": "varyaa_prospectus_2024",
+ "doc_sha256": "e72f6f329a747a3433d61448891e6257d403af5778aeab54cebcf7f76a197571",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-24",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "present",
+   "value_rupees": "201000000.00",
+   "raw": "2010.00",
+   "pages": [
+    2,
+    9,
+    20,
+    40,
+    200
+   ],
+   "span": "OF RS. 140/- PER SHARE) (THE “ISSUE PRICE”), AGGREGATING TO RS. 2010.00 LAKHS (“THE ISSUE”), OUT OF WHICH 70,000 EQUITY SHARES",
+   "note": ""
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "absent",
+   "note": "Issue is entirely fresh; offer for sale shown as not applicable."
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "present",
+   "value_rupees": "201000000.00",
+   "raw": "2010.00",
+   "pages": [
+    2,
+    9,
+    20,
+    40,
+    200
+   ],
+   "span": "OF RS. 140/- PER SHARE) (THE “ISSUE PRICE”), AGGREGATING TO RS. 2010.00 LAKHS (“THE ISSUE”), OUT OF WHICH 70,000 EQUITY SHARES",
+   "note": ""
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "present",
+   "value_rupees": "40000000.00",
+   "raw": "400.00",
+   "pages": [
+    20,
+    64,
+    65
+   ],
+   "span": "2. General Corporate Purpose 400.00",
+   "note": ""
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "No unidentified acquisition object."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "0",
+   "raw": "has not appointed any monitoring agency",
+   "pages": [
+    34
+   ],
+   "span": "Company has not appointed any monitoring agency for this Issue. Hence, we have not appointed a monitoring",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2023",
+   "status": "present",
+   "value_rupees": "53803000.00",
+   "raw": "538.03",
+   "pages": [
+    42,
+    70,
+    166
+   ],
+   "span": "3 Total income (1+2) 1762.49 538.03 253.13 12.05",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2022",
+   "status": "present",
+   "value_rupees": "25313000.00",
+   "raw": "253.13",
+   "pages": [
+    42,
+    70,
+    166
+   ],
+   "span": "3 Total income (1+2) 1762.49 538.03 253.13 12.05",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2023",
+   "status": "present",
+   "value_rupees": "52270000.00",
+   "raw": "522.70",
+   "pages": [
+    42,
+    70,
+    90
+   ],
+   "span": "1 Revenue from operations 22 1,718.99 522.70 247.14 9.04",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2022",
+   "status": "present",
+   "value_rupees": "24714000.00",
+   "raw": "247.14",
+   "pages": [
+    42,
+    70,
+    90
+   ],
+   "span": "1 Revenue from operations 22 1,718.99 522.70 247.14 9.04",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2023",
+   "status": "present",
+   "value_rupees": "11050000.00",
+   "raw": "110.50",
+   "pages": [
+    42,
+    43,
+    134,
+    140,
+    156,
+    166,
+    180
+   ],
+   "span": "6 Profit/(Loss) Before Tax (3-5) 469.19 110.50 57.99 (13.06)",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2023",
+   "status": "present",
+   "value_rupees": "7893000.00",
+   "raw": "78.93",
+   "pages": [
+    21,
+    42,
+    70,
+    90,
+    142,
+    153,
+    166
+   ],
+   "span": "Profit after Tax 351.11 78.93 57.98 (13.06)",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2022",
+   "status": "present",
+   "value_rupees": "5798000.00",
+   "raw": "57.98",
+   "pages": [
+    21,
+    42,
+    70,
+    90,
+    142,
+    153,
+    166
+   ],
+   "span": "Profit after Tax 351.11 78.93 57.98 (13.06)",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2023",
+   "status": "present",
+   "value_rupees": "38112000.00",
+   "raw": "381.12",
+   "pages": [
+    32
+   ],
+   "span": "Net cash flow from operating activities (371.07) 381.12 9.41 8.98",
+   "note": ""
+  }
+ ]
+}

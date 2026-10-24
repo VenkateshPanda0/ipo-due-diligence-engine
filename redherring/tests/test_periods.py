@@ -24,6 +24,12 @@ from redherring.extract.periods import Period, parse_period, period_key
         ("As at March 31, 2026", date(2026, 3, 31), None, True),
         ("As on 31st March 2025", date(2025, 3, 31), None, True),
         ("As at and for FY 2021", date(2021, 3, 31), 12, False),
+        ("31-Mar-22", date(2022, 3, 31), None, False),
+        ("AS AT 31-Mar-22", date(2022, 3, 31), None, True),
+        ("AS AT 30- Sept-22", date(2022, 9, 30), None, True),
+        ("As on Sept. 30, 2022", date(2022, 9, 30), None, True),
+        ("30-Jun-2025", date(2025, 6, 30), None, False),
+        ("For the year ended 31-Mar-99", date(1999, 3, 31), 12, False),
     ],
 )
 def test_parse_period(header: str, end: date, months: int | None, instant: bool) -> None:

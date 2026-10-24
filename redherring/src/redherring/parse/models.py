@@ -16,7 +16,8 @@ from redherring.parse.units import Unit
 # 4: ruled boxes with fused cells are rebuilt row by row; prose is not a text table.
 # 5: column headers for ruled tables and for headers separated by label-only lines.
 # 6: per-row page numbers on logical tables (citations of stitched tables).
-PARSER_VERSION = 6
+# 7: header phrases are assigned to columns as units (no split dates).
+PARSER_VERSION = 7
 
 
 def page_tag(pdf_page: int) -> str:

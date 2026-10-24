@@ -456,3 +456,23 @@ def test_ruled_table_gets_columns_from_leading_header_rows(tmp_path: Path) -> No
     ]
     assert t.label_header == "Particulars"
     assert t.unit is Unit.MILLION  # found in the third header row
+
+
+def test_header_phrases_are_not_split_across_columns() -> None:
+    from redherring.parse.statements import build_statement_tables
+
+    words: list[dict[str, object]] = []
+    # three data rows, value columns with right edges at 440 and 540
+    for i in range(3):
+        top = 120 + i * 14
+        words += [_word(f"Row{i}", 140, top), _word("100.50", 440, top), _word("200.50", 540, top)]
+    # header "June 30, 2026" laid out so that "June" alone lies left of the column boundary (490)
+    words += [
+        _word("June", 486, 100, width=16),  # centre 478 < 490
+        _word("30,", 506, 100, width=14),  # centre 499 >= 490, gap to "June" is 4 pt
+        _word("2026", 528, 100, width=20),
+    ]
+    words += [_word("March", 400, 100, width=26), _word("2025", 423, 100, width=20)]
+    (t,) = build_statement_tables(1, words)
+    assert t.columns[1] == "June 30, 2026"  # kept whole, in reading order
+    assert t.columns[0] == "March 2025"

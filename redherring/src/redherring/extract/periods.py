@@ -24,7 +24,8 @@ _MDY = re.compile(
     rf"\b({_MONTH_RE})\.?\s+(\d{{1,2}})(?:st|nd|rd|th)?\s*,?\s*((?:19|20)\d{{2}})\b", re.I
 )
 _DMY_NAMED = re.compile(
-    rf"\b(\d{{1,2}})(?:st|nd|rd|th)?[\s\-.,/]*({_MONTH_RE})\.?[\s\-.,/]*((?:19|20)\d{{2}})\b", re.I
+    rf"\b(\d{{1,2}})(?:st|nd|rd|th)?[\s\-.,/]*({_MONTH_RE})\.?[\s\-.,/]*((?:19|20)?\d{{2}})(?!\d)",
+    re.I,
 )
 _DMY_NUM = re.compile(r"\b(\d{1,2})[-/.](\d{1,2})[-/.]((?:19|20)\d{2})\b")
 _FISCAL = re.compile(
@@ -52,6 +53,14 @@ def _last_day(year: int, month: int) -> int:
     return calendar.monthrange(year, month)[1]
 
 
+def _full_year(text: str) -> int:
+    """'2026' -> 2026; two-digit years pivot at 70 ('22' -> 2022, '99' -> 1999)."""
+    year = int(text)
+    if len(text) == 4:
+        return year
+    return 2000 + year if year < 70 else 1900 + year
+
+
 def _safe_date(year: int, month: int, day: int) -> date | None:
     if 1 <= month <= 12 and 1 <= day <= _last_day(year, month):
         return date(year, month, day)
@@ -66,7 +75,7 @@ def _first_date(text: str) -> tuple[int, date, bool] | None:
         if d:
             found.append((m.start(), d, False))
     if m := _DMY_NAMED.search(text):
-        d = _safe_date(int(m.group(3)), _MONTHS[m.group(2).lower()], int(m.group(1)))
+        d = _safe_date(_full_year(m.group(3)), _MONTHS[m.group(2).lower()], int(m.group(1)))
         if d:
             found.append((m.start(), d, False))
     if m := _DMY_NUM.search(text):

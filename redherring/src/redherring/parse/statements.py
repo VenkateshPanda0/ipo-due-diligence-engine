@@ -206,7 +206,25 @@ def _find_header(lines: list[_Line], first: int, floor: int, x_lo: float, x_hi: 
     return sorted(found)
 
 
+PHRASE_GAP = 6.0  # points: header words closer than this on one line form one phrase
+
+
+def _phrases(line: _Line) -> list[list[dict[str, Any]]]:
+    out: list[list[dict[str, Any]]] = [[line.words[0]]]
+    for prev, w in itertools.pairwise(line.words):
+        if w["x0"] - prev["x1"] <= PHRASE_GAP:
+            out[-1].append(w)
+        else:
+            out.append([w])
+    return out
+
+
 def _assign_header(header_lines: list[_Line], anchors: list[float]) -> tuple[str, list[str]]:
+    """Assign each header *phrase* to the column it is centred over.
+
+    Whole phrases move together ("June 30, 2026" must not be split between two columns just
+    because its first word starts left of a boundary).
+    """
     n = len(anchors)
     if n == 1:
         bounds = [anchors[0] - 60.0, float("inf")]
@@ -216,13 +234,13 @@ def _assign_header(header_lines: list[_Line], anchors: list[float]) -> tuple[str
     label: list[str] = []
     cols: list[list[str]] = [[] for _ in range(n)]
     for ln in header_lines:
-        for w in ln.words:
-            cx = (w["x0"] + w["x1"]) / 2
+        for phrase in _phrases(ln):
+            cx = (phrase[0]["x0"] + phrase[-1]["x1"]) / 2
+            text = " ".join(w["text"] for w in phrase)
             if cx < bounds[0]:
-                label.append(w["text"])
-                continue
-            j = max(i for i in range(n) if bounds[i] <= cx)
-            cols[j].append(w["text"])
+                label.append(text)
+            else:
+                cols[max(i for i in range(n) if bounds[i] <= cx)].append(text)
     return " ".join(label), [" ".join(c) for c in cols]
 
 

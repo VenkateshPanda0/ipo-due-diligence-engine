@@ -8,7 +8,7 @@ from tests.pdfgen import PageSpec, build_pdf
 
 
 def test_unimplemented_commands_exit_nonzero(capsys: pytest.CaptureFixture[str]) -> None:
-    assert main(["analyze"]) == 2
+    assert main(["diff"]) == 2
     assert "not implemented" in capsys.readouterr().err
 
 

@@ -6,17 +6,18 @@ import argparse
 import sys
 from pathlib import Path
 
+from redherring.analyze import Summary, analyze_document
 from redherring.ingest.fetch import Fetcher, FetchError
 from redherring.ingest.manifest import DocType, Manifest, load_sources
 from redherring.parse.models import PARSER_VERSION, ParsedDocument
 from redherring.parse.pdf import default_workers, parse_pdf
 from redherring.parse.render import render_tagged
 from redherring.parse.report import compute_stats, stats_markdown
+from redherring.report_text import summary_markdown
 
 NOT_FILINGS = {DocType.REGULATION, DocType.ENFORCEMENT_ORDER}
 
 NOT_YET = {
-    "analyze": "M1",
     "diff": "M3",
     "eval": "M1",
     "report": "M2",
@@ -93,6 +94,33 @@ def _cmd_parse(args: argparse.Namespace) -> int:
     return 1 if failures else 0
 
 
+def _cmd_analyze(args: argparse.Namespace) -> int:
+    data_dir = Path(args.data_dir)
+    manifest = Manifest(data_dir / "manifest.jsonl")
+    entries = [e for e in manifest.entries() if e.doc_type not in NOT_FILINGS]
+    if args.doc_id:
+        entries = [e for e in entries if e.doc_id in args.doc_id]
+    out_dir = data_dir / "extracted"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    rows: list[Summary] = []
+    failures = 0
+    for e in entries:
+        parsed = data_dir / "parsed" / f"{e.doc_id}.json"
+        if not parsed.exists():
+            print(f"FAIL  {e.doc_id}: run `rh parse` first", file=sys.stderr)
+            failures += 1
+            continue
+        doc = ParsedDocument.model_validate_json(parsed.read_text(encoding="utf-8"))
+        report = analyze_document(doc, data_dir / e.local_path)
+        (out_dir / f"{e.doc_id}.financials.json").write_text(
+            report.model_dump_json(indent=1), encoding="utf-8"
+        )
+        rows.append(report.summary)
+    if rows:
+        print(summary_markdown(rows))
+    return 1 if failures else 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="rh", description="RedHerring: IPO offer-document analysis")
     p.add_argument("--data-dir", default="data", help="working data directory (default: data)")
@@ -111,6 +139,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     par.add_argument("--force", action="store_true", help="re-parse even if output is up to date")
     par.set_defaults(func=_cmd_parse)
+
+    ana = sub.add_parser("analyze", help="extract financial values and run verification checks")
+    ana.add_argument("--doc-id", action="append", help="limit to this doc_id (repeatable)")
+    ana.set_defaults(func=_cmd_analyze)
 
     for name, milestone in NOT_YET.items():
         stub = sub.add_parser(name, help=f"not implemented yet (planned {milestone})")

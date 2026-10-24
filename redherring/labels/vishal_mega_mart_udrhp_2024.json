@@ -1,0 +1,252 @@
+{
+ "schema_version": 1,
+ "doc_id": "vishal_mega_mart_udrhp_2024",
+ "doc_sha256": "854153b1e1f803d3e9de393ae996578933a3c1a7d2854f6d30217df979d49796",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-24",
+ "split": "heldout",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "absent",
+   "note": "Offer is an offer for sale only; no fresh issue."
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "present",
+   "value_rupees": "80000000000",
+   "raw": "80,000",
+   "pages": [
+    1,
+    3,
+    11,
+    17,
+    39,
+    85,
+    328
+   ],
+   "span": "₹80,000 million aggregating up to and Disclosure Requirements) Regulations,",
+   "note": ""
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "present",
+   "value_rupees": "80000000000",
+   "raw": "80,000",
+   "pages": [
+    1,
+    3,
+    11,
+    17,
+    39,
+    85,
+    328
+   ],
+   "span": "₹80,000 million aggregating up to and Disclosure Requirements) Regulations,",
+   "note": ""
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "absent",
+   "note": "No proceeds to the company; no objects table."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "No objects."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "0",
+   "raw": "is not required to appoint",
+   "pages": [
+    67,
+    86
+   ],
+   "span": "As the Offer is an offer for sale of Equity Shares by the Promoter Selling Shareholder, our Company is not required to appoint",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2024",
+   "status": "present",
+   "value_rupees": "89451270000.00",
+   "raw": "89,451.27",
+   "pages": [
+    18,
+    61,
+    203,
+    278,
+    279
+   ],
+   "span": "Total income (in ₹ million) 26,039.82 89,451.27 76,188.93 56,538.51",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2023",
+   "status": "present",
+   "value_rupees": "76188930000.00",
+   "raw": "76,188.93",
+   "pages": [
+    18,
+    61,
+    203,
+    278,
+    279,
+    280
+   ],
+   "span": "Total income (in ₹ million) 26,039.82 89,451.27 76,188.93 56,538.51",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2024",
+   "status": "present",
+   "value_rupees": "89119460000.00",
+   "raw": "89,119.46",
+   "pages": [
+    61,
+    91,
+    143,
+    203,
+    258,
+    259,
+    260,
+    278,
+    279
+   ],
+   "span": "Revenue from operations 25,962.92 89,119.46 75,860.37 55,885.15",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2023",
+   "status": "present",
+   "value_rupees": "75860370000.00",
+   "raw": "75,860.37",
+   "pages": [
+    61,
+    91,
+    143,
+    203,
+    258,
+    259,
+    260,
+    278,
+    280
+   ],
+   "span": "Revenue from operations 25,962.92 89,119.46 75,860.37 55,885.15",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2024",
+   "status": "present",
+   "value_rupees": "6209510000.00",
+   "raw": "6,209.51",
+   "pages": [
+    61,
+    62,
+    143,
+    203,
+    204,
+    259,
+    283
+   ],
+   "span": "Profit before tax 2,007.74 6,209.51 4,305.31 2,696.49",
+   "note": ""
+  },
+  {
+   "key": "financials.tax_expense.FY2024",
+   "status": "present",
+   "value_rupees": "1590160000.00",
+   "raw": "1,590.16",
+   "pages": [
+    61,
+    203,
+    239,
+    278,
+    280
+   ],
+   "span": "Total tax expense 506.25 1,590.16 1,092.58 668.79",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2024",
+   "status": "present",
+   "value_rupees": "4619350000.00",
+   "raw": "4,619.35",
+   "pages": [
+    18,
+    40,
+    61,
+    91,
+    143,
+    147,
+    205,
+    258,
+    259,
+    280
+   ],
+   "span": "Profit for the period/ year (in ₹ million) 1,501.49 4,619.35 3,212.73 2,027.70",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2023",
+   "status": "present",
+   "value_rupees": "3212730000.00",
+   "raw": "3,212.73",
+   "pages": [
+    18,
+    40,
+    61,
+    91,
+    143,
+    147,
+    205,
+    258,
+    259,
+    282
+   ],
+   "span": "Profit for the period/ year (in ₹ million) 1,501.49 4,619.35 3,212.73 2,027.70",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2024",
+   "status": "present",
+   "value_rupees": "85060840000.00",
+   "raw": "85,060.84",
+   "pages": [
+    60,
+    202
+   ],
+   "span": "Total assets 91,148.15 85,060.84 82,889.08 82,179.76",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2023",
+   "status": "present",
+   "value_rupees": "82889080000.00",
+   "raw": "82,889.08",
+   "pages": [
+    60,
+    202
+   ],
+   "span": "Total assets 91,148.15 85,060.84 82,889.08 82,179.76",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2024",
+   "status": "present",
+   "value_rupees": "8296700000.00",
+   "raw": "8,296.70",
+   "pages": [
+    33,
+    62,
+    91,
+    204,
+    283
+   ],
+   "span": "Net cash from operating activities 8,239.25 8,296.70 6,355.34 6,570.97",
+   "note": ""
+  }
+ ]
+}

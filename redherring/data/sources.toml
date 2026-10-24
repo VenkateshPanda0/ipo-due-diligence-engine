@@ -61,3 +61,32 @@ url = "https://www.sebi.gov.in/sebi_data/attachdocs/mar-2026/1774592300989.pdf"
 issuer = "SEBI"
 doc_type = "regulation"
 notes = "SEBI (Issue of Capital and Disclosure Requirements) Regulations, 2018, SEBI consolidated copy marked amended up to 21 March 2026 (per search listing; confirm on page 1)."
+
+# Held-out test set, added 2026-10-24. Labels are written BEFORE the extractor is run on these,
+# and the extractor is not tuned on them (see docs/decisions.md D-021).
+[[document]]
+doc_id = "indiqube_rhp_2025"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/jul-2025/1753677505359.pdf"
+issuer = "Indiqube Spaces Limited"
+doc_type = "rhp"
+platform = "mainboard"
+filing_date = 2025-07-25
+notes = "Held-out. SEBI listing: filings/public-issues/jul-2025/indiqube-spaces-limited-rhp_95623.html"
+
+[[document]]
+doc_id = "laxmi_india_finance_rhp_2025"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/jul-2025/1753185412594.pdf"
+issuer = "Laxmi India Finance Limited"
+doc_type = "rhp"
+platform = "mainboard"
+filing_date = 2025-07-22
+notes = "Held-out. NBFC. SEBI listing: filings/public-issues/jul-2025/laxmi-india-finance-limited-rhp_95526.html"
+
+[[document]]
+doc_id = "vishal_mega_mart_udrhp_2024"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/oct-2024/1729226055847.pdf"
+issuer = "Vishal Mega Mart Limited"
+doc_type = "drhp"
+platform = "mainboard"
+filing_date = 2024-10-18
+notes = "Held-out. Updated DRHP-I (offer for sale). SEBI listing: filings/public-issues/oct-2024/vishal-mega-mart-limited-updated-draft-red-herring-prospectus-i_87742.html"

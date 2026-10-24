@@ -1,0 +1,228 @@
+{
+ "schema_version": 1,
+ "doc_id": "laxmi_india_finance_rhp_2025",
+ "doc_sha256": "1686db7dce9e647d36fb26d4428c166e9fc7401d950f1a1e8d328e1cd969ec30",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-24",
+ "split": "heldout",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "absent",
+   "note": "Price not yet determined: fresh issue amount shown as [●] million (cover, p1/p3/p111)."
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "absent",
+   "note": "Amount shown as [●] million."
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "absent",
+   "note": "Amount shown as [●] million."
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "absent",
+   "note": "Single object: augmenting capital base (INR 1,770 million); no general corporate purposes object (p111)."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "No such object."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "1",
+   "raw": "Our Company has appointed CARE Ratings Limited",
+   "pages": [
+    87
+   ],
+   "span": "Our Company has appointed CARE Ratings Limited, credit rating agency registered with SEBI as a monitoring agency to",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2025",
+   "status": "present",
+   "value_rupees": "2480380000.00",
+   "raw": "2,480.38",
+   "pages": [
+    33,
+    64,
+    81,
+    121,
+    125,
+    182,
+    191,
+    284,
+    286,
+    291,
+    298,
+    389,
+    395,
+    414
+   ],
+   "span": "Total Income 2,480.38 1,750.18 1,306.68",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2024",
+   "status": "present",
+   "value_rupees": "1750180000.00",
+   "raw": "1,750.18",
+   "pages": [
+    33,
+    64,
+    81,
+    121,
+    183,
+    191,
+    284,
+    286,
+    291,
+    298,
+    389,
+    395,
+    414
+   ],
+   "span": "Total Income 2,480.38 1,750.18 1,306.68",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "2457130000.00",
+   "raw": "2,457.13",
+   "pages": [
+    81,
+    284,
+    298,
+    398,
+    401,
+    414
+   ],
+   "span": "I Total Revenue from Operations 2,457.13 1,731.37 1,295.29",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2024",
+   "status": "present",
+   "value_rupees": "1731370000.00",
+   "raw": "1,731.37",
+   "pages": [
+    81,
+    284,
+    298,
+    398,
+    401,
+    414,
+    416
+   ],
+   "span": "I Total Revenue from Operations 2,457.13 1,731.37 1,295.29",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2025",
+   "status": "present",
+   "value_rupees": "473550000.00",
+   "raw": "473.55",
+   "pages": [
+    81,
+    298
+   ],
+   "span": "VII Profit/(Loss) Before Tax (V-VI) 473.55 296.36 220.19",
+   "note": ""
+  },
+  {
+   "key": "financials.tax_expense.FY2025",
+   "status": "present",
+   "value_rupees": "113510000.00",
+   "raw": "113.51",
+   "pages": [
+    81,
+    298
+   ],
+   "span": "Total Tax Expenses (VIII) 113.51 71.68 60.48",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2025",
+   "status": "present",
+   "value_rupees": "360050000.00",
+   "raw": "360.05",
+   "pages": [
+    81,
+    298,
+    338
+   ],
+   "span": "IX Profit/(loss) for the year (VII-VIII) 360.05 224.68 159.71",
+   "note": "Restated statement line IX. Summary tables label total comprehensive income (359.10) 'Profit for the year'; the P&L line is the profit."
+  },
+  {
+   "key": "financials.profit_after_tax.FY2024",
+   "status": "present",
+   "value_rupees": "224680000.00",
+   "raw": "224.68",
+   "pages": [
+    81,
+    298,
+    338
+   ],
+   "span": "IX Profit/(loss) for the year (VII-VIII) 360.05 224.68 159.71",
+   "note": "Summary tables show 226.21 (comprehensive income)."
+  },
+  {
+   "key": "financials.total_assets.FY2025",
+   "status": "present",
+   "value_rupees": "14125210000.00",
+   "raw": "14,125.21",
+   "pages": [
+    58,
+    80,
+    283,
+    290,
+    291,
+    297,
+    349,
+    399,
+    400,
+    418
+   ],
+   "span": "Total assets 14,125.21 9,848.46 7,787.08",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2024",
+   "status": "present",
+   "value_rupees": "9848460000.00",
+   "raw": "9,848.46",
+   "pages": [
+    58,
+    80,
+    283,
+    290,
+    291,
+    297,
+    349,
+    388,
+    418
+   ],
+   "span": "Total assets 14,125.21 9,848.46 7,787.08",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "-3112640000.00",
+   "raw": "(3,112.64)",
+   "pages": [
+    82,
+    300
+   ],
+   "span": "Net Cash from/(used in) Operating Activity (A) (3,112.64) (2,237.52) (1,694.14)",
+   "note": ""
+  }
+ ]
+}

@@ -51,6 +51,11 @@ class LabelFile(BaseModel):
     labelled_by: str
     labelled_on: date
     method: str = Field(description="How the labels were produced, stated plainly")
+    split: Literal["dev", "heldout"] = Field(
+        default="dev",
+        description="heldout: labelled before the extractor was run on the document and never "
+        "tuned against; dev documents were used to build the extractor",
+    )
     fields: list[Label]
 
     @model_validator(mode="after")

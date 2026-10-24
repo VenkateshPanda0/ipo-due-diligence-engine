@@ -125,6 +125,67 @@ one-off `git -c commit.gpgsign=false`; no git setting was changed. Author and co
 after each commit. If a push target requires signed commits, the author must decide how to proceed.
 The author later approved this explicitly (2026-10-23); the push of 13 unsigned commits succeeded.
 
+## D-014 — Full autonomy (2026-10-24)
+
+The author handed the project over without further involvement: "you have 100% control ... don't
+ask me anything". Consequences: decisions are mine and recorded here; I do not ask questions;
+the standing rules that were the author's own stay (identity, no AI trailers, no history rewrites,
+no force-push, nothing claimed that was not measured, primary sources over notes, no investment
+advice, public filings only). Dismantling and rebuilding is allowed when it makes a better product.
+
+## D-015 — Rules are TOML specs with validity windows (2026-10-23)
+
+Each rule is a data file naming its logic type, thresholds, platforms, `valid_from`/`valid_to`,
+and its sources (ICDR clause, effective date, date checked against SEBI's consolidated copy
+"Amended upto March 21, 2026"). A superseded threshold is kept as a separate `-PRE2025` rule so a
+2024 filing is judged by 2024 law. Heuristic rules say so and cite the literature. Alternative
+considered: thresholds in Python; rejected because the audit trail (clause + date) must live next
+to the number.
+
+## D-016 — Label-free correctness checks come first (2026-10-23)
+
+Because hand labels are scarce, three checks need none and run on every document: (1) each cited
+value is re-read from the PDF text layer through a different code path; (2) accounting identities
+foot (total income = revenue + other income; PAT = PBT - tax; assets = equity + liabilities);
+(3) independent tables agree (consensus). A value that fails (1) is never reported. (2) and (3)
+are signals, not proof; the benchmark (D-018) is the measurement.
+
+## D-017 — Consensus prefers columns that foot (2026-10-24)
+
+Repetition is not evidence: three cash-flow tables printing "profit before tax" before the share
+of an associate (2,239.30) outvoted the P&L's 2,239.15. Readings from (table, period) columns whose
+own identities foot are preferred to any number of readings from columns that cannot be checked;
+trust is per column because one year printed with a different sign convention must not discredit
+the years that foot. Within an agreeing cluster the exact figure most tables print is reported.
+
+## D-018 — Benchmark scoring and its honest limits (2026-10-24)
+
+A prediction is correct when it is within the coarser printed precision of the label (so 538.02
+vs 538.03 agree, 2,239.30 vs 2,239.15 do not). Citation accuracy requires the cited page to be one
+where the labeller found the statement. Labels were written by the maintainer, an AI, reading
+poppler text (a different extraction path); there is no inter-annotator agreement. The first six
+filings are a development set: the extractor was tuned against them, so their scores overstate
+generalisation. A held-out set (D-021) was added to measure that.
+
+## D-019 — No LLM key in this environment (2026-10-23)
+
+No API key exists in the sandbox, so the LLM layer (provider protocol, hard cost cap enforced
+before each call, on-disk cache, validated structured output, untrusted-document prompts) is built
+and tested against a fake provider only. No LLM number is claimed. Everything that ships works
+without it; the LLM is for the long tail the deterministic extractors miss.
+
+## D-020 — Cache versioning (2026-10-22)
+
+`PARSER_VERSION` and `ANALYSIS_VERSION` are stored in cached output; a stale file is refused with a
+"re-run" message rather than silently reused. Bump on any change that can alter output.
+
+## D-021 — Held-out documents (2026-10-24)
+
+Three filings added after tuning (Indiqube RHP 2025, Laxmi India Finance RHP 2025, Vishal Mega
+Mart UDRHP-I 2024). Rule: write the labels first, run the extractor once, report the scores as
+they come, and only then fix defects. Fixes made afterwards turn those documents into development
+data; the report says so.
+
 ## Open items
 
 - Terms-of-use review for SEBI / BSE / NSE (see D-010).

@@ -140,3 +140,20 @@ def test_stale_analysis_output_gives_a_clear_message_not_a_traceback(
     err = capsys.readouterr().err
     assert "re-run `rh analyze`" in err
     assert "Traceback" not in err
+
+
+def test_eval_scores_development_and_held_out_documents_separately(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    sha = _setup(tmp_path)
+    labels = tmp_path / "labels"
+    labels.mkdir()
+    label = _final_label(sha)
+    label["split"] = "heldout"
+    (labels / "demo.json").write_text(json.dumps(label))
+    assert main(["--data-dir", str(tmp_path), "eval", "--labels-dir", str(labels)]) == 0
+    out = capsys.readouterr().out
+    assert "held-out" in out.lower()
+    held = json.loads((tmp_path / "eval" / "report.heldout.json").read_text())
+    assert held["correct"] == 1
+    assert not (tmp_path / "eval" / "report.dev.json").exists()  # no dev documents here

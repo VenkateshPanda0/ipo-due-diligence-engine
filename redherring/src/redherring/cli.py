@@ -233,6 +233,15 @@ def _cmd_eval(args: argparse.Namespace) -> int:
     out.mkdir(parents=True, exist_ok=True)
     (out / "report.json").write_text(report.model_dump_json(indent=1), encoding="utf-8")
     print(eval_markdown(report))
+    if {lf.split for lf in files.values()} != {"dev"}:  # only separate when a held-out set exists
+        for split, title in (("dev", "Development documents"), ("heldout", "Held-out documents")):
+            subset = {d: lf for d, lf in files.items() if lf.split == split}
+            if not subset:
+                continue
+            part = score(subset, {d: predictions[d] for d in subset})
+            (out / f"report.{split}.json").write_text(part.model_dump_json(indent=1), "utf-8")
+            print(f"\n### {title} ({len(subset)} documents)\n")
+            print(eval_markdown(part))
     return 0
 
 

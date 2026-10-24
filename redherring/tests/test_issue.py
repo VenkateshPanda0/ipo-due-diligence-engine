@@ -99,6 +99,21 @@ def test_every_fact_carries_page_span_and_raw_text() -> None:
     assert f.unit is Unit.MILLION
 
 
+def test_ofs_amount_is_not_taken_from_the_fresh_issue_column_of_an_interleaved_cover() -> None:
+    """Indiqube's cover is a table whose text flattens as heading, fresh-issue cell, OFS cell."""
+    doc = _doc(
+        _page(
+            1,
+            "Fresh Issue and an Offer for Sale Fresh issue of up to [●] Equity Shares of face "
+            "value ₹1 each aggregating up to ₹6,500.00 million Offer for sale of up to [●] Equity "
+            "Shares of face value ₹1 each aggregating up to ₹500.00 million",
+        )
+    )
+    facts = _facts(doc)
+    assert facts[IssueKey.FRESH_ISSUE_AMOUNT][0] == Decimal(6_500_000_000)
+    assert facts[IssueKey.OFS_AMOUNT][0] == Decimal(500_000_000)
+
+
 def test_only_early_pages_are_searched() -> None:
     late = _page(60, "Fresh Issue of shares aggregating up to ₹ 1,000 million")
     assert extract_issue_facts(_doc(_page(1, "cover"), late)) == []

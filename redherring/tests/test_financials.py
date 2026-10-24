@@ -26,6 +26,10 @@ from redherring.parse.units import Unit
             "net cash flow from operating activities",
         ),
         ("  Total   assets  ", "total assets"),
+        ("III Total Income (I+II)", "total income (i+ii)"),  # roman numeral without a full stop
+        ("VII Profit/(Loss) Before Tax (V-VI)", "profit/(loss) before tax (v-vi)"),
+        ("Civil works", "civil works"),  # "civil" is not a numeral
+        ("Mix of products", "mix of products"),
     ],
 )
 def test_normalise_label(raw: str, expected: str) -> None:
@@ -51,6 +55,10 @@ def test_normalise_label(raw: str, expected: str) -> None:
         ("Profit / (Loss) for the year", Concept.PROFIT_AFTER_TAX),
         ("Restated profit for the period/year (VIII) = (V-VII)", Concept.PROFIT_AFTER_TAX),
         ("Restated profit for the year/period", Concept.PROFIT_AFTER_TAX),
+        ("I Total Revenue from Operations", Concept.REVENUE_FROM_OPERATIONS),
+        ("VII Profit/(Loss) Before Tax (V-VI)", Concept.PROFIT_BEFORE_TAX),
+        ("IX Profit/(loss) for the year (VII-VIII)", Concept.PROFIT_AFTER_TAX),
+        ("Net Cash from/(used in) Operating Activity (A)", Concept.CASH_FROM_OPERATIONS),
         ("EBITDA", Concept.EBITDA),
         ("EBITDA(3) (in ₹ million)", Concept.EBITDA),
         ("Adjusted EBITDA (G = E+F)", Concept.ADJUSTED_EBITDA),
@@ -84,6 +92,8 @@ def test_concept_for_label(label: str, concept: Concept) -> None:
         "Other comprehensive income for the year",
         "Restated profit for the period/year before exceptional items (net of tax) (IX)",
         "Profit attributable to owners of the company",
+        "3. Net Profit after tax (Including OCI)",  # total comprehensive income, not profit
+        "PAT after OCI",
         "",
     ],
 )

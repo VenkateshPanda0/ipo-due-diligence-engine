@@ -225,6 +225,26 @@ def _parse_one(tmp_path: Path, spec: PageSpec, name: str = "s.pdf") -> ParsedDoc
     return parse_pdf(path)
 
 
+def test_a_stray_box_over_part_of_a_statement_does_not_split_it(tmp_path: Path) -> None:
+    """Vishal Mega Mart p202: a ruled rectangle around three rows' value cells (labels lie outside)
+    made a label-less fragment and cut the balance sheet in three, so its totals never met."""
+    p = PageSpec()
+    p.text(72, 60, "(All amounts are in Indian Rupees in Million)", 8)
+    p.text(380, 80, "As at March 31, 2026", 8)
+    p.text(480, 80, "As at March 31, 2025", 8)
+    labels = [f"Line item {c}" for c in "ABCDEFGH"]
+    for i, label in enumerate(labels):
+        top = 100 + i * 14
+        p.text(72, top, label, 8)
+        _right(p, 440, top, f"{1000 + i}.50")
+        _right(p, 540, top, f"{2000 + i}.25")
+    p.grid(360, 100 + 3 * 14 - 3, [100, 100], [["", ""]] * 3, row_h=14)
+    doc = _parse_one(tmp_path, p)
+    tables = doc.pages[0].tables
+    assert len(tables) == 1, [(t.strategy, t.rows) for t in tables]
+    assert [r[0] for r in tables[0].rows] == labels
+
+
 def test_statement_columns_are_anchored_by_x_position(tmp_path: Path) -> None:
     doc = _parse_one(tmp_path, _two_period_statement())
     (t,) = [t for t in doc.pages[0].tables if t.strategy == "numeric_rows"]

@@ -248,6 +248,40 @@ def _band_feeds(band: RawTable, statement: RawTable) -> bool:
     return absorbed or -2.0 <= gap <= 30.0
 
 
+def _labelless(t: RawTable) -> bool:
+    """A table whose first column never holds a word: just numbers, as from a box drawn around the
+    value cells of a statement whose row labels lie outside it."""
+    return bool(t.rows) and not any(re.search(r"[A-Za-z]{2}", r[0]) for r in t.rows if r)
+
+
+def _prefer_labelled_statements(
+    pdf_page: int,
+    words: list[dict[str, Any]],
+    data_ruled: list[RawTable],
+    statements: list[RawTable],
+) -> tuple[list[RawTable], list[RawTable]]:
+    """Re-read label-less ruled boxes as part of the unruled statement they sit inside.
+
+    A rectangle around some rows' value cells hides those words from the statement builder, which
+    then cuts the statement in pieces (a balance sheet whose total assets and total equity and
+    liabilities end up in different tables). If the statement built from all the words outside the
+    *other* boxes covers a label-less box, the box was only a drawing: drop it.
+    """
+    loose = [t for t in data_ruled if _labelless(t)]
+    if not loose:
+        return data_ruled, statements
+    kept = [t for t in data_ruled if t not in loose]
+    boxes = [t.bbox for t in kept]
+    outside = [w for w in words if not _inside(w, boxes)] if kept else words
+    if not looks_numeric_tabular(outside):
+        return data_ruled, statements
+    rebuilt = build_statement_tables(pdf_page, outside)
+    covered = [t for t in loose if any(_overlaps_vertically(t.bbox, st.bbox) for st in rebuilt)]
+    if not covered:
+        return data_ruled, statements
+    return [t for t in data_ruled if t not in covered], rebuilt
+
+
 def _find_tables(plumber_page: Any, words: list[dict[str, Any]]) -> list[RawTable]:
     """Ruled tables, plus unruled numeric statements among the words outside them.
 
@@ -266,6 +300,9 @@ def _find_tables(plumber_page: Any, words: list[dict[str, Any]]) -> list[RawTabl
     if not looks_numeric_tabular(outside):
         return ruled
     statements = build_statement_tables(plumber_page.page_number, outside)
+    data_ruled, statements = _prefer_labelled_statements(
+        plumber_page.page_number, words, data_ruled, statements
+    )
     unused = [b for b in bands if not any(_band_feeds(b, st) for st in statements)]
     if data_ruled or bands:
         return [*data_ruled, *unused, *statements]

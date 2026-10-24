@@ -19,11 +19,15 @@ from redherring.extract.periods import parse_period
 from redherring.parse.models import ParsedDocument, Table
 from redherring.parse.units import parse_amount
 
-_ENUMERATOR = re.compile(r"^\s*(?:[-–•]\s*|\(?(?:[a-z]|[ivxlc]{1,5}|\d{1,2})[).]\s+)")
+_ROMAN = r"(?:i|ii|iii|iv|v|vi|vii|viii|ix|x|xi|xii|xiii|xiv|xv|xvi|xvii|xviii|xix|xx)"
+# "- ", "(a) ", "iv. ", and a bare numeral as in "III Total Income" (Indian statements number lines)
+_ENUMERATOR = re.compile(
+    rf"^\s*(?:[-–•]\s*|\(?(?:[a-z]|[ivxlc]{{1,5}}|\d{{1,2}})[).]\s+|{_ROMAN}\s+(?=[a-z]))"
+)
 _NOTE_REF = re.compile(r"\((?:refer\s+)?notes?[^)]*\)")
 _REJECT = re.compile(
     r"%|percent|per cent|growth|margin|\bratio\b|per share|\bdays\b|attributable|comprehensive|"
-    r"\bas a\b|\bturnover\b|\bcagr\b"
+    r"\bas a\b|\bturnover\b|\bcagr\b|(?:including|incl\.?|after|net of) oci\b"
 )
 # qualifiers such as "(A)", "(net)" and a trailing formula like "(VIII) = (V-VII)"
 _PARENS = r"(?:\s*\([^)]*\))*(?:\s*=\s*\([^)]*\))?"
@@ -65,9 +69,9 @@ _HEADS: tuple[tuple[Concept, str], ...] = (
     ),
     (Concept.TRADE_RECEIVABLES, r"trade receivables"),
     (Concept.INVENTORIES, r"inventor(?:y|ies)"),
-    (Concept.CASH_FROM_OPERATIONS, r"(?:net )?cash\b.*\boperating activities"),
-    (Concept.CASH_FROM_INVESTING, r"(?:net )?cash\b.*\binvesting activities"),
-    (Concept.CASH_FROM_FINANCING, r"(?:net )?cash\b.*\bfinancing activities"),
+    (Concept.CASH_FROM_OPERATIONS, r"(?:net )?cash\b.*\boperating activit(?:y|ies)"),
+    (Concept.CASH_FROM_INVESTING, r"(?:net )?cash\b.*\binvesting activit(?:y|ies)"),
+    (Concept.CASH_FROM_FINANCING, r"(?:net )?cash\b.*\bfinancing activit(?:y|ies)"),
 )
 _COMPILED = tuple((c, re.compile(f"(?:{head}){_PARENS}")) for c, head in _HEADS)
 

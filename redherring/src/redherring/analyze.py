@@ -9,7 +9,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from redherring.extract.consensus import Consensus, build_consensus
+from redherring.extract.consensus import Consensus, build_consensus, drop_ambiguous
 from redherring.extract.financials import extract_financials
 from redherring.extract.issue import IssueFact, extract_issue_facts
 from redherring.extract.models import CitedNumber, Concept
@@ -67,6 +67,7 @@ class Summary(BaseModel):
     concepts: dict[str, int]
     issue_facts_total: int
     issue_facts_verified: int
+    values_ambiguous_dropped: int
     flags: int
     rules_decisive: int  # rules that could be evaluated (flagged or clear)
     rules_applicable: int  # rules in force for this platform and date
@@ -127,7 +128,8 @@ def analyze_document(
             )
     good_values = [v for v, vv in zip(values, verified, strict=True) if vv.verified]
     footing = run_footing(values)
-    consensus = build_consensus(good_values)
+    unambiguous, ambiguous_dropped = drop_ambiguous(good_values)
+    consensus = build_consensus(unambiguous)
     multi = [c for c in consensus if c.total >= 2]
     good_issue = [f for f, vf in zip(issue, verified_issue, strict=True) if vf.verified]
     flags: list[Flag] = []
@@ -150,6 +152,7 @@ def analyze_document(
         concepts=dict(Counter(v.concept.value for v in values)),
         issue_facts_total=len(issue),
         issue_facts_verified=sum(f.verified for f in verified_issue),
+        values_ambiguous_dropped=ambiguous_dropped,
         flags=len(flags),
         rules_decisive=sum(a.status in ("flagged", "clear") for a in rule_audit),
         rules_applicable=sum(

@@ -76,6 +76,9 @@ class GrowthGap(BaseModel):
     right: str
     min_gap_pp: float
     period_regex: str = r"^FY\d{4}$"
+    # Materiality: `left` must be at least this fraction of `right` in the base year, so a
+    # change in a trivial balance is not reported as a trend.
+    min_base_ratio: float = 0.0
 
 
 Logic = Annotated[

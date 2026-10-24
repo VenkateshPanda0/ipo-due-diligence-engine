@@ -251,3 +251,41 @@ def test_flow_concepts_keep_their_own_keys() -> None:
     june = Period(end=date(2026, 6, 30), months=None, instant=True)
     (s,) = build_consensus([cn(Concept.TRADE_RECEIVABLES, "5.00", period=june)])
     assert s.period_key == "AT-2026-06-30"  # not a fiscal year end: unchanged
+
+
+# ---- selection policy: plurality and in-table ambiguity -----------------------------------------
+
+
+def test_consensus_records_cluster_sizes_and_runner_up() -> None:
+    vals = [
+        cn(Concept.TOTAL_INCOME, "100.00", table_id=0),
+        cn(Concept.TOTAL_INCOME, "100.00", table_id=1),
+        cn(Concept.TOTAL_INCOME, "100.00", table_id=2),
+        cn(Concept.TOTAL_INCOME, "100.00", table_id=3),
+        cn(Concept.TOTAL_INCOME, "55.00", table_id=4),
+        cn(Concept.TOTAL_INCOME, "55.00", table_id=5),
+        cn(Concept.TOTAL_INCOME, "7.00", table_id=6),
+    ]
+    (c,) = build_consensus(vals)
+    assert c.cluster_sizes == [4, 2, 1]
+    assert c.runner_up == 2
+    assert c.supporters == 4
+
+
+def test_values_ambiguous_within_one_table_are_dropped() -> None:
+    from redherring.extract.consensus import drop_ambiguous
+
+    # one table, one concept and period, two different readings (e.g. current and non-current)
+    twice = [
+        cn(Concept.TRADE_RECEIVABLES, "1.35", table_id=3, span="a | 1.35"),
+        cn(Concept.TRADE_RECEIVABLES, "950.20", table_id=3, span="b | 950.20"),
+    ]
+    other = cn(Concept.TRADE_RECEIVABLES, "950.20", table_id=4)
+    same_value_twice = [
+        cn(Concept.TOTAL_INCOME, "10.00", table_id=5, span="x | 10.00"),
+        cn(Concept.TOTAL_INCOME, "10.00", table_id=5, span="y | 10.00"),
+    ]
+    kept, dropped = drop_ambiguous([*twice, other, *same_value_twice])
+    assert dropped == 2
+    assert {v.table_id for v in kept if v.concept is Concept.TRADE_RECEIVABLES} == {4}
+    assert len([v for v in kept if v.concept is Concept.TOTAL_INCOME]) == 2  # equal readings agree

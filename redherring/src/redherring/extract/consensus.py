@@ -29,15 +29,42 @@ class Consensus:
     supporters: int  # values agreeing with `chosen`
     total: int  # all comparable values for this concept and period
     alternatives: list[CitedNumber]  # values that disagree with `chosen`
+    cluster_sizes: list[int]  # sizes of all agreement clusters, largest first
 
     @property
     def unanimous(self) -> bool:
         return self.supporters == self.total
 
+    @property
+    def runner_up(self) -> int:
+        """Support of the best rival reading (0 if there is none)."""
+        return self.cluster_sizes[1] if len(self.cluster_sizes) > 1 else 0
+
 
 def _step(v: CitedNumber) -> Decimal:
     assert v.unit is not None
     return quantum(v.raw) * MULTIPLIER[v.unit]
+
+
+def drop_ambiguous(values: list[CitedNumber]) -> tuple[list[CitedNumber], int]:
+    """Remove values where one table gives several different readings of the same figure.
+
+    A balance sheet has "trade receivables" in more than one section; a table that lists a
+    concept twice for one period with different numbers does not tell us which is "the" figure.
+    Equal readings (the same number repeated) are not ambiguous. Returns (kept, number dropped).
+    """
+    readings: dict[tuple[int, Concept, str], set[Decimal]] = defaultdict(set)
+
+    def key(v: CitedNumber) -> tuple[int, Concept, str] | None:
+        if v.period is None:
+            return None
+        return (v.table_id, v.concept, fiscal_key(v.period, stock=v.concept in STOCK_CONCEPTS))
+
+    for v in values:
+        if (k := key(v)) is not None:
+            readings[k].add(v.value)
+    kept = [v for v in values if (k := key(v)) is None or len(readings[k]) == 1]
+    return kept, len(values) - len(kept)
 
 
 def build_consensus(values: list[CitedNumber]) -> list[Consensus]:
@@ -78,6 +105,7 @@ def build_consensus(values: list[CitedNumber]) -> list[Consensus]:
                 supporters=len(best),
                 total=len(members),
                 alternatives=others,
+                cluster_sizes=sorted((len(c) for c in clusters), reverse=True),
             )
         )
     return out

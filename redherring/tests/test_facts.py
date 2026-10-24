@@ -71,3 +71,17 @@ def test_balance_sheet_items_are_keyed_by_fiscal_year_for_trend_rules() -> None:
     facts = facts_from(build_consensus(values), [])
     assert "financials.trade_receivables.FY2026" in facts
     assert "financials.trade_receivables.AT-2026-03-31" not in facts
+
+
+def test_a_strong_plurality_is_kept_but_a_weak_one_is_not() -> None:
+    def many(raws: list[str]) -> list[CitedNumber]:
+        return [cn(Concept.TOTAL_INCOME, r, FY26, table_id=i) for i, r in enumerate(raws)]
+
+    strong = facts_from(build_consensus(many(["100.00"] * 4 + ["55.00"] * 2 + ["7.00"])), [])
+    assert "financials.total_income.FY2026" in strong  # 4 supporters vs runner-up 2
+    weak = facts_from(build_consensus(many(["100.00"] * 3 + ["55.00"] * 2 + ["7.00"] * 2)), [])
+    assert weak == {}  # 3 vs 2: not decisive
+    tie = facts_from(build_consensus(many(["100.00"] * 2 + ["55.00"] * 2)), [])
+    assert tie == {}
+    lone = facts_from(build_consensus(many(["100.00"])), [])
+    assert "financials.total_income.FY2026" in lone

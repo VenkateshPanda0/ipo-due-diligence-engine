@@ -8,12 +8,16 @@ from redherring.flags.engine import Citation, Fact
 
 
 def _keep(c: Consensus) -> bool:
-    """A figure enters the rules if it is a lone reading or a strict majority of its sources.
+    """A figure enters the rules if it is a lone reading or a strong plurality of its sources.
 
-    Two sources that disagree with no majority mean we do not know the figure; a rule must not
-    pick one of them.
+    Strong means at least two independent sources agree and they are at least twice as many as
+    the best rival reading. Statements are repeated in several sections, while subsidiary and
+    segment tables each add a one-off number, so a repeated figure that clearly leads is the
+    entity's own. A close contest means we do not know the figure; a rule must not pick one.
     """
-    return c.total == 1 or c.supporters * 2 > c.total
+    if c.total == 1:
+        return True
+    return c.supporters >= 2 and c.supporters >= 2 * c.runner_up
 
 
 def facts_from(consensus: list[Consensus], issue_facts: list[IssueFact]) -> dict[str, Fact]:

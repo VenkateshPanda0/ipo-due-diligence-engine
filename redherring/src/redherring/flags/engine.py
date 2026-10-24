@@ -195,18 +195,30 @@ def _persistent_below(rule: RuleSpec, logic: PersistentBelow, facts: Facts) -> _
     return _Result(flags=[flag], evaluated=True, numbers=numbers)
 
 
+def _consecutive_fiscal_years(p0: str, p1: str) -> bool:
+    m0, m1 = re.fullmatch(r"FY(\d{4})", p0), re.fullmatch(r"FY(\d{4})", p1)
+    return bool(m0 and m1 and int(m1.group(1)) - int(m0.group(1)) == 1)
+
+
 def _growth_gap(rule: RuleSpec, logic: GrowthGap, facts: Facts) -> _Result:
     left = _series(facts, logic.left, logic.period_regex)
     right = _series(facts, logic.right, logic.period_regex)
     periods = sorted(set(left) & set(right))[-2:]
-    if len(periods) < 2:
+    if len(periods) < 2 or not _consecutive_fiscal_years(periods[0], periods[1]):
         return _Result(
             missing=[logic.left, logic.right],
-            detail=f"needs 2 common periods of both series; have {len(periods)}",
+            detail=f"needs 2 consecutive fiscal years of both series; have {periods}",
         )
     p0, p1 = periods
     if left[p0].value <= 0 or right[p0].value <= 0:
         return _Result(detail="base-period value is not positive")
+    base_ratio = left[p0].value / right[p0].value
+    if base_ratio < Decimal(str(logic.min_base_ratio)):
+        return _Result(
+            evaluated=True,
+            numbers={"base_ratio": base_ratio},
+            detail=f"immaterial: {base_ratio:.2%} of the comparison series in {p0}",
+        )
     g_left = left[p1].value / left[p0].value - 1
     g_right = right[p1].value / right[p0].value - 1
     gap = (g_left - g_right) * 100

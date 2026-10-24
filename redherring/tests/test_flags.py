@@ -299,3 +299,62 @@ def test_audit_reports_series_that_are_too_short(tmp_path: Path) -> None:
     (a,) = audit([rule], short, platform="sme")
     assert a.status == "missing_inputs"
     assert "3" in a.detail  # says how many fiscal years are needed
+
+
+GROWTH = """
+id = "T-GROWTH"
+name = "Receivables outgrow revenue"
+rationale = "Receivables rising far faster than sales can mean revenue customers have not paid for."
+platforms = ["mainboard"]
+severity = "medium"
+heuristic = true
+citation_requirement = "Cite both rows for both years."
+
+[logic]
+kind = "growth_gap"
+left = "financials.trade_receivables"
+right = "financials.revenue_from_operations"
+min_gap_pp = 20.0
+min_base_ratio = 0.01
+
+[[sources]]
+kind = "literature"
+ref = "Beneish (1999)"
+checked_on = 2026-10-24
+"""
+
+
+def test_growth_gap_ignores_an_immaterial_base(tmp_path: Path) -> None:
+    from redherring.flags.engine import audit
+
+    rule = spec(GROWTH, tmp_path)
+    tiny = {
+        **series("financials.trade_receivables", {"FY2024": "1180000", "FY2025": "3420000"}, 75),
+        **series(
+            "financials.revenue_from_operations",
+            {"FY2024": "24088000000", "FY2025": "10077000000"},
+            120,
+        ),
+    }
+    assert evaluate([rule], tiny, platform="mainboard") == []
+    (a,) = audit([rule], tiny, platform="mainboard")
+    assert a.status == "clear"
+    assert "immaterial" in a.detail
+
+    material = {
+        **series("financials.trade_receivables", {"FY2024": "100", "FY2025": "300"}, 75),
+        **series("financials.revenue_from_operations", {"FY2024": "1000", "FY2025": "1100"}, 120),
+    }
+    assert len(evaluate([rule], material, platform="mainboard")) == 1
+
+
+def test_growth_gap_needs_consecutive_fiscal_years(tmp_path: Path) -> None:
+    from redherring.flags.engine import audit
+
+    rule = spec(GROWTH, tmp_path)
+    gap = {
+        **series("financials.trade_receivables", {"FY2022": "100", "FY2025": "300"}, 75),
+        **series("financials.revenue_from_operations", {"FY2022": "1000", "FY2025": "1100"}, 120),
+    }
+    assert evaluate([rule], gap, platform="mainboard") == []
+    assert audit([rule], gap, platform="mainboard")[0].status == "missing_inputs"

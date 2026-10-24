@@ -37,5 +37,12 @@ Fetcher with integrity checks, page-tagged parser, tables, units, CLI, CI, decis
 5. Version diff (count post-March-2026 filings before promising abridged-vs-full checks).
 6. Outcome backtest only with written hypotheses and a price source whose terms allow it.
 
-## Version diff (M3) and Outcomes (M4)
+## Version diff (M3)
+| Item | State |
+|---|---|
+| Figure-level diff between versions (`rh diff`), restatements and issue-size changes | done; two pairs exercised (Indiqube DRHP to RHP: issue cut from 8,500 to 7,000 million; Vishal UDRHP-I to RHP: nothing moved) |
+| Text-level diff (risk factors, objects wording, litigation) | not started; needs the segmenter |
+| Abridged-prospectus consistency | not started; count post-March-2026 filings first |
+
+## Outcomes (M4)
 Not started; see above.

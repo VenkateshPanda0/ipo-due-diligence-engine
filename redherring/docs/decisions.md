@@ -245,6 +245,16 @@ only if all such tables agree and never from a table that itself borrowed; the p
 `unit_inherited_from`. A wrong scale would be worse than none, hence the three conditions. It also
 raised the share of tables with a unit from about 34% to 45% on the nine older filings.
 
+## D-029 — Diff compares figures, not prose, and ignores periods only one side has (2026-10-24)
+
+`rh diff` compares the facts the rules can use, within the coarser printed precision, so a
+restatement appears and re-rounding does not. A financial figure for a period only one version
+contains (a new six-month stub, a year that left the window) is listed in one line, not as 40
+"removed/added" rows: the first version of the diff drowned the two real changes (issue size cut
+from 8,500 to 7,000 million) in them. Issue and objects keys that appear or vanish do count. Empty
+placeholder packages (`diff`, `report`, `research`) from the first skeleton were deleted because
+`redherring/diff/` shadowed the new `diff.py`.
+
 ## Open items
 
 - Terms-of-use review for SEBI / BSE / NSE (see D-010).

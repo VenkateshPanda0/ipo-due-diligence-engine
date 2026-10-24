@@ -7,11 +7,6 @@ from redherring.ingest.manifest import DocType, Manifest, ManifestEntry, Platfor
 from tests.pdfgen import PageSpec, build_pdf
 
 
-def test_unimplemented_commands_exit_nonzero(capsys: pytest.CaptureFixture[str]) -> None:
-    assert main(["diff"]) == 2
-    assert "not implemented" in capsys.readouterr().err
-
-
 def test_parse_command_end_to_end(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     from datetime import UTC, datetime
 

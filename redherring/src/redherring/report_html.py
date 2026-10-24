@@ -12,6 +12,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from html import escape
 
 from redherring.analyze import AnalysisReport, FactRecord
+from redherring.diff import Diff, FactChange
 from redherring.flags.engine import Flag, RuleAudit
 from redherring.ingest.manifest import ManifestEntry
 
@@ -329,5 +330,83 @@ thead th{{color:var(--mute)}} .banner{{background:var(--card);border-left:4px so
 <p>"Rules checked" counts the rules that could be evaluated of those in force for the filing; a filing with no flags and few rules checked has not been cleared.</p>
 <div class=table-wrap><table><thead><tr><th>Issuer</th><th>Document</th><th>Platform</th><th>Filed</th><th>Flags</th><th>Rules checked</th><th>Notes</th></tr></thead>
 <tbody>{"".join(rows)}</tbody></table></div>
+</body></html>
+"""
+
+
+_KEY_TITLES = {key: title for key, title in _ISSUE_ROWS} | {f"financials.{c}": t for c, t in _ROWS}
+
+
+def _key_title(key: str) -> str:
+    if key.startswith("financials."):
+        _, concept, period = key.split(".", 2)
+        base = _KEY_TITLES.get(f"financials.{concept}", concept.replace("_", " "))
+        return f"{base} {period}"
+    return _KEY_TITLES.get(key, key)
+
+
+def _change_row(c: FactChange, old_url: str, new_url: str) -> str:
+    old = f"{_crore(c.old.value)} <small>{_cite(old_url, c.old.pdf_page)}</small>" if c.old else "–"
+    new = f"{_crore(c.new.value)} <small>{_cite(new_url, c.new.pdf_page)}</small>" if c.new else "–"
+    what = {
+        "same": "unchanged",
+        "added": "only in the newer version",
+        "removed": "only in the older version",
+        "changed": f"changed {c.pct:+.1f}%" if c.pct is not None else "changed",
+    }[c.kind]
+    cls = " class=moved" if c.kind in ("changed", "added", "removed") else ""
+    return (
+        f"<tr{cls}><th>{escape(_key_title(c.key))}</th><td class=num>{old}</td>"
+        f"<td class=num>{new}</td><td>{what}</td></tr>"
+    )
+
+
+def diff_html(
+    old: tuple[ManifestEntry, AnalysisReport], new: tuple[ManifestEntry, AnalysisReport], d: Diff
+) -> str:
+    """Two versions of one offering side by side: figures that moved first, then those that held."""
+    (oe, _), (ne, _) = old, new
+    moved = d.moved
+    held = [c for c in d.comparable if c.kind == "same"]
+    only_old = sorted({c.key.split(".", 2)[2] for c in d.period_only if c.kind == "removed"})
+    only_new = sorted({c.key.split(".", 2)[2] for c in d.period_only if c.kind == "added"})
+    periods_html = (
+        "<p class=note>Periods in only one version (a new interim period or a year dropped from "
+        f"the window, not a change in any figure): older only {escape(', '.join(only_old) or 'none')}"
+        f"; newer only {escape(', '.join(only_new) or 'none')}.</p>"
+        if d.period_only
+        else ""
+    )
+    flags = "".join(
+        f"<li><code>{escape(f.rule_id)}</code>: {escape(f.kind)}</li>"
+        for f in d.flags
+        if f.kind != "kept"
+    )
+    body = "".join(_change_row(c, oe.url, ne.url) for c in [*moved, *held])
+    return f"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{escape(ne.issuer)}: what changed between versions</title>
+<style>
+:root{{--bg:#fff;--fg:#1c1c1e;--mute:#5b5b66;--line:#d9d9e0;--card:#f6f6f9;--med:#a15c00}}
+@media (prefers-color-scheme:dark){{:root{{--bg:#16161a;--fg:#ececf1;--mute:#a0a0ad;--line:#33333c;--card:#1f1f25;--med:#ffb74d}}}}
+body{{margin:0 auto;max-width:56rem;padding:1rem 16px 3rem;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,sans-serif}}
+h1{{font-size:1.5rem}} h2{{font-size:1.15rem;margin:2rem 0 .5rem;border-bottom:1px solid var(--line)}}
+.meta,.note{{color:var(--mute)}} .banner{{background:var(--card);border-left:4px solid var(--med);padding:.6rem .9rem;margin:1rem 0}}
+table{{border-collapse:collapse;width:100%;font-size:.95rem}} th,td{{padding:.3rem .5rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}}
+td.num{{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}} tr.moved th,tr.moved td{{font-weight:600}} .table-wrap{{overflow-x:auto}}
+</style></head><body>
+<h1>{escape(ne.issuer)}: what changed</h1>
+<p class=meta>{escape(oe.doc_type.value)} {oe.filing_date.isoformat() if oe.filing_date else ""}
+(<a href="{escape(oe.url, quote=True)}">source</a>) &rarr; {escape(ne.doc_type.value)} {ne.filing_date.isoformat() if ne.filing_date else ""}
+(<a href="{escape(ne.url, quote=True)}">source</a>)</p>
+<div class=banner><strong>{escape(DISCLAIMER)}</strong></div>
+<p>{len(moved)} of {len(d.comparable)} comparable figures moved. Figures are compared within the coarser printed precision, so re-rounding is not shown as a change. A restated annual figure is the one to read first: companies restate when the earlier version was wrong or its basis changed.</p>
+<h2>Figures (₹ crore)</h2>
+<div class=table-wrap><table><thead><tr><th></th><th>Older</th><th>Newer</th><th></th></tr></thead><tbody>{body}</tbody></table></div>
+{periods_html}
+<h2>Flags</h2>
+{f"<ul>{flags}</ul>" if flags else "<p>The same flags (or none) in both versions.</p>"}
+<p class=note>{escape(DISCLAIMER)}</p>
 </body></html>
 """

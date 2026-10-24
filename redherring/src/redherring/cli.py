@@ -1,4 +1,4 @@
-"""`rh` command line. M0 implements `ingest` and `parse`; the rest arrive in later milestones."""
+"""`rh` command line: ingest, parse, analyze, report, diff, and the benchmark commands."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 from redherring.analyze import ANALYSIS_VERSION, AnalysisReport, Summary, analyze_document
+from redherring.diff import diff_reports
 from redherring.eval.labels import check_labels, load_labels
 from redherring.eval.metrics import Prediction, score
 from redherring.eval.prefill import draft_from_predictions
@@ -18,15 +19,11 @@ from redherring.parse.models import PARSER_VERSION, ParsedDocument
 from redherring.parse.pdf import default_workers, parse_pdf
 from redherring.parse.render import render_tagged
 from redherring.parse.report import compute_stats, stats_markdown
-from redherring.report_html import index_html, report_html
+from redherring.report_html import diff_html, index_html, report_html
 from redherring.report_text import summary_markdown
 from redherring.verify.cited import PdfiumPageText
 
 NOT_FILINGS = {DocType.REGULATION, DocType.ENFORCEMENT_ORDER}
-
-NOT_YET = {
-    "diff": "M3",
-}
 
 
 def _cmd_ingest(args: argparse.Namespace) -> int:
@@ -186,6 +183,41 @@ def _cmd_report(args: argparse.Namespace) -> int:
     return 1 if failures else 0
 
 
+def _load_analysis(data_dir: Path, entry: ManifestEntry) -> AnalysisReport:
+    path = data_dir / "extracted" / f"{entry.doc_id}.financials.json"
+    if not path.exists():
+        raise StaleOutput(f"{entry.doc_id}: run `rh analyze` first")
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    if raw.get("analysis_version") != ANALYSIS_VERSION:
+        raise StaleOutput(f"{entry.doc_id}: written by an older analyzer; re-run `rh analyze`")
+    return AnalysisReport.model_validate(raw)
+
+
+def _cmd_diff(args: argparse.Namespace) -> int:
+    data_dir = Path(args.data_dir)
+    manifest = Manifest(data_dir / "manifest.jsonl")
+    old_e, new_e = manifest.get(args.old), manifest.get(args.new)
+    if old_e is None or new_e is None:
+        print(f"unknown doc_id: {args.old if old_e is None else args.new}", file=sys.stderr)
+        return 1
+    try:
+        old_r, new_r = _load_analysis(data_dir, old_e), _load_analysis(data_dir, new_e)
+    except StaleOutput as exc:
+        print(f"FAIL  {exc}", file=sys.stderr)
+        return 1
+    d = diff_reports(old_r, new_r)
+    out_dir = data_dir / "reports"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    target = out_dir / f"diff_{args.old}__{args.new}.html"
+    target.write_text(diff_html((old_e, old_r), (new_e, new_r), d), encoding="utf-8")
+    print(f"{len(d.moved)} of {len(d.comparable)} comparable figures moved; wrote {target}")
+    for c in d.moved:
+        old = c.old.value if c.old else None
+        new = c.new.value if c.new else None
+        print(f"  {c.key}: {old} -> {new} ({c.kind})")
+    return 0
+
+
 def _cmd_label_init(args: argparse.Namespace) -> int:
     data_dir, labels_dir = Path(args.data_dir), Path(args.labels_dir)
     manifest = Manifest(data_dir / "manifest.jsonl")
@@ -307,6 +339,11 @@ def build_parser() -> argparse.ArgumentParser:
     rep.add_argument("--doc-id", action="append", help="limit to this doc_id (repeatable)")
     rep.set_defaults(func=_cmd_report)
 
+    dif = sub.add_parser("diff", help="what changed between two versions of the same offering")
+    dif.add_argument("old", help="doc_id of the earlier version")
+    dif.add_argument("new", help="doc_id of the later version")
+    dif.set_defaults(func=_cmd_diff)
+
     lab = sub.add_parser("label-init", help="write draft label files pre-filled from the extractor")
     lab.add_argument("--doc-id", action="append", help="limit to this doc_id (repeatable)")
     lab.add_argument("--labels-dir", default="labels")
@@ -321,15 +358,7 @@ def build_parser() -> argparse.ArgumentParser:
     ev.add_argument("--labels-dir", default="labels")
     ev.set_defaults(func=_cmd_eval)
 
-    for name, milestone in NOT_YET.items():
-        stub = sub.add_parser(name, help=f"not implemented yet (planned {milestone})")
-        stub.set_defaults(func=lambda _a, n=name, m=milestone: _not_yet(n, m))
     return p
-
-
-def _not_yet(name: str, milestone: str) -> int:
-    print(f"`rh {name}` is not implemented yet (planned {milestone}).", file=sys.stderr)
-    return 2
 
 
 def main(argv: list[str] | None = None) -> int:

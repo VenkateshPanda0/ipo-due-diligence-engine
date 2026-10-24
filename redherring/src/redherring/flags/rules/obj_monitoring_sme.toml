@@ -1,0 +1,22 @@
+id = "OBJ-MONITORING-AGENCY-SME"
+name = "No monitoring agency although the issue is above the threshold (SME)"
+rationale = "On the SME platform the monitoring-agency requirement starts at a lower size, so smaller issues are covered and its absence is a compliance gap."
+platforms = ["sme"]
+severity = "high"
+heuristic = false
+citation_requirement = "Cite the issue size excluding offer for sale and the statement on appointment of a monitoring agency."
+
+[logic]
+kind = "required_if"
+trigger = "issue.fresh_issue_amount"
+threshold = 500000000.0
+required = "objects.monitoring_agency_appointed"
+
+[[sources]]
+kind = "regulation"
+ref = "SEBI (Issue of Capital and Disclosure Requirements) Regulations, 2018, Chapter IX (SME issues)"
+clause = "Regulation 262(1)"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/mar-2026/1774592300989.pdf"
+checked_on = 2026-10-24
+effective = 2025-03-08
+note = "Threshold Rs 50 crore (500,000,000 rupees) for issue size excluding offer for sale, substituted w.e.f. 08.03.2025 for 'one hundred crore rupees' per the footnote in SEBI's consolidated copy. A flag needs an explicit 'no' in the document."

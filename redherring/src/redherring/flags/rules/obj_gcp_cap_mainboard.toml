@@ -1,0 +1,22 @@
+id = "OBJ-GCP-CAP-MAINBOARD"
+name = "General corporate purposes close to the regulatory cap (mainboard)"
+rationale = "A large unallocated 'general corporate purposes' bucket leaves investors with little to hold the issuer to, and the regulation caps it."
+platforms = ["mainboard"]
+severity = "medium"
+heuristic = false
+citation_requirement = "Cite the objects-of-the-issue row for general corporate purposes and the row giving the amount being raised."
+
+[logic]
+kind = "ratio_vs_cap"
+numerators = ["objects.gcp_amount"]
+denominator = "issue.fresh_issue_amount"
+cap = 0.25
+near_cap_fraction = 0.9
+
+[[sources]]
+kind = "regulation"
+ref = "SEBI (Issue of Capital and Disclosure Requirements) Regulations, 2018"
+clause = "Regulation 7(2)"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/mar-2026/1774592300989.pdf"
+checked_on = 2026-10-24
+note = "Text as in SEBI's consolidated copy marked 'Amended upto March 21, 2026': general corporate purposes shall not exceed 25% of the amount being raised. The 90% 'near cap' trigger is this project's choice, not the regulator's."

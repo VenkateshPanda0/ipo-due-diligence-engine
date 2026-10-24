@@ -1,0 +1,21 @@
+id = "FIN-CFO-BELOW-PAT"
+name = "Operating cash flow persistently below reported profit"
+rationale = "Profit that is not backed by operating cash flow, year after year, is a classic warning about earnings quality."
+platforms = ["mainboard", "sme"]
+severity = "medium"
+heuristic = true
+citation_requirement = "Cite the cash-flow-from-operations row and the profit-after-tax row for each of the years used."
+
+[logic]
+kind = "persistent_below"
+left = "financials.cash_from_operations"
+right = "financials.profit_after_tax"
+min_periods = 3
+min_breaches = 2
+require_right_positive = true
+
+[[sources]]
+kind = "literature"
+ref = "Sloan, R. G. (1996), 'Do stock prices fully reflect information in accruals and cash flows about future earnings?', The Accounting Review 71(3), 289-315"
+checked_on = 2026-10-24
+note = "The 2-of-3 years trigger is this project's choice. Not a regulatory threshold."

@@ -1,0 +1,19 @@
+id = "FIN-RECEIVABLES-OUTGROW-REVENUE"
+name = "Trade receivables growing much faster than revenue"
+rationale = "Receivables rising far faster than sales can mean revenue is being booked that customers have not paid for."
+platforms = ["mainboard", "sme"]
+severity = "medium"
+heuristic = true
+citation_requirement = "Cite the trade-receivables and revenue-from-operations rows for both years."
+
+[logic]
+kind = "growth_gap"
+left = "financials.trade_receivables"
+right = "financials.revenue_from_operations"
+min_gap_pp = 20.0
+
+[[sources]]
+kind = "literature"
+ref = "Beneish, M. D. (1999), 'The Detection of Earnings Manipulation', Financial Analysts Journal 55(5), 24-36"
+checked_on = 2026-10-24
+note = "Days-sales-in-receivables index is one of the Beneish ratios. The 20-percentage-point gap is this project's choice. Not a regulatory threshold."

@@ -1,0 +1,23 @@
+id = "ISSUE-OFS-CAP-SME"
+name = "Offer for sale close to the regulatory limit (SME)"
+rationale = "A large selling-shareholder component means much of an SME issue's money goes to existing holders and not to the company, and the regulation limits it."
+platforms = ["sme"]
+severity = "medium"
+heuristic = false
+citation_requirement = "Cite the offer-for-sale size and the total issue size."
+
+[logic]
+kind = "ratio_vs_cap"
+numerators = ["issue.ofs_amount"]
+denominator = "issue.total_issue_amount"
+cap = 0.20
+near_cap_fraction = 0.9
+
+[[sources]]
+kind = "regulation"
+ref = "SEBI (Issue of Capital and Disclosure Requirements) Regulations, 2018, Chapter IX (SME issues)"
+clause = "Regulation 230(1)(f)"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/mar-2026/1774592300989.pdf"
+checked_on = 2026-10-24
+effective = 2025-03-08
+note = "The size of offer for sale by selling shareholders shall not exceed 20% of the total issue size; inserted w.e.f. 08.03.2025 per the footnote in SEBI's consolidated copy."

@@ -1,0 +1,21 @@
+id = "OBJ-MONITORING-AGENCY-MAINBOARD"
+name = "No monitoring agency although the issue is above the threshold (mainboard)"
+rationale = "Above the size threshold an independent credit rating agency must track how the proceeds are used, so its absence is a compliance gap."
+platforms = ["mainboard"]
+severity = "high"
+heuristic = false
+citation_requirement = "Cite the issue size excluding offer for sale and the statement on appointment of a monitoring agency."
+
+[logic]
+kind = "required_if"
+trigger = "issue.fresh_issue_amount"
+threshold = 1000000000.0
+required = "objects.monitoring_agency_appointed"
+
+[[sources]]
+kind = "regulation"
+ref = "SEBI (Issue of Capital and Disclosure Requirements) Regulations, 2018"
+clause = "Regulation 41(1)"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/mar-2026/1774592300989.pdf"
+checked_on = 2026-10-24
+note = "Where the issue size excluding offer for sale exceeds Rs 100 crore (1,000,000,000 rupees), proceeds must be monitored by a credit rating agency registered with the Board. A flag needs an explicit 'no' in the document; silence is not treated as 'no'."

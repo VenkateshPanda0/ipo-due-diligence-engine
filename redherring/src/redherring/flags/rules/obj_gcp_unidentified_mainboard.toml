@@ -1,0 +1,23 @@
+id = "OBJ-GCP-UNIDENTIFIED-35-MAINBOARD"
+name = "General corporate purposes plus unidentified acquisitions close to the combined cap (mainboard)"
+rationale = "Money earmarked for general purposes and for acquisitions not yet identified is money with no named use, and the regulation caps the two together."
+platforms = ["mainboard"]
+severity = "medium"
+heuristic = false
+citation_requirement = "Cite the rows for general corporate purposes, for the unidentified acquisition object, and for the amount being raised."
+
+[logic]
+kind = "ratio_vs_cap"
+numerators = ["objects.gcp_amount", "objects.unidentified_acquisition_amount"]
+denominator = "issue.fresh_issue_amount"
+cap = 0.35
+near_cap_fraction = 0.9
+
+[[sources]]
+kind = "regulation"
+ref = "SEBI (Issue of Capital and Disclosure Requirements) Regulations, 2018"
+clause = "Regulation 7(3)"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/mar-2026/1774592300989.pdf"
+checked_on = 2026-10-24
+effective = 2022-01-14
+note = "Inserted by the (Amendment) Regulations, 2022 w.e.f. 14.1.2022 per the footnote in SEBI's consolidated copy (amended upto March 21, 2026). The limits do not apply where the acquisition or strategic investment is identified and specifically disclosed."

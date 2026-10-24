@@ -1,0 +1,23 @@
+id = "OBJ-UNIDENTIFIED-ACQ-25-MAINBOARD"
+name = "Unidentified acquisitions close to their own cap (mainboard)"
+rationale = "Raising money for an acquisition target that is not named gives investors nothing to assess, and the regulation limits it."
+platforms = ["mainboard"]
+severity = "medium"
+heuristic = false
+citation_requirement = "Cite the objects row for the unidentified acquisition or strategic investment and the amount being raised."
+
+[logic]
+kind = "ratio_vs_cap"
+numerators = ["objects.unidentified_acquisition_amount"]
+denominator = "issue.fresh_issue_amount"
+cap = 0.25
+near_cap_fraction = 0.9
+
+[[sources]]
+kind = "regulation"
+ref = "SEBI (Issue of Capital and Disclosure Requirements) Regulations, 2018"
+clause = "Regulation 7(3), first proviso"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/mar-2026/1774592300989.pdf"
+checked_on = 2026-10-24
+effective = 2022-01-14
+note = "The amount for objects where the acquisition or investment target is not identified shall not exceed 25% of the amount being raised (consolidated copy amended upto March 21, 2026)."

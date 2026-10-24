@@ -13,26 +13,39 @@ from dataclasses import dataclass
 from decimal import Decimal
 
 from redherring.extract.models import CitedNumber, Concept
-from redherring.extract.periods import period_key
+from redherring.extract.periods import Period, period_key
 
-# (name, target, [(sign, part), ...]): target should equal the signed sum of the parts.
-_IDENTITIES: tuple[tuple[str, Concept, tuple[tuple[int, Concept], ...]], ...] = (
+# (name, kind, target, [(sign, part), ...]): the target should equal the signed sum of the parts.
+# kind "flow" applies to period columns (income statement), "stock" to "as at" columns (balance
+# sheet): "profit for the year" inside a balance sheet is an equity line, not the P&L result.
+_IDENTITIES: tuple[tuple[str, str, Concept, tuple[tuple[int, Concept], ...]], ...] = (
     (
         "total_income = revenue_from_operations + other_income",
+        "flow",
         Concept.TOTAL_INCOME,
         ((1, Concept.REVENUE_FROM_OPERATIONS), (1, Concept.OTHER_INCOME)),
     ),
     (
         "profit_after_tax = profit_before_tax - tax_expense",
+        "flow",
         Concept.PROFIT_AFTER_TAX,
         ((1, Concept.PROFIT_BEFORE_TAX), (-1, Concept.TAX_EXPENSE)),
     ),
     (
         "total_assets = total_equity_and_liabilities",
+        "stock",
         Concept.TOTAL_ASSETS,
         ((1, Concept.TOTAL_EQUITY_AND_LIABILITIES),),
     ),
 )
+
+
+def _applies(kind: str, period: Period | None) -> bool:
+    if period is None:
+        return True  # unknown column: cannot rule it out
+    if kind == "stock":
+        return period.instant or period.months is None
+    return not period.instant
 
 
 @dataclass(frozen=True)
@@ -63,11 +76,13 @@ def run_footing(values: list[CitedNumber]) -> list[FootingCheck]:
 
     checks: list[FootingCheck] = []
     for (table_id, key), by_concept in sorted(groups.items()):
-        for name, target, parts in _IDENTITIES:
+        for name, kind, target, parts in _IDENTITIES:
             needed = [target, *(p for _, p in parts)]
             if any(len(by_concept.get(c, [])) != 1 for c in needed):
                 continue  # missing or ambiguous: do not guess
             t = by_concept[target][0]
+            if not _applies(kind, t.period):
+                continue
             units = {t.unit, *(by_concept[p][0].unit for _, p in parts)}
             if len(units) != 1:
                 continue  # mixed units inside one table cell group: not comparable as printed

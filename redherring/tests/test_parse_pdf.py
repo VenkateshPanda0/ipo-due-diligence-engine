@@ -476,3 +476,46 @@ def test_header_phrases_are_not_split_across_columns() -> None:
     (t,) = build_statement_tables(1, words)
     assert t.columns[1] == "June 30, 2026"  # kept whole, in reading order
     assert t.columns[0] == "March 2025"
+
+
+def test_ruled_header_band_over_unruled_rows_becomes_the_header(tmp_path: Path) -> None:
+    """The header sits in its own ruled box; the statement rows below are unruled."""
+    p = PageSpec()
+    p.text(72, 70, "(Rs. in million)", 8)
+    p.grid(
+        72,
+        90,
+        [200, 110, 110],
+        [
+            ["Particulars", "Fiscal 2026", "Fiscal 2025"],
+            ["", "Amount", "Amount"],
+        ],
+        row_h=14,
+    )
+    data = [
+        ("Impairment of instruments", "2,614.03", "2,004.30"),
+        ("Total income", "10,650.92", "7,029.16"),
+        ("Total expenses", "8,323.43", "6,131.89"),
+        ("Average managed AUM", "219,501.51", "172,114.90"),
+    ]
+    for i, (label, a, b) in enumerate(data):
+        top = 130 + i * 14
+        p.text(75, top, label, 8)
+        _right(p, 72 + 200 + 55, top, a)  # numbers sit under their (left-aligned) header text
+        _right(p, 72 + 200 + 110 + 55, top, b)
+    doc = _parse_one(tmp_path, p)
+    tables = doc.pages[0].tables
+    assert [t.strategy for t in tables] == ["numeric_rows"]  # the band is folded into the header
+    (t,) = tables
+    assert "Fiscal 2026" in t.columns[0]
+    assert "Fiscal 2025" in t.columns[1]
+    assert t.unit is Unit.MILLION
+    assert ["Total income", "10,650.92", "7,029.16"] in t.rows
+    assert not any("Fiscal 2026" in b.text for b in doc.pages[0].blocks)
+
+
+def test_text_only_ruled_table_with_no_statement_below_is_kept(tmp_path: Path) -> None:
+    p = PageSpec()
+    p.grid(72, 90, [150, 250], [["Term", "Description"], ["EBITDA", "Earnings before interest"]])
+    doc = _parse_one(tmp_path, p)
+    assert [t.strategy for t in doc.pages[0].tables] == ["lines"]

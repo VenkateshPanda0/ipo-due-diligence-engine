@@ -169,3 +169,30 @@ def test_consensus_ignores_values_without_unit_or_period() -> None:
         cn(Concept.TOTAL_INCOME, "100.00", period=None),
     ]
     assert build_consensus(vals) == []
+
+
+AT26 = Period(end=date(2026, 3, 31), months=None, instant=True)
+
+
+def test_flow_identities_are_not_applied_to_balance_sheet_columns() -> None:
+    """'Profit for the year' inside a balance sheet is an equity line, not the P&L result."""
+    vals = [
+        cn(Concept.PROFIT_BEFORE_TAX, "2,239.30", period=AT26),
+        cn(Concept.TAX_EXPENSE, "40.00", period=AT26),
+        cn(Concept.PROFIT_AFTER_TAX, "937.00", period=AT26),
+    ]
+    assert run_footing(vals) == []
+
+
+def test_balance_identity_needs_a_balance_sheet_column() -> None:
+    vals = [
+        cn(Concept.TOTAL_ASSETS, "500.00", period=AT26),
+        cn(Concept.TOTAL_EQUITY_AND_LIABILITIES, "500.00", period=AT26),
+    ]
+    (check,) = run_footing(vals)
+    assert check.ok
+    flow = [
+        cn(Concept.TOTAL_ASSETS, "500.00", period=FY26),
+        cn(Concept.TOTAL_EQUITY_AND_LIABILITIES, "500.00", period=FY26),
+    ]
+    assert run_footing(flow) == []  # a 12-month flow column is not a balance sheet

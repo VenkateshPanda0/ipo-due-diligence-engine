@@ -153,9 +153,16 @@ def _overlaps_vertically(a: BBox, b: BBox) -> bool:
     return inter > 0.5 * min(a.bottom - a.top, b.bottom - b.top)
 
 
+_PLAIN_YEAR = re.compile(r"^(?:19|20)\d{2}$")
+
+
 def _money_tokens(cell: str) -> int:
+    """Count money-like tokens in a cell. A bare year ("2026") is a label, not an amount."""
     return sum(
-        parse_amount(t) is not None and ("," in t or "." in t or len(t) >= 3) for t in cell.split()
+        parse_amount(t) is not None
+        and ("," in t or "." in t or len(t) >= 3)
+        and not _PLAIN_YEAR.match(t)
+        for t in cell.split()
     )
 
 
@@ -221,22 +228,47 @@ def _rebuild_merged(
     return out
 
 
+def _is_header_band(t: RawTable) -> bool:
+    """A small ruled box holding only text: the column header drawn as its own table."""
+    return t.strategy == "lines" and len(t.rows) <= 6 and _money_tokens_total(t.rows) == 0
+
+
+def _money_tokens_total(rows: list[list[str]]) -> int:
+    return sum(_money_tokens(c) for r in rows for c in r)
+
+
+def _band_feeds(band: RawTable, statement: RawTable) -> bool:
+    """Has `statement` absorbed `band` as its header (or does it sit right below it)?"""
+    overlap = min(band.bbox.x1, statement.bbox.x1) - max(band.bbox.x0, statement.bbox.x0)
+    if overlap <= 0:
+        return False
+    shared = min(band.bbox.bottom, statement.bbox.bottom) - max(band.bbox.top, statement.bbox.top)
+    absorbed = shared >= 0.5 * (band.bbox.bottom - band.bbox.top)
+    gap = statement.bbox.top - band.bbox.bottom
+    return absorbed or -2.0 <= gap <= 30.0
+
+
 def _find_tables(plumber_page: Any, words: list[dict[str, Any]]) -> list[RawTable]:
     """Ruled tables, plus unruled numeric statements among the words outside them.
 
-    On pages with no ruled table, pdfplumber's whitespace "text" tables are kept too, unless they
-    overlap a rebuilt statement.
+    A ruled box with no numbers is a header band: if an unruled statement sits right below it, the
+    band's words become that statement's header instead of a separate table. On pages with no
+    ruled table, pdfplumber's whitespace "text" tables are kept too, unless they overlap a
+    rebuilt statement.
     """
     ruled = _rebuild_merged(
         plumber_page.page_number, _plumber_tables(plumber_page, {}, "lines", 2, 2), words
     )
-    boxes = [t.bbox for t in ruled]
-    outside = [w for w in words if not _inside(w, boxes)] if ruled else words
+    bands = [t for t in ruled if _is_header_band(t)]
+    data_ruled = [t for t in ruled if t not in bands]
+    boxes = [t.bbox for t in data_ruled]
+    outside = [w for w in words if not _inside(w, boxes)] if data_ruled else words
     if not looks_numeric_tabular(outside):
         return ruled
     statements = build_statement_tables(plumber_page.page_number, outside)
-    if ruled:
-        return [*ruled, *statements]
+    unused = [b for b in bands if not any(_band_feeds(b, st) for st in statements)]
+    if data_ruled or bands:
+        return [*data_ruled, *unused, *statements]
     others = _plumber_tables(plumber_page, _TEXT_SETTINGS, "text", 3, 3)
     kept = [
         t for t in others if not any(_overlaps_vertically(t.bbox, st.bbox) for st in statements)

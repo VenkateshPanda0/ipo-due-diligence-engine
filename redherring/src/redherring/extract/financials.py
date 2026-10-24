@@ -25,7 +25,8 @@ _REJECT = re.compile(
     r"%|percent|per cent|growth|margin|\bratio\b|per share|\bdays\b|attributable|comprehensive|"
     r"\bas a\b|\bturnover\b|\bcagr\b"
 )
-_PARENS = r"(?:\s*\([^)]*\))*"
+# qualifiers such as "(A)", "(net)" and a trailing formula like "(VIII) = (V-VII)"
+_PARENS = r"(?:\s*\([^)]*\))*(?:\s*=\s*\([^)]*\))?"
 
 # (concept, head pattern). The head must match the whole normalised label, optionally followed by
 # parenthetical qualifiers such as "(A)", "(net)" or "(I= a+b)". First match wins.
@@ -46,7 +47,7 @@ _HEADS: tuple[tuple[Concept, str], ...] = (
     (
         Concept.PROFIT_AFTER_TAX,
         r"(?:restated )?(?:net )?(?:profit|loss)(?:/\((?:loss|profit)\))?"
-        r"(?: for the (?:year|period)| after tax)",
+        r"(?: for the (?:year|period)(?:/(?:year|period))?| after tax)",
     ),
     (Concept.ADJUSTED_EBITDA, r"adjusted ebitda"),
     (Concept.EBITDA, r"ebitda"),

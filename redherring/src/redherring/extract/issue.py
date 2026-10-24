@@ -52,6 +52,12 @@ _FRESH = re.compile(
 _OFS = re.compile(
     rf"{_NOT_DEFINED}offer\s+for\s+sale\b{_GAP}aggregat\w*\s*(?:to\s+|up\s+to\s+)?{_AMT}", re.I
 )
+# "aggregating to Rs. 10,916.80* million (the "Offer")": the total is stated outright. A quoted
+# "Offer Price" does not match because the closing parenthesis must follow "Offer"/"Issue".
+_TOTAL_STATED = re.compile(
+    rf"aggregat\w*\s*(?:to\s+|up\s+to\s+)?{_AMT}\s*\(\s*(?:the\s+)?[“\"]?(?:offer|issue)[”\"]?\s*\)",
+    re.I,
+)
 _NOT_APPLICABLE = re.compile(r"\bN\.?\s?A\.?\b|\bnil\b", re.I)
 
 _UNIT_WORDS = {
@@ -112,7 +118,22 @@ def _segments(doc: ParsedDocument, max_page: int) -> list[tuple[int, str]]:
 def _cover_amounts(doc: ParsedDocument, max_page: int) -> list[IssueFact]:
     found: dict[IssueKey, IssueFact] = {}
     row_na: dict[int, bool] = {}
+    stated_total: IssueFact | None = None
     for page, text in _segments(doc, max_page):
+        if stated_total is None and (tm := _TOTAL_STATED.search(text)):
+            amount = _amount(tm)
+            if amount:
+                value, raw, unit = amount
+                stated_total = IssueFact(
+                    key=IssueKey.TOTAL_ISSUE_AMOUNT,
+                    value=value,
+                    raw=raw,
+                    unit=unit,
+                    pdf_page=page,
+                    span=text[max(0, tm.start() - 40) : tm.end() + 20],
+                    method="regex",
+                    confidence=0.85,
+                )
         for key, pattern in ((IssueKey.FRESH_ISSUE_AMOUNT, _FRESH), (IssueKey.OFS_AMOUNT, _OFS)):
             if key in found:
                 continue
@@ -133,7 +154,9 @@ def _cover_amounts(doc: ParsedDocument, max_page: int) -> list[IssueFact]:
                 row_na[page] = bool(_NOT_APPLICABLE.search(text[m.end() :]))
     fresh, ofs = found.get(IssueKey.FRESH_ISSUE_AMOUNT), found.get(IssueKey.OFS_AMOUNT)
     facts = list(found.values())
-    if fresh and ofs:
+    if stated_total:
+        facts.append(stated_total)
+    elif fresh and ofs:
         facts.append(_total(fresh, ofs.value, f"{fresh.span} + {ofs.span}"))
     elif fresh and not ofs and row_na.get(fresh.pdf_page):
         facts.append(_total(fresh, Decimal(0), f"{fresh.span} (no offer for sale: N.A.)"))

@@ -188,3 +188,24 @@ def test_defined_term_mention_does_not_steal_the_next_amount() -> None:
     assert facts[IssueKey.FRESH_ISSUE_AMOUNT][0] == Decimal(350_760_000)
     assert facts[IssueKey.OFS_AMOUNT][0] == Decimal(189_600_000)  # 1896.00 lakhs, not 270.18
     assert facts[IssueKey.TOTAL_ISSUE_AMOUNT][0] == Decimal(540_360_000)
+
+
+def test_explicit_total_is_preferred_to_the_derived_sum_and_cites_its_own_page() -> None:
+    cover = _page(
+        3,
+        "OF Rs. 34 PER EQUITY SHARE (THE “OFFER PRICE”) AGGREGATING TO Rs. 10,916.80* MILLION "
+        "(THE “OFFER”). THE OFFER COMPRISES A FRESH ISSUE OF 220,588,235* EQUITY SHARES BY OUR "
+        "COMPANY AGGREGATING TO Rs. 7,500* MILLION (“FRESH ISSUE”) AND AN OFFER FOR SALE OF "
+        "100,494,200* EQUITY SHARES AGGREGATING TO Rs. 3,416.80* MILLION (“OFFER FOR SALE”)",
+    )
+    summary = _page(
+        12, "Fresh Issue of 220,588,235* Equity Shares aggregating to Rs. 7,500.00* million"
+    )
+    facts = {f.key: f for f in extract_issue_facts(_doc(summary, cover))}
+    total = facts[IssueKey.TOTAL_ISSUE_AMOUNT]
+    assert total.value == Decimal(10_916_800_000)
+    assert total.method == "regex"  # stated, not derived
+    assert total.pdf_page == 3
+    assert total.raw == "10,916.80"
+    assert facts[IssueKey.FRESH_ISSUE_AMOUNT].value == Decimal(7_500_000_000)
+    assert facts[IssueKey.OFS_AMOUNT].value == Decimal(3_416_800_000)

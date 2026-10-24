@@ -163,6 +163,20 @@ def test_sme_type_row_gives_fresh_and_total_and_nil_offer_for_sale() -> None:
     assert IssueKey.OFS_AMOUNT not in facts  # "Nil" is not an amount
 
 
+def test_eligibility_route_is_read_from_the_cover() -> None:
+    loss_making = _doc(
+        _page(
+            1, "The Offer is being made pursuant to Regulation 6(2) of the Securities and Exchange"
+        )
+    )
+    profitable = _doc(
+        _page(1, "The Offer is being made pursuant to Regulation 6(1) of the SEBI ICDR Regulations")
+    )
+    assert _facts(loss_making)[IssueKey.ELIGIBILITY_REG_6_2][0] == 1
+    assert _facts(profitable)[IssueKey.ELIGIBILITY_REG_6_2][0] == 0
+    assert IssueKey.ELIGIBILITY_REG_6_2 not in _facts(_doc(_page(1, "A cover without the clause")))
+
+
 def test_only_early_pages_are_searched() -> None:
     late = _page(60, "Fresh Issue of shares aggregating up to ₹ 1,000 million")
     assert extract_issue_facts(_doc(_page(1, "cover"), late)) == []

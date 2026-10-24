@@ -150,6 +150,19 @@ def _issue_table(report: AnalysisReport, url: str, hidden: frozenset[int]) -> st
                 f"<tr><th>{title}</th><td class=num>{_crore(f.value)} "
                 f"<small>{_cite(url, f.pdf_page, hidden)}</small></td></tr>"
             )
+    route = by_key.get("issue.eligibility_reg_6_2")
+    if route:
+        text = (
+            "Regulation 6(2): the issuer does not meet the profit track record of Regulation 6(1), "
+            "so the offer must be book-built with at least 75% of the net offer to qualified "
+            "institutional buyers"
+            if route.value == 1
+            else "Regulation 6(1): the issuer states it meets the profit track record"
+        )
+        rows.append(
+            f"<tr><th>Eligibility route</th><td>{text} <small>{_cite(url, route.pdf_page, hidden)}"
+            "</small></td></tr>"
+        )
     ma = by_key.get("objects.monitoring_agency_appointed")
     if ma:
         word = "appointed" if ma.value == 1 else "stated as not appointed or not required"
@@ -272,5 +285,49 @@ SHA-256 <code>{escape(entry.sha256)}</code></p>
 {f"<li>Business type detected from the text: {sectors}.</li>" if sectors else ""}
 </ul>
 <p class=note>Generated from public filings by RedHerring. Every figure links to its page in the source PDF. {escape(DISCLAIMER)}</p>
+</body></html>
+"""
+
+
+def index_html(items: list[tuple[ManifestEntry, AnalysisReport]]) -> str:
+    """A page listing every analysed filing with its flag count and how much could be checked."""
+    rows = []
+    for entry, report in sorted(items, key=lambda it: it[0].issuer.lower()):
+        s = report.summary
+        flags = ", ".join(sorted({f.severity for f in report.flags})) or "none"
+        notes = []
+        if report.pages_with_hidden_text:
+            notes.append("⚠ invisible text")
+        if report.sectors:
+            notes.append(
+                "business: " + ", ".join(x.sector.replace("_", " ") for x in report.sectors)
+            )
+        rows.append(
+            f'<tr><td><a href="{escape(entry.doc_id, quote=True)}.html">{escape(entry.issuer)}</a></td>'
+            f"<td>{escape(entry.doc_type.value)}</td>"
+            f"<td>{escape(entry.platform.value if entry.platform else '–')}</td>"
+            f"<td>{entry.filing_date.isoformat() if entry.filing_date else '–'}</td>"
+            f"<td>{len(report.flags)} ({escape(flags)})</td>"
+            f"<td>{s.rules_decisive} of {s.rules_applicable}</td>"
+            f"<td>{escape('; '.join(notes))}</td></tr>"
+        )
+    return f"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Offer document reviews</title>
+<style>
+:root{{--bg:#fff;--fg:#1c1c1e;--mute:#5b5b66;--line:#d9d9e0;--card:#f6f6f9;--med:#a15c00}}
+@media (prefers-color-scheme:dark){{:root{{--bg:#16161a;--fg:#ececf1;--mute:#a0a0ad;--line:#33333c;--card:#1f1f25;--med:#ffb74d}}}}
+body{{margin:0 auto;max-width:64rem;padding:1rem 16px 3rem;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,sans-serif}}
+h1{{font-size:1.5rem}} table{{border-collapse:collapse;width:100%;font-size:.95rem}}
+th,td{{padding:.35rem .5rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}}
+thead th{{color:var(--mute)}} .banner{{background:var(--card);border-left:4px solid var(--med);padding:.6rem .9rem;margin:1rem 0}}
+.table-wrap{{overflow-x:auto}}
+</style></head><body>
+<h1>Offer document reviews</h1>
+<div class=banner><strong>{escape(DISCLAIMER)}</strong></div>
+<p>"Rules checked" counts the rules that could be evaluated of those in force for the filing; a filing with no flags and few rules checked has not been cleared.</p>
+<div class=table-wrap><table><thead><tr><th>Issuer</th><th>Document</th><th>Platform</th><th>Filed</th><th>Flags</th><th>Rules checked</th><th>Notes</th></tr></thead>
+<tbody>{"".join(rows)}</tbody></table></div>
 </body></html>
 """

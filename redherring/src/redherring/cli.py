@@ -13,12 +13,12 @@ from redherring.eval.metrics import Prediction, score
 from redherring.eval.prefill import draft_from_predictions
 from redherring.eval.report import eval_markdown
 from redherring.ingest.fetch import Fetcher, FetchError
-from redherring.ingest.manifest import DocType, Manifest, load_sources
+from redherring.ingest.manifest import DocType, Manifest, ManifestEntry, load_sources
 from redherring.parse.models import PARSER_VERSION, ParsedDocument
 from redherring.parse.pdf import default_workers, parse_pdf
 from redherring.parse.render import render_tagged
 from redherring.parse.report import compute_stats, stats_markdown
-from redherring.report_html import report_html
+from redherring.report_html import index_html, report_html
 from redherring.report_text import summary_markdown
 from redherring.verify.cited import PdfiumPageText
 
@@ -160,6 +160,7 @@ def _cmd_report(args: argparse.Namespace) -> int:
     out_dir = data_dir / "reports"
     out_dir.mkdir(parents=True, exist_ok=True)
     failures = 0
+    written: list[tuple[ManifestEntry, AnalysisReport]] = []
     for e in entries:
         path = data_dir / "extracted" / f"{e.doc_id}.financials.json"
         if not path.exists():
@@ -177,7 +178,11 @@ def _cmd_report(args: argparse.Namespace) -> int:
         report = AnalysisReport.model_validate(raw)
         target = out_dir / f"{e.doc_id}.html"
         target.write_text(report_html(report, e), encoding="utf-8")
+        written.append((e, report))
         print(f"wrote {target}")
+    if written:
+        (out_dir / "index.html").write_text(index_html(written), encoding="utf-8")
+        print(f"wrote {out_dir / 'index.html'}")
     return 1 if failures else 0
 
 

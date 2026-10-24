@@ -28,6 +28,7 @@ class IssueKey(StrEnum):
     GCP_AMOUNT = "objects.gcp_amount"
     UNIDENTIFIED_ACQUISITION_AMOUNT = "objects.unidentified_acquisition_amount"
     MONITORING_AGENCY_APPOINTED = "objects.monitoring_agency_appointed"
+    ELIGIBILITY_REG_6_2 = "issue.eligibility_reg_6_2"  # 1: made under Reg 6(2), 0: under Reg 6(1)
 
 
 class IssueFact(BaseModel):
@@ -94,6 +95,8 @@ def _roles(term: str) -> set[IssueKey]:
         roles.add(IssueKey.OFS_AMOUNT)
     return roles
 
+
+_ELIGIBILITY = re.compile(r"made\s+pursuant\s+to\s+Regulation\s+6\s*\(\s*([12])\s*\)\s+of", re.I)
 
 _NOT_APPLICABLE = re.compile(r"\bN\.?\s?A\.?\b|\bnil\b", re.I)
 
@@ -353,6 +356,23 @@ def _objects_from_tables(doc: ParsedDocument) -> list[IssueFact]:
     return list(found.values())
 
 
+def _eligibility_route(doc: ParsedDocument, max_page: int) -> list[IssueFact]:
+    for page, text in _segments(doc, max_page):
+        if m := _ELIGIBILITY.search(text):
+            return [
+                IssueFact(
+                    key=IssueKey.ELIGIBILITY_REG_6_2,
+                    value=Decimal(1 if m.group(1) == "2" else 0),
+                    raw=m.group(0),
+                    pdf_page=page,
+                    span=m.group(0),
+                    method="regex",
+                    confidence=0.85,
+                )
+            ]
+    return []
+
+
 def _monitoring_agency(doc: ParsedDocument) -> list[IssueFact]:
     appointed: tuple[int, str] | None = None
     not_required: tuple[int, str] | None = None
@@ -383,7 +403,12 @@ def extract_issue_facts(
     doc: ParsedDocument, *, max_page: int = DEFAULT_COVER_PAGES
 ) -> list[IssueFact]:
     """Issue sizes from the first `max_page` pages, objects and monitoring agency from anywhere."""
-    return [*_cover_amounts(doc, max_page), *_objects_from_tables(doc), *_monitoring_agency(doc)]
+    return [
+        *_cover_amounts(doc, max_page),
+        *_eligibility_route(doc, max_page),
+        *_objects_from_tables(doc),
+        *_monitoring_agency(doc),
+    ]
 
 
 __all__ = ["IssueFact", "IssueKey", "detect_unit", "extract_issue_facts"]

@@ -149,3 +149,35 @@ def test_report_names_the_figures_kept_out_of_the_rules_because_of_invisible_tex
     )
     assert "Kept out of the red-flag rules" in html
     assert "objects.monitoring_agency_appointed" in html
+
+
+def test_index_lists_each_filing_with_flags_and_what_could_be_checked() -> None:
+    from redherring.report_html import index_html
+
+    flagged = _report(flags=[_flag()], summary=_summary(rules_decisive=2, rules_applicable=5))
+    html = index_html([(_entry("Zeta Ltd"), _report()), (_entry("Alpha Ltd"), flagged)])
+    assert html.index("Alpha Ltd") < html.index("Zeta Ltd")  # sorted by issuer
+    assert "1 (high)" in html
+    assert "2 of 5" in html
+    assert DISCLAIMER in html
+    assert 'href="demo.html"' in html
+
+
+def test_cover_route_is_shown_in_the_report() -> None:
+    from redherring.analyze import VerifiedIssueFact
+    from redherring.extract.issue import IssueKey
+
+    fact = VerifiedIssueFact(
+        key=IssueKey.ELIGIBILITY_REG_6_2,
+        value=Decimal(1),
+        raw="made pursuant to Regulation 6(2) of",
+        pdf_page=1,
+        span="made pursuant to Regulation 6(2) of",
+        method="regex",
+        confidence=0.85,
+        verified=True,
+        failures=[],
+    )
+    html = report_html(_report(issue_facts=[fact]), _entry())
+    assert "Regulation 6(2)" in html
+    assert "75%" in html

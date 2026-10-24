@@ -122,6 +122,43 @@ def test_gcp_amount_from_objects_table_and_net_proceeds() -> None:
     assert facts[IssueKey.GCP_AMOUNT] == (Decimal(1_117_150_000), 140)
 
 
+def test_objects_table_with_a_serial_number_column_and_net_proceeds_only_in_the_header() -> None:
+    """SME prospectuses: `Sr. No. | Objects | Amount ... Net Proceeds`, no Net Proceeds row."""
+    t = Table(
+        pdf_pages=[20, 21],
+        row_pages=[20, 20, 21, 21, 21],
+        unit=Unit.LAKH,
+        columns=["Objects of the Issue", "Amount Proposed to be Utilized from the Net Proceeds"],
+        rows=[
+            ["1.", "Repayment of certain Borrowings", "500.00"],
+            ["3.", "Investment in Strategic Acquisition / Joint Venture", "530.00"],
+            ["4.", "General Corporate Purpose", "670.00"],
+            ["", "Total", "1700.00"],
+        ],
+    )
+    facts = _facts(_doc(_page(1), tables=[t]))
+    assert facts[IssueKey.GCP_AMOUNT] == (Decimal(67_000_000), 21)
+    assert facts[IssueKey.UNIDENTIFIED_ACQUISITION_AMOUNT][0] == Decimal(53_000_000)
+
+
+def test_objects_table_without_any_net_proceeds_wording_is_accepted_only_if_it_foots() -> None:
+    def table(total: str) -> Table:
+        return Table(
+            pdf_pages=[9],
+            row_pages=[9] * 4,
+            unit=Unit.LAKH,
+            columns=["Particular", "Amount"],
+            rows=[
+                ["1.", "To finance the new showroom", "1550.00"],
+                ["2.", "General Corporate Purpose", "400.00"],
+                ["", "Total", total],
+            ],
+        )
+
+    assert IssueKey.GCP_AMOUNT in _facts(_doc(_page(1), tables=[table("1950.00")]))
+    assert IssueKey.GCP_AMOUNT not in _facts(_doc(_page(1), tables=[table("9999.00")]))
+
+
 def test_gcp_placeholder_and_unidentified_acquisition_rows() -> None:
     t = Table(
         pdf_pages=[104],

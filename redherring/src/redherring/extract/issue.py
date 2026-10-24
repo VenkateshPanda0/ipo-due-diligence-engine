@@ -205,31 +205,62 @@ def _is_unidentified_acquisition(label: str) -> bool:
     return has_acq and any(w in label for w in ("future", "unidentified", "inorganic", "strategic"))
 
 
-def _first_amount(t: Table, row: list[str]) -> tuple[Decimal, str] | None:
-    for cell in row[1:]:
+def _split_row(row: list[str]) -> tuple[str, list[str]] | None:
+    """(label, cells after it): the label is the first cell with words, past any serial number."""
+    for i, cell in enumerate(row):
+        if sum(c.isalpha() for c in cell) >= 3:
+            return normalise_label(cell), row[i + 1 :]
+    return None
+
+
+def _first_amount(cells: list[str]) -> tuple[Decimal, str] | None:
+    for cell in cells:
         value = parse_amount(cell)
         if value is not None:
             return value, cell
     return None
 
 
+def _foots(rows: list[tuple[str, list[str]]]) -> bool:
+    """Do the amounts above a "Total" row add up to it? True for a genuine objects table."""
+    amounts: list[Decimal] = []
+    for label, cells in rows:
+        amount = _first_amount(cells)
+        if amount is None:
+            continue
+        if label.startswith("total"):
+            return bool(amounts) and abs(sum(amounts, Decimal(0)) - amount[0]) <= Decimal("0.02")
+        amounts.append(amount[0])
+    return False
+
+
+def _is_objects_table(t: Table, rows: list[tuple[str, list[str]]]) -> bool:
+    """An objects table states its amounts in a unit and is about the Net Proceeds: it totals them,
+    names them in a header, or has rows that foot to a Total."""
+    if t.unit is None:
+        return False
+    if any("net proceeds" in label for label, _ in rows) or any(
+        "net proceeds" in c.lower() for c in t.columns
+    ):
+        return True
+    return _foots(rows)
+
+
 def _objects_from_tables(doc: ParsedDocument) -> list[IssueFact]:
     found: dict[IssueKey, IssueFact] = {}
     for t in doc.tables:
         unit = t.unit
-        if unit is None or not any("net proceeds" in normalise_label(r[0]) for r in t.rows if r):
-            continue  # an objects table states amounts in a unit and totals "Net Proceeds"
-        for i, row in enumerate(t.rows):
-            if not row:
-                continue
-            label = normalise_label(row[0])
+        split = [(i, sp) for i, row in enumerate(t.rows) if row and (sp := _split_row(row))]
+        if unit is None or not _is_objects_table(t, [sp for _, sp in split]):
+            continue
+        for i, (label, cells) in split:
             if _GCP_LABEL.fullmatch(label) or label.startswith("general corporate purpose"):
                 key = IssueKey.GCP_AMOUNT
             elif _is_unidentified_acquisition(label):
                 key = IssueKey.UNIDENTIFIED_ACQUISITION_AMOUNT
             else:
                 continue
-            amount = _first_amount(t, row)
+            amount = _first_amount(cells)
             if amount is None or key in found:
                 continue  # placeholder or repeated table: keep the first stated amount
             value, raw = amount
@@ -239,7 +270,7 @@ def _objects_from_tables(doc: ParsedDocument) -> list[IssueFact]:
                 raw=raw,
                 unit=unit,
                 pdf_page=t.row_pages[i] if i < len(t.row_pages) else t.pdf_pages[0],
-                span=" | ".join(c for c in row if c),
+                span=" | ".join(c for c in t.rows[i] if c),
                 method="table_row",
                 confidence=0.85,
             )

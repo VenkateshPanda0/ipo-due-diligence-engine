@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
-from redherring.analyze import AnalysisReport, Summary, analyze_document
+from redherring.analyze import ANALYSIS_VERSION, AnalysisReport, Summary, analyze_document
 from redherring.eval.labels import check_labels, load_labels
 from redherring.eval.metrics import Prediction, score
 from redherring.eval.prefill import draft_from_predictions
@@ -132,11 +133,18 @@ def _cmd_analyze(args: argparse.Namespace) -> int:
     return 1 if failures else 0
 
 
+class StaleOutput(RuntimeError):
+    pass
+
+
 def _predictions(data_dir: Path, doc_id: str) -> list[Prediction] | None:
     path = data_dir / "extracted" / f"{doc_id}.financials.json"
     if not path.exists():
         return None
-    report = AnalysisReport.model_validate_json(path.read_text(encoding="utf-8"))
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    if raw.get("analysis_version") != ANALYSIS_VERSION:
+        raise StaleOutput(f"{path.name} was written by an older analyzer")
+    report = AnalysisReport.model_validate(raw)
     return [
         Prediction(key=f.key, value=f.value, pdf_page=f.pdf_page, span=f.span) for f in report.facts
     ]
@@ -151,7 +159,12 @@ def _cmd_label_init(args: argparse.Namespace) -> int:
     labels_dir.mkdir(parents=True, exist_ok=True)
     failures = 0
     for e in entries:
-        preds = _predictions(data_dir, e.doc_id)
+        try:
+            preds = _predictions(data_dir, e.doc_id)
+        except StaleOutput as exc:
+            print(f"FAIL  {e.doc_id}: {exc}; re-run `rh analyze`", file=sys.stderr)
+            failures += 1
+            continue
         out = labels_dir / f"{e.doc_id}.draft.json"
         if preds is None:
             print(f"FAIL  {e.doc_id}: run `rh analyze` first", file=sys.stderr)
@@ -203,7 +216,11 @@ def _cmd_eval(args: argparse.Namespace) -> int:
         return 1
     predictions: dict[str, list[Prediction]] = {}
     for doc_id in files:
-        preds = _predictions(data_dir, doc_id)
+        try:
+            preds = _predictions(data_dir, doc_id)
+        except StaleOutput as exc:
+            print(f"FAIL  {doc_id}: {exc}; re-run `rh analyze`", file=sys.stderr)
+            return 1
         if preds is None:
             print(
                 f"WARN  {doc_id}: no extracted output; every labelled value counts as missed",

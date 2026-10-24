@@ -20,6 +20,9 @@ from redherring.parse.models import ParsedDocument
 from redherring.verify.cited import PdfiumPageText, check_cited_number, check_evidence
 from redherring.verify.footing import FootingCheck, run_footing
 
+# Bump when AnalysisReport changes shape or meaning; older files are refused with a clear message.
+ANALYSIS_VERSION = 2
+
 
 class VerifiedNumber(CitedNumber):
     verified: bool
@@ -83,6 +86,7 @@ class Summary(BaseModel):
 
 
 class AnalysisReport(BaseModel):
+    analysis_version: int = 0  # 0 = written before versioning
     summary: Summary
     values: list[VerifiedNumber]
     issue_facts: list[VerifiedIssueFact]
@@ -171,6 +175,7 @@ def analyze_document(
         ),
     )
     return AnalysisReport(
+        analysis_version=ANALYSIS_VERSION,
         summary=summary,
         values=verified,
         issue_facts=verified_issue,

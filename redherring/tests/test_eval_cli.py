@@ -122,3 +122,21 @@ def test_eval_without_labels_says_so(tmp_path: Path, capsys: pytest.CaptureFixtu
         main(["--data-dir", str(tmp_path), "eval", "--labels-dir", str(tmp_path / "labels")]) == 1
     )
     assert "no label files" in capsys.readouterr().err
+
+
+def test_stale_analysis_output_gives_a_clear_message_not_a_traceback(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    sha = _setup(tmp_path)
+    out = tmp_path / "extracted" / "demo.financials.json"
+    data = json.loads(out.read_text())
+    del data["facts"]  # as written by an older version
+    data["analysis_version"] = 0
+    out.write_text(json.dumps(data))
+    labels = tmp_path / "labels"
+    labels.mkdir()
+    (labels / "demo.json").write_text(json.dumps(_final_label(sha)))
+    assert main(["--data-dir", str(tmp_path), "eval", "--labels-dir", str(labels)]) == 1
+    err = capsys.readouterr().err
+    assert "re-run `rh analyze`" in err
+    assert "Traceback" not in err

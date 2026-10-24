@@ -118,18 +118,21 @@ def stitch_tables(raw: list[RawTable], page_heights: dict[int, float]) -> list[T
     tables: list[Table] = []
     for g in groups:
         rows = [list(r) for r in g[0].rows]
+        row_pages = [g[0].pdf_page] * len(rows)
         header = rows[0] if rows else []
         for cont in g[1:]:
             tail = [list(r) for r in cont.rows]
             if tail and header and tail[0] == header:  # repeated header row
                 tail = tail[1:]
             rows.extend(tail)
+            row_pages.extend([cont.pdf_page] * len(tail))
         unit = next((t.unit for t in g if t.unit), None)
         unit_text = next((t.unit_text for t in g if t.unit), None)
         tables.append(
             Table(
                 pdf_pages=sorted({t.pdf_page for t in g}),
                 rows=rows,
+                row_pages=row_pages,
                 unit=unit,
                 unit_text=unit_text,
                 columns=next((t.columns for t in g if t.columns), []),

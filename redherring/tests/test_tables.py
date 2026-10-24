@@ -70,3 +70,18 @@ def test_normal_table_not_transposed() -> None:
 
 def test_transpose_pads_ragged_rows() -> None:
     assert transpose([["a", "b"], ["c"]]) == [["a", "c"], ["b", ""]]
+
+
+def test_stitched_table_remembers_the_page_of_every_row() -> None:
+    p1 = _raw(1, 600, 760, [HEADER, ["Revenue", "100", "90"], ["COGS", "40", "35"]], Unit.LAKH)
+    p2 = _raw(2, 60, 200, [HEADER, ["Expenses", "70", "60"], ["PAT", "30", "25"]])
+    (t,) = stitch_tables([p1, p2], HEIGHTS)
+    assert [r[0] for r in t.rows] == ["Particulars", "Revenue", "COGS", "Expenses", "PAT"]
+    # repeated header on page 2 was dropped together with its page entry
+    assert t.row_pages == [1, 1, 1, 2, 2]
+    assert len(t.row_pages) == len(t.rows)
+
+
+def test_single_page_table_row_pages_default_to_its_page() -> None:
+    (t,) = stitch_tables([_raw(3, 100, 300, [HEADER, ["Revenue", "100", "90"]])], HEIGHTS)
+    assert t.row_pages == [3, 3]

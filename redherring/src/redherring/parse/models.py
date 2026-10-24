@@ -15,7 +15,8 @@ from redherring.parse.units import Unit
 # 3: x-anchored statement columns with assembled headers, residual rows beside ruled tables.
 # 4: ruled boxes with fused cells are rebuilt row by row; prose is not a text table.
 # 5: column headers for ruled tables and for headers separated by label-only lines.
-PARSER_VERSION = 5
+# 6: per-row page numbers on logical tables (citations of stitched tables).
+PARSER_VERSION = 6
 
 
 def page_tag(pdf_page: int) -> str:
@@ -60,6 +61,9 @@ class Table(BaseModel):
 
     pdf_pages: list[int]
     rows: list[list[str]]
+    row_pages: list[int] = Field(
+        default_factory=list, description="PDF page of each row in `rows` (same length)"
+    )
     unit: Unit | None = None
     unit_text: str | None = None
     columns: list[str] = Field(default_factory=list)  # see RawTable.columns

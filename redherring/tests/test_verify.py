@@ -196,3 +196,12 @@ def test_balance_identity_needs_a_balance_sheet_column() -> None:
         cn(Concept.TOTAL_EQUITY_AND_LIABILITIES, "500.00", period=FY26),
     ]
     assert run_footing(flow) == []  # a 12-month flow column is not a balance sheet
+
+
+def test_component_concepts_are_not_compared_for_consensus() -> None:
+    """Non-current and current borrowings are parts of a total, not rival values for it."""
+    vals = [
+        cn(Concept.BORROWINGS, "4,223.75", table_id=0),
+        cn(Concept.BORROWINGS, "12,865.43", table_id=0),
+    ]
+    assert build_consensus(vals) == []

@@ -17,6 +17,9 @@ from redherring.extract.periods import period_key
 from redherring.parse.units import MULTIPLIER
 from redherring.verify.footing import quantum
 
+# Lines that are parts of a total, not rival readings of one figure: never compared.
+COMPONENT_CONCEPTS = frozenset({Concept.BORROWINGS})
+
 
 @dataclass(frozen=True)
 class Consensus:
@@ -41,7 +44,12 @@ def build_consensus(values: list[CitedNumber]) -> list[Consensus]:
     """One Consensus per (concept, period) among values with a known unit and period."""
     groups: dict[tuple[Concept, str], list[CitedNumber]] = defaultdict(list)
     for v in values:
-        if v.unit is not None and v.period is not None and v.rupees is not None:
+        if (
+            v.concept not in COMPONENT_CONCEPTS
+            and v.unit is not None
+            and v.period is not None
+            and v.rupees is not None
+        ):
             groups[(v.concept, period_key(v.period))].append(v)
 
     out: list[Consensus] = []

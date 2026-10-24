@@ -50,6 +50,11 @@ def test_normalise_label(raw: str, expected: str) -> None:
         ("Profit/(loss) after tax", Concept.PROFIT_AFTER_TAX),
         ("Profit / (Loss) for the year", Concept.PROFIT_AFTER_TAX),
         ("EBITDA", Concept.EBITDA),
+        ("EBITDA(3) (in ₹ million)", Concept.EBITDA),
+        ("Adjusted EBITDA (G = E+F)", Concept.ADJUSTED_EBITDA),
+        ("Total borrowings", Concept.TOTAL_BORROWINGS),
+        ("(i) Borrowings", Concept.BORROWINGS),
+        ("Long Term Borrowings", Concept.BORROWINGS),
         ("Total assets", Concept.TOTAL_ASSETS),
         ("Total equity", Concept.TOTAL_EQUITY),
         ("Total equity and liabilities", Concept.TOTAL_EQUITY_AND_LIABILITIES),
@@ -219,3 +224,48 @@ def test_dash_and_blank_cells_produce_no_value() -> None:
     assert [(v.value, v.period.end.year if v.period else None) for v in values] == [
         (Decimal("12.5"), 2024)
     ]
+
+
+def test_label_column_is_detected_when_serial_numbers_come_first() -> None:
+    """SME layout: serial | particulars | annexure no. | values (the Synoptics statements)."""
+    t = Table.model_validate(
+        {
+            "pdf_pages": [44, 45],
+            "rows": [
+                ["PARTICULARS", "", "Anne xure Nos.", "AS AT 30- Sept-22", "AS AT 31-Mar-22"],
+                ["1", "Income", "", "", ""],
+                ["(a)", "Revenue From Operations", "22", "2,375.73", "5,092.32"],
+                ["(b)", "Other Income", "23", "1.66", "4.75"],
+                ["2", "Total Income (1a+1b)", "", "2,377.39", "5,097.07"],
+            ],
+            "row_pages": [44, 44, 44, 44, 45],
+            "columns": ["", "Anne xure Nos.", "AS AT 30- Sept-22", "AS AT 31-Mar-22"],
+            "n_header_rows": 1,
+            "unit": Unit.LAKH,
+        }
+    )
+    values = extract_financials(_doc(t))
+    assert [(v.concept, v.raw, v.period.end.isoformat() if v.period else None) for v in values] == [
+        (Concept.REVENUE_FROM_OPERATIONS, "2,375.73", "2022-09-30"),
+        (Concept.REVENUE_FROM_OPERATIONS, "5,092.32", "2022-03-31"),
+        (Concept.OTHER_INCOME, "1.66", "2022-09-30"),
+        (Concept.OTHER_INCOME, "4.75", "2022-03-31"),
+        (Concept.TOTAL_INCOME, "2,377.39", "2022-09-30"),
+        (Concept.TOTAL_INCOME, "5,097.07", "2022-03-31"),
+    ]
+    assert all("Revenue" in v.span or "Income" in v.span for v in values)
+    # annexure numbers (22, 23) are never read as amounts
+    assert not any(v.raw in {"22", "23"} for v in values)
+
+
+def test_annexure_and_serial_columns_are_skipped_by_header() -> None:
+    t = Table.model_validate(
+        {
+            "pdf_pages": [1],
+            "rows": [["Total income", "7", "100.00"]],
+            "row_pages": [1],
+            "columns": ["Annexure", "FY 2026"],
+            "unit": Unit.CRORE,
+        }
+    )
+    assert [v.raw for v in extract_financials(_doc(t))] == ["100.00"]

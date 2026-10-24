@@ -48,7 +48,8 @@ _HEADS: tuple[tuple[Concept, str], ...] = (
         r"(?:restated )?(?:net )?(?:profit|loss)(?:/\((?:loss|profit)\))?"
         r"(?: for the (?:year|period)| after tax)",
     ),
-    (Concept.EBITDA, r"(?:adjusted )?ebitda"),
+    (Concept.ADJUSTED_EBITDA, r"adjusted ebitda"),
+    (Concept.EBITDA, r"ebitda"),
     (Concept.TOTAL_ASSETS, r"total assets"),
     (
         Concept.TOTAL_EQUITY_AND_LIABILITIES,
@@ -56,9 +57,10 @@ _HEADS: tuple[tuple[Concept, str], ...] = (
     ),
     (Concept.TOTAL_EQUITY, r"total equity"),
     (Concept.NET_WORTH, r"net worth"),
+    (Concept.TOTAL_BORROWINGS, r"total borrowings"),
     (
         Concept.BORROWINGS,
-        r"(?:total )?borrowings|(?:long|short)[- ]term borrowings|debt securities",
+        r"borrowings|(?:long|short)[- ]term borrowings|debt securities",
     ),
     (Concept.TRADE_RECEIVABLES, r"trade receivables"),
     (Concept.INVENTORIES, r"inventor(?:y|ies)"),
@@ -96,11 +98,34 @@ def concept_for_label(label: str) -> Concept | None:
     return None
 
 
+_REFERENCE_COLUMN = re.compile(r"^\s*(?:note|notes|anne\s*xure|sr\.?\s*no|s\.?\s*no)\b", re.I)
+_ENUMERATOR_ONLY = re.compile(r"^\s*\(?(?:[a-z]|[ivxlc]{1,5}|\d{1,3})[).]?\s*$", re.I)
+
+
 def _skip_column(header: str) -> bool:
     low = header.lower()
     if "%" in low or "percent" in low or "per cent" in low:
         return True
-    return low.strip().startswith("note") and parse_period(header) is None
+    return bool(_REFERENCE_COLUMN.match(header)) and parse_period(header) is None
+
+
+def _label_index(rows: list[list[str]]) -> int:
+    """Index of the column holding row labels.
+
+    Usually 0, but SME statements put a serial ("(a)", "1") first, then the particulars. The label
+    column is the first of the leading three whose cells are mostly words, not enumerators.
+    """
+    width = max((len(r) for r in rows), default=0)
+    for j in range(min(width, 3)):
+        cells = [r[j] for r in rows if j < len(r) and r[j].strip()]
+        if not cells:
+            continue
+        words = sum(
+            bool(re.search(r"[A-Za-z]{3,}", c)) and not _ENUMERATOR_ONLY.match(c) for c in cells
+        )
+        if words / len(cells) >= 0.5:
+            return j
+    return 0
 
 
 def _looks_like_note_ref(cell: str, row: list[str]) -> bool:
@@ -117,28 +142,32 @@ def _confidence(has_period: bool, has_unit: bool, period_has_duration: bool) -> 
 
 def _extract_table(table_id: int, t: Table) -> list[CitedNumber]:
     out: list[CitedNumber] = []
+    body = t.rows[t.n_header_rows :]
+    label_idx = _label_index(body)
     for i, row in enumerate(t.rows):
-        if i < t.n_header_rows or not row:
+        if i < t.n_header_rows or label_idx >= len(row):
             continue
-        concept = concept_for_label(row[0])
+        label = row[label_idx]
+        concept = concept_for_label(label)
         if concept is None:
             continue
         page = t.row_pages[i] if i < len(t.row_pages) else t.pdf_pages[0]
         span = " | ".join(c for c in row if c)
-        for j, cell in enumerate(row[1:]):
-            header = t.columns[j] if j < len(t.columns) else ""
+        for k in range(label_idx + 1, len(row)):
+            cell = row[k]
+            header = t.columns[k - 1] if 0 <= k - 1 < len(t.columns) else ""
             if _skip_column(header):
                 continue
             value = parse_amount(cell)
             if value is None:
                 continue
             period = parse_period(header)
-            if period is None and _looks_like_note_ref(cell, row):
+            if period is None and _looks_like_note_ref(cell, row[label_idx:]):
                 continue
             out.append(
                 CitedNumber(
                     concept=concept,
-                    label=row[0],
+                    label=label,
                     raw=cell,
                     value=value,
                     unit=t.unit,

@@ -63,3 +63,11 @@ def test_issue_facts_use_their_enum_key() -> None:
     facts = facts_from([], [f])
     assert facts["objects.gcp_amount"].value == Decimal(240_000_000)
     assert facts["objects.gcp_amount"].citations[0].pdf_page == 88
+
+
+def test_balance_sheet_items_are_keyed_by_fiscal_year_for_trend_rules() -> None:
+    at = Period(end=date(2026, 3, 31), months=None, instant=True)
+    values = [cn(Concept.TRADE_RECEIVABLES, "300.00", at)]
+    facts = facts_from(build_consensus(values), [])
+    assert "financials.trade_receivables.FY2026" in facts
+    assert "financials.trade_receivables.AT-2026-03-31" not in facts

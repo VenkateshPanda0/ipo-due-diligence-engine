@@ -38,6 +38,21 @@ class Concept(StrEnum):
     CASH_FROM_FINANCING = "cash_from_financing"
 
 
+# Balance-sheet items: measured at a date, not over a period.
+STOCK_CONCEPTS = frozenset(
+    {
+        Concept.TOTAL_ASSETS,
+        Concept.TOTAL_EQUITY,
+        Concept.TOTAL_EQUITY_AND_LIABILITIES,
+        Concept.NET_WORTH,
+        Concept.TOTAL_BORROWINGS,
+        Concept.BORROWINGS,
+        Concept.TRADE_RECEIVABLES,
+        Concept.INVENTORIES,
+    }
+)
+
+
 class CitedNumber(BaseModel):
     """One number read from a table cell, with its evidence."""
 

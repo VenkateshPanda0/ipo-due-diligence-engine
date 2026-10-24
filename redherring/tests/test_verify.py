@@ -227,3 +227,27 @@ def test_check_evidence_for_text_facts() -> None:
     )
     assert not not_in_span.ok
     assert "not in cited span" in not_in_span.reasons[0]
+
+
+# ---- fiscal keys for balance-sheet (stock) concepts ---------------------------------------------
+
+
+def test_stock_concepts_at_31_march_share_the_fiscal_year_key() -> None:
+    """A 31 March balance and a 'FY2026' KPI figure are the same fact and must be compared."""
+    vals = [
+        cn(Concept.NET_WORTH, "10,536.08", period=AT26, table_id=0),
+        cn(Concept.NET_WORTH, "10,536.08", period=FY26, table_id=1),
+    ]
+    (c,) = build_consensus(vals)
+    assert c.period_key == "FY2026"
+    assert c.unanimous
+    assert c.total == 2
+
+
+def test_flow_concepts_keep_their_own_keys() -> None:
+    vals = [cn(Concept.TOTAL_INCOME, "100.00", period=FY26)]
+    (c,) = build_consensus(vals)
+    assert c.period_key == "FY2026"
+    june = Period(end=date(2026, 6, 30), months=None, instant=True)
+    (s,) = build_consensus([cn(Concept.TRADE_RECEIVABLES, "5.00", period=june)])
+    assert s.period_key == "AT-2026-06-30"  # not a fiscal year end: unchanged

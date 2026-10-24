@@ -12,8 +12,8 @@ from collections import defaultdict
 from dataclasses import dataclass
 from decimal import Decimal
 
-from redherring.extract.models import CitedNumber, Concept
-from redherring.extract.periods import period_key
+from redherring.extract.models import STOCK_CONCEPTS, CitedNumber, Concept
+from redherring.extract.periods import fiscal_key
 from redherring.parse.units import MULTIPLIER
 from redherring.verify.footing import quantum
 
@@ -50,7 +50,7 @@ def build_consensus(values: list[CitedNumber]) -> list[Consensus]:
             and v.period is not None
             and v.rupees is not None
         ):
-            groups[(v.concept, period_key(v.period))].append(v)
+            groups[(v.concept, fiscal_key(v.period, stock=v.concept in STOCK_CONCEPTS))].append(v)
 
     out: list[Consensus] = []
     for (concept, key), members in sorted(groups.items(), key=lambda kv: (kv[0][0], kv[0][1])):

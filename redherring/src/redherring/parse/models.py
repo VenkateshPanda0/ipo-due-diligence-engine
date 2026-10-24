@@ -14,7 +14,8 @@ from redherring.parse.units import Unit
 # are re-parsed. 1: initial. 2: overlap-space fix, numeric_rows, row-label units, no row flipping.
 # 3: x-anchored statement columns with assembled headers, residual rows beside ruled tables.
 # 4: ruled boxes with fused cells are rebuilt row by row; prose is not a text table.
-PARSER_VERSION = 4
+# 5: column headers for ruled tables and for headers separated by label-only lines.
+PARSER_VERSION = 5
 
 
 def page_tag(pdf_page: int) -> str:
@@ -49,6 +50,9 @@ class RawTable(BaseModel):
     # and the header text over the label column.
     columns: list[str] = Field(default_factory=list)
     label_header: str = ""
+    # ruled/text tables: how many leading rows of `rows` are header rows (already folded into
+    # `columns`/`label_header`, but left in `rows` as found). numeric_rows tables have none.
+    n_header_rows: int = 0
 
 
 class Table(BaseModel):
@@ -60,6 +64,7 @@ class Table(BaseModel):
     unit_text: str | None = None
     columns: list[str] = Field(default_factory=list)  # see RawTable.columns
     label_header: str = ""
+    n_header_rows: int = 0
     # True if periods appear to run down the first column. `rows` are kept AS FOUND; the flag is
     # unvalidated (see M0 report) so nothing is flipped silently. Use `tables.transpose` to flip.
     transposed_suspect: bool = False

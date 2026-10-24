@@ -401,3 +401,58 @@ def test_prose_is_not_turned_into_a_text_table(tmp_path: Path) -> None:
     doc = _parse_one(tmp_path, p)
     assert doc.pages[0].tables == []
     assert any("Other expenses increased" in b.text for b in doc.pages[0].blocks)
+
+
+def test_header_is_found_above_label_only_rows(tmp_path: Path) -> None:
+    """Period header, then section/label lines with no values, then the first data row."""
+    p = PageSpec()
+    p.text(72, 60, "Annexure II: Restated Consolidated Summary Statement of Profit and Loss", 8)
+    p.text(72, 72, "(All amounts are in Indian Rupees in Million)", 8)
+    p.text(380, 90, "For the year ended", 8)
+    p.text(480, 90, "For the year ended", 8)
+    p.text(390, 100, "March 31, 2026", 8)
+    p.text(490, 100, "March 31, 2025", 8)
+    p.text(72, 116, "Income", 8)
+    p.text(72, 128, "Revenue from operations", 8)
+    p.text(80, 140, "- Fees and commission income", 8)
+    data = [
+        ("Fees", "6,328.65", "3,917.61"),
+        ("Interest", "3,871.66", "2,829.16"),
+        ("Other", "112.83", "102.44"),
+    ]
+    for i, (label, a, b) in enumerate(data):
+        top = 152 + i * 12
+        p.text(80, top, f"- {label} income", 8)
+        _right(p, 440, top, a)
+        _right(p, 540, top, b)
+    doc = _parse_one(tmp_path, p)
+    (t,) = [t for t in doc.pages[0].tables if t.strategy == "numeric_rows"]
+    assert "March 31, 2026" in t.columns[0]
+    assert "March 31, 2025" in t.columns[1]
+    assert "For the year ended" in t.columns[0]
+    assert t.unit is Unit.MILLION
+    # label-only lines between the header and the first data row stay in the table as rows
+    labels = [r[0] for r in t.rows]
+    assert "Income" in labels
+    assert "Revenue from operations" in labels
+
+
+def test_ruled_table_gets_columns_from_leading_header_rows(tmp_path: Path) -> None:
+    p = PageSpec()
+    rows = [
+        ["Particulars", "Fiscal 2026", "Fiscal 2025"],
+        ["", "Amount", "Amount"],
+        ["", "(Rs. in million)", "(Rs. in million)"],
+        ["Revenue from operations", "17,989.49", "10,077.66"],
+        ["Other income", "518.44", "429.48"],
+    ]
+    p.grid(72, 100, [220, 110, 110], rows)
+    doc = _parse_one(tmp_path, p)
+    (t,) = doc.pages[0].tables
+    assert t.n_header_rows == 3
+    assert t.columns == [
+        "Fiscal 2026 Amount (Rs. in million)",
+        "Fiscal 2025 Amount (Rs. in million)",
+    ]
+    assert t.label_header == "Particulars"
+    assert t.unit is Unit.MILLION  # found in the third header row

@@ -31,7 +31,7 @@ from redherring.parse.models import (
 from redherring.parse.statements import build_statement_tables, looks_numeric_tabular
 from redherring.parse.statements import group_lines as _group_lines
 from redherring.parse.statements import line_bbox as _line_bbox
-from redherring.parse.tables import clean_rows, stitch_tables
+from redherring.parse.tables import clean_rows, header_info, stitch_tables
 from redherring.parse.units import detect_unit, parse_amount
 
 MIN_ALNUM_FOR_TEXT_LAYER = 25
@@ -181,12 +181,16 @@ def _plumber_tables(
         if strategy == "text" and _numeric_density(rows) < 0.2:
             continue  # whitespace "tables" must be numeric; this is prose cut into columns
         x0, top, x1, bottom = t.bbox
+        columns, label_header, n_header = header_info(rows)
         found.append(
             RawTable(
                 pdf_page=plumber_page.page_number,
                 bbox=BBox(x0=x0, top=top, x1=x1, bottom=bottom),
                 rows=rows,
                 strategy=strategy,
+                columns=columns,
+                label_header=label_header,
+                n_header_rows=n_header,
             )
         )
     return found
@@ -243,7 +247,8 @@ def _find_tables(plumber_page: Any, words: list[dict[str, Any]]) -> list[RawTabl
 def _attach_units(tables: list[RawTable], words: list[dict[str, Any]]) -> None:
     """Find a unit caption inside the table's first rows or in the text just above it."""
     for t in tables:
-        header_text = " ".join([*t.columns, t.label_header, *(" ".join(r) for r in t.rows[:2])])
+        head_rows = t.rows[: max(t.n_header_rows, 2)]
+        header_text = " ".join([*t.columns, t.label_header, *(" ".join(r) for r in head_rows)])
         hit = detect_unit(header_text)
         if hit is None:
             above = [

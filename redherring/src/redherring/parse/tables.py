@@ -9,6 +9,7 @@ from __future__ import annotations
 import re
 
 from redherring.parse.models import RawTable, Table
+from redherring.parse.units import parse_amount
 
 _PERIOD = re.compile(
     r"""(?ix)
@@ -21,6 +22,33 @@ _PERIOD = re.compile(
     )
     """
 )
+
+
+_YEAR_ONLY = re.compile(r"^(?:19|20)\d{2}$")
+MAX_HEADER_ROWS = 8
+
+
+def _is_money_cell(cell: str) -> bool:
+    return parse_amount(cell) is not None and not _YEAR_ONLY.match(cell.strip())
+
+
+def header_info(rows: list[list[str]]) -> tuple[list[str], str, int]:
+    """(value-column headers, label-column header, number of header rows) of a ruled table.
+
+    Header rows are the leading rows with no money-like value in any value column, provided data
+    rows follow. Cells of each column are joined top to bottom, so a header split over rows
+    ("Fiscal 2026" / "Amount" / "(Rs. in million)") becomes one string per column.
+    """
+    n = 0
+    while n < min(len(rows), MAX_HEADER_ROWS) and not any(_is_money_cell(c) for c in rows[n][1:]):
+        n += 1
+    if n == 0 or n == len(rows):
+        return [], "", 0
+    width = max(len(r) for r in rows[:n])
+    padded = [r + [""] * (width - len(r)) for r in rows[:n]]
+    columns = [" ".join(c for c in (r[j] for r in padded) if c) for j in range(1, width)]
+    label = " ".join(c for c in (r[0] for r in padded) if c)
+    return columns, label, n
 
 
 def clean_cell(cell: object) -> str:
@@ -106,6 +134,7 @@ def stitch_tables(raw: list[RawTable], page_heights: dict[int, float]) -> list[T
                 unit_text=unit_text,
                 columns=next((t.columns for t in g if t.columns), []),
                 label_header=next((t.label_header for t in g if t.label_header), ""),
+                n_header_rows=g[0].n_header_rows,
                 transposed_suspect=looks_transposed(rows),
                 stitched_from=len(g),
             )

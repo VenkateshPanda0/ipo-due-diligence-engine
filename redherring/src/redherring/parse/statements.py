@@ -33,6 +33,14 @@ _HEADERISH = re.compile(
     re.IGNORECASE,
 )
 _YEAR = re.compile(r"^(?:19|20)\d{2}$")
+_PERIODISH = re.compile(
+    r"\b(as\s+(?:at|on)|year|period|ended|quarter|months?|fy|fiscal|"
+    r"jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\b|\b(?:19|20)\d{2}\b",
+    re.IGNORECASE,
+)
+_LABEL_HEADER = re.compile(r"\bparticulars\b|\bnotes?\b", re.IGNORECASE)
+MAX_HEADER_SCAN = 18  # lines scanned above the first data row
+MAX_HEADER_GAP = 30.0  # points of blank space that end the upward scan
 _CAPTION = re.compile(r"amounts?\s+(?:are\s+)?in|all\s+amounts|₹\s*in|rs\.?\s*in", re.IGNORECASE)
 
 
@@ -173,15 +181,29 @@ def _segments(lines: list[_Line]) -> list[tuple[int, int]]:
     return [(s[0], s[-1]) for s in segs if len(s) >= MIN_DATA_ROWS]
 
 
-def _header_start(lines: list[_Line], first: int, floor: int) -> int:
-    """Index of the first header line above the data rows (== `first` if none)."""
-    start = first
-    while start > floor and first - start < MAX_HEADER_LINES:
-        text = lines[start - 1].text
-        if lines[start - 1].k or _CAPTION.search(text) or not _HEADERISH.search(text):
+def _find_header(lines: list[_Line], first: int, floor: int, x_lo: float, x_hi: float) -> list[int]:
+    """Indices of header lines above the data rows, skipping label-only lines between.
+
+    A header line has period words (months, years, "ended", "as at") over the value columns, or is
+    a "Particulars"/"Note" label line. The scan stops at an earlier data row, a unit caption, a
+    large vertical gap, or MAX_HEADER_SCAN lines.
+    """
+    found: list[int] = []
+    j = first - 1
+    while j >= floor and first - j <= MAX_HEADER_SCAN:
+        ln = lines[j]
+        if ln.k or _CAPTION.search(ln.text):
             break
-        start -= 1
-    return start
+        below_top = lines[j + 1].words[0]["top"]
+        if below_top - ln.words[0]["bottom"] > MAX_HEADER_GAP:
+            break
+        over_values = " ".join(
+            w["text"] for w in ln.words if x_lo <= (w["x0"] + w["x1"]) / 2 <= x_hi
+        )
+        if (over_values and _PERIODISH.search(over_values)) or _LABEL_HEADER.search(ln.text):
+            found.append(j)
+        j -= 1
+    return sorted(found)
 
 
 def _assign_header(header_lines: list[_Line], anchors: list[float]) -> tuple[str, list[str]]:
@@ -217,11 +239,16 @@ def build_statement_tables(pdf_page: int, words: list[dict[str, Any]]) -> list[R
         anchored = len(anchors) <= max_k + 1
         if anchored:
             _promote_aligned_rows(lines, first, last, anchors)
-        start = _header_start(lines, first, floor)
-        header_lines = lines[start:first]
+        x_lo = anchors[0] - (anchors[1] - anchors[0]) / 2 if len(anchors) > 1 else anchors[0] - 60.0
+        header_idx = _find_header(lines, first, floor, x_lo, anchors[-1] + 25.0) if anchored else []
+        start = header_idx[0] if header_idx else first
+        header_lines = [lines[i] for i in header_idx]
         ncols = len(anchors) if anchored else max_k
 
         rows: list[list[str]] = []
+        for i in range(start, first):
+            if i not in header_idx:
+                rows.append([lines[i].text, *([""] * ncols)])
         for ln in seg:
             label = " ".join(w["text"] for w in ln.label_words)
             cells = [""] * ncols

@@ -19,7 +19,9 @@ from redherring.parse.units import Unit
 # 7: header phrases are assigned to columns as units (no split dates).
 # 8: ruled header bands feed the statement below; continuation tables inherit headers.
 # 9: a table with its own, different header is a new statement, not a continuation.
-PARSER_VERSION = 10
+# 10: label-less ruled boxes over part of a statement are re-read with the statement.
+# 11: a captionless statement takes the unit of a sibling statement with the same periods.
+PARSER_VERSION = 11
 
 
 def page_tag(pdf_page: int) -> str:
@@ -63,6 +65,9 @@ class RawTable(BaseModel):
     header_inherited_from: int | None = Field(
         default=None, description="PDF page whose table supplied `columns` (continuation tables)"
     )
+    unit_inherited_from: int | None = Field(
+        default=None, description="PDF page whose caption supplied `unit` (captionless statements)"
+    )
 
 
 class Table(BaseModel):
@@ -79,6 +84,7 @@ class Table(BaseModel):
     label_header: str = ""
     n_header_rows: int = 0
     header_inherited_from: int | None = None
+    unit_inherited_from: int | None = None
     # True if periods appear to run down the first column. `rows` are kept AS FOUND; the flag is
     # unvalidated (see M0 report) so nothing is flipped silently. Use `tables.transpose` to flip.
     transposed_suspect: bool = False

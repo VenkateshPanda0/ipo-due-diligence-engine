@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import re
 
+from redherring.extract.periods import parse_period
 from redherring.parse.models import RawTable, Table
 from redherring.parse.units import parse_amount
 
@@ -122,6 +123,45 @@ def inherit_headers(raw: list[RawTable]) -> None:
                     break
 
 
+MAX_UNIT_PAGES = 2  # a caption counts for statements at most this many pages after it
+
+
+def _period_signature(columns: list[str]) -> tuple[str, ...]:
+    """The fiscal period each column header names, e.g. ('2022-03-31', '2021-03-31')."""
+    sig = [p.end.isoformat() if (p := parse_period(c)) else "" for c in columns]
+    return tuple(sig) if all(sig) else ()
+
+
+def inherit_units(raw: list[RawTable]) -> None:
+    """Give a statement without a unit caption the unit of the sibling statements before it.
+
+    Some filings print "(Amount Rs. In Lakh)" over the balance sheet and income statement but not
+    over the cash-flow statement two pages on. The unit is borrowed only from tables within two
+    pages whose columns name exactly the same dates, only if all such tables agree, and never from
+    a table that itself borrowed. The source page is recorded in `unit_inherited_from`.
+    """
+    ordered = sorted(raw, key=lambda t: (t.pdf_page, t.bbox.top))
+    for i, t in enumerate(ordered):
+        if t.unit is not None or not t.columns:
+            continue
+        sig = _period_signature(t.columns)
+        if not sig:
+            continue
+        donors = [
+            d
+            for d in ordered[:i]
+            if d.unit is not None
+            and d.unit_inherited_from is None
+            and 0 <= t.pdf_page - d.pdf_page <= MAX_UNIT_PAGES
+            and _period_signature(d.columns) == sig
+        ]
+        if donors and len({d.unit for d in donors}) == 1:
+            src = donors[-1]
+            t.unit = src.unit
+            t.unit_text = f"inherited from page {src.pdf_page}: {src.unit_text}"
+            t.unit_inherited_from = src.pdf_page
+
+
 def _continues(prev: RawTable, nxt: RawTable, page_heights: dict[int, float]) -> bool:
     """Does `nxt` (top of page p+1) look like the continuation of `prev` (bottom of page p)?"""
     if nxt.pdf_page != prev.pdf_page + 1:
@@ -178,6 +218,9 @@ def stitch_tables(raw: list[RawTable], page_heights: dict[int, float]) -> list[T
                 n_header_rows=g[0].n_header_rows,
                 header_inherited_from=next(
                     (t.header_inherited_from for t in g if t.header_inherited_from), None
+                ),
+                unit_inherited_from=next(
+                    (t.unit_inherited_from for t in g if t.unit_inherited_from), None
                 ),
                 transposed_suspect=looks_transposed(rows),
                 stitched_from=len(g),

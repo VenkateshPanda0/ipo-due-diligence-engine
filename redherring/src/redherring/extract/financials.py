@@ -37,11 +37,11 @@ _PARENS = r"(?:\s*\([^)]*\))*(?:\s*=\s*\([^)]*\))?"
 _HEADS: tuple[tuple[Concept, str], ...] = (
     (Concept.REVENUE_FROM_OPERATIONS, r"(?:total )?revenue from operations"),
     (Concept.OTHER_INCOME, r"other income"),
-    (Concept.TOTAL_INCOME, r"total income"),
+    (Concept.TOTAL_INCOME, r"total income|total revenue"),
     (Concept.TOTAL_EXPENSES, r"total expenses|total expenditure"),
     (
         Concept.PROFIT_BEFORE_TAX,
-        r"(?:restated )?(?:net )?(?:profit|loss)(?:/\((?:loss|profit)\))? before tax"
+        r"(?:restated )?(?:net )?(?:profit|loss)(?:/\(?(?:loss|profit)\)?)? before tax(?:ation)?"
         r"|(?:restated )?\(loss\)/profit before tax",
     ),
     (
@@ -50,8 +50,9 @@ _HEADS: tuple[tuple[Concept, str], ...] = (
     ),
     (
         Concept.PROFIT_AFTER_TAX,
-        r"(?:restated )?(?:net )?(?:profit|loss)(?:/\((?:loss|profit)\))?"
-        r"(?: for the (?:year|period)(?:/(?:year|period))?| after tax)",
+        r"(?:restated )?(?:net )?(?:profit|loss)(?:/\(?(?:loss|profit)\)?)?"
+        r"(?: for the (?:year|period)(?:/(?:year|period))?| after tax(?: but before extra[- ]?ordinary items)?"
+        r"| after adjustments)",
     ),
     (Concept.ADJUSTED_EBITDA, r"adjusted ebitda"),
     (Concept.EBITDA, r"ebitda"),

@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 from redherring.extract.financials import normalise_label
 from redherring.parse.models import ParsedDocument, Table
 from redherring.parse.units import MULTIPLIER, Unit, detect_unit, parse_amount
+from redherring.verify.footing import quantum
 
 DEFAULT_COVER_PAGES = 40
 
@@ -65,6 +66,21 @@ _DEFINED_AFTER = re.compile(
 )
 
 
+# "... aggregating up to ₹7,000 million comprising a fresh issue ...": the amount before
+# "comprising" is the whole offer even when no defined term follows it.
+_TOTAL_COMPRISING = re.compile(
+    rf"aggregat\w*\s*(?:to\s+|up\s+to\s+)?{_AMT}\s*(?:\([^)]{{1,40}}\)\s*)?"
+    r"comprising\s+(?:of\s+)?(?:a\s+)?fresh\s+issue",
+    re.I,
+)
+# SME covers: a header "Fresh Issue Size | OFS Size | Total Issue Size" over one row
+# "Fresh Issue ₹1,301.04 Lakhs | Nil | ₹1,301.04 Lakhs".
+_RAW_AMT = r"(?:₹|rs\.?|inr)\s*([\d,]+(?:\.\d+)?)\s*(million|mn|lakhs?|lacs?|crores?|cr)\b"
+_TYPE_ROW = re.compile(
+    rf"\bfresh\s+issue\s+{_RAW_AMT}\s+(?:(nil|n\.?\s?a\.?)|{_RAW_AMT})\s+{_RAW_AMT}", re.I
+)
+
+
 def _roles(term: str) -> set[IssueKey]:
     words = re.sub(r"[“”\"'*]", "", term).lower().split()
     if words[:1] == ["the"]:
@@ -96,11 +112,14 @@ _UNIT_WORDS = {
 _APPOINTED = re.compile(
     r"(?:has|have)\s+appointed\s+(?:(?!\.\s+[A-Z]).){0,120}?\bmonitoring\s+agency\b"
     r"|\bappointed\s+(?:(?!\.\s+[A-Z]).){0,60}?as\s+(?:the\s+)?monitoring\s+agency\b"
-    r"|\bmonitoring\s+agency\b(?:(?!\.\s+[A-Z]).){0,80}?(?:has|have)\s+been\s+appointed",
+    r"|\bmonitoring\s+agency\b(?:(?!\.\s+[A-Z]).){0,80}?(?:has|have)\s+been\s+appointed"
+    r"|(?:has|have)\s+appointed\s+(?:(?!\.\s+[A-Z]).){0,160}?\bto\s+monitor\s+(?:the\s+)?"
+    r"(?:utili[sz]ation|use|deployment)",
     re.I,
 )
 _NOT_REQUIRED = re.compile(
     r"\bno\s+monitoring\s+agency\b"
+    r"|(?:has|have)\s+not\s+appointed\s+(?:any\s+|a\s+)?monitoring\s+agency\b"
     r"|\bmonitoring\s+agency\b(?:(?!\.\s+[A-Z]).){0,100}?\b(?:is|are|shall\s+be|will\s+be)\s+not\s+"
     r"(?:required|applicable|necessary)"
     r"|\bnot\s+required\s+to\s+(?:appoint|have|engage)\s+(?:a\s+)?monitoring\s+agency\b",
@@ -136,48 +155,100 @@ def _segments(doc: ParsedDocument, max_page: int) -> list[tuple[int, str]]:
     return out
 
 
+def _fact(
+    key: IssueKey, amount: tuple[Decimal, str, Unit], page: int, span: str, conf: float
+) -> IssueFact:
+    value, raw, unit = amount
+    return IssueFact(
+        key=key,
+        value=value,
+        raw=raw,
+        unit=unit,
+        pdf_page=page,
+        span=span,
+        method="regex",
+        confidence=conf,
+    )
+
+
+def _step(f: IssueFact) -> Decimal:
+    return quantum(f.raw) * MULTIPLIER[f.unit] if f.unit else Decimal(1)
+
+
+def _by_value(cands: list[IssueFact]) -> dict[Decimal, list[IssueFact]]:
+    out: dict[Decimal, list[IssueFact]] = {}
+    for c in cands:  # document order: the first fact of a value is its earliest mention
+        out.setdefault(c.value, []).append(c)
+    return out
+
+
+def _resolve(cands: dict[IssueKey, list[IssueFact]]) -> dict[IssueKey, IssueFact]:
+    """One fact per key out of every candidate found on the cover pages.
+
+    Cover tables flatten into text in which a column's amount follows another column's heading, so
+    the first amount after "Offer for Sale" can be the fresh issue's. Where fresh, offer for sale
+    and total are all present, the combination that adds up (fresh + OFS = total) wins, weighted
+    by how often each figure is printed. Otherwise each key takes its most frequently printed
+    value, earliest first on a tie.
+    """
+    groups = {k: _by_value(v) for k, v in cands.items()}
+    chosen: dict[IssueKey, Decimal] = {}
+    trio = (IssueKey.FRESH_ISSUE_AMOUNT, IssueKey.OFS_AMOUNT, IssueKey.TOTAL_ISSUE_AMOUNT)
+    if all(k in groups for k in trio):
+        best = -1
+        for f, fs in groups[trio[0]].items():
+            for o, os_ in groups[trio[1]].items():
+                for t, ts in groups[trio[2]].items():
+                    tol = 2 * max(_step(fs[0]), _step(os_[0]), _step(ts[0]))
+                    score = len(fs) + len(os_) + len(ts)
+                    if abs(f + o - t) <= tol and score > best:
+                        best, chosen = score, {trio[0]: f, trio[1]: o, trio[2]: t}
+    for key, by_value in groups.items():
+        if key not in chosen:
+            chosen[key] = max(by_value, key=lambda v: len(by_value[v]))  # first max = earliest
+    return {key: groups[key][value][0] for key, value in chosen.items()}
+
+
 def _cover_amounts(doc: ParsedDocument, max_page: int) -> list[IssueFact]:
-    found: dict[IssueKey, IssueFact] = {}
+    cands: dict[IssueKey, list[IssueFact]] = {}
     row_na: dict[int, bool] = {}
+
+    def add(fact: IssueFact) -> None:
+        cands.setdefault(fact.key, []).append(fact)
+
     for page, text in _segments(doc, max_page):
         for dm in _DEFINED_AFTER.finditer(text):
             amount = _amount(dm)
-            if not amount:
-                continue
-            value, raw, unit = amount
-            for role in _roles(dm.group(3)):
-                found.setdefault(
-                    role,
-                    IssueFact(
-                        key=role,
-                        value=value,
-                        raw=raw,
-                        unit=unit,
-                        pdf_page=page,
-                        span=text[max(0, dm.start() - 40) : dm.end() + 20],
-                        method="regex",
-                        confidence=0.85,
-                    ),
-                )
-    for page, text in _segments(doc, max_page):
+            if amount:
+                span = text[max(0, dm.start() - 40) : dm.end() + 20]
+                for role in _roles(dm.group(3)):
+                    add(_fact(role, amount, page, span, 0.85))
+        for tm in _TOTAL_COMPRISING.finditer(text):
+            amount = _amount(tm)
+            if amount:
+                span = text[max(0, tm.start() - 40) : tm.end() + 20]
+                add(_fact(IssueKey.TOTAL_ISSUE_AMOUNT, amount, page, span, 0.8))
+        if tr := _TYPE_ROW.search(text):
+            span = text[max(0, tr.start() - 40) : tr.end() + 20]
+            for key, groups in (
+                (IssueKey.FRESH_ISSUE_AMOUNT, (1, 2)),
+                (IssueKey.OFS_AMOUNT, (4, 5)),
+                (IssueKey.TOTAL_ISSUE_AMOUNT, (6, 7)),
+            ):
+                num, unit_word = tr.group(groups[0]), tr.group(groups[1])
+                value = _num(num) if num else None
+                unit = _UNIT_WORDS.get(unit_word.lower()) if unit_word else None
+                if value is not None and unit is not None:
+                    add(_fact(key, (value * MULTIPLIER[unit], num, unit), page, span, 0.85))
         for key, pattern in ((IssueKey.FRESH_ISSUE_AMOUNT, _FRESH), (IssueKey.OFS_AMOUNT, _OFS)):
-            if key in found:
-                continue
-            m = pattern.search(text)
-            amount = _amount(m) if m else None
-            if m and amount:
-                value, raw, unit = amount
-                found[key] = IssueFact(
-                    key=key,
-                    value=value,
-                    raw=raw,
-                    unit=unit,
-                    pdf_page=page,
-                    span=text[max(0, m.start() - 40) : m.end() + 20],
-                    method="regex",
-                    confidence=0.8,
-                )
-                row_na[page] = bool(_NOT_APPLICABLE.search(text[m.end() :]))
+            for m in pattern.finditer(text):
+                amount = _amount(m)
+                if amount:
+                    span = text[max(0, m.start() - 40) : m.end() + 20]
+                    add(_fact(key, amount, page, span, 0.8))
+                    if key is IssueKey.FRESH_ISSUE_AMOUNT:
+                        row_na[page] = bool(_NOT_APPLICABLE.search(text[m.end() :]))
+    found = _resolve(cands)
     fresh, ofs = found.get(IssueKey.FRESH_ISSUE_AMOUNT), found.get(IssueKey.OFS_AMOUNT)
     facts = list(found.values())
     if IssueKey.TOTAL_ISSUE_AMOUNT in found:

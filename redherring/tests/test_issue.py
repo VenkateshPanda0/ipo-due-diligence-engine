@@ -114,6 +114,55 @@ def test_ofs_amount_is_not_taken_from_the_fresh_issue_column_of_an_interleaved_c
     assert facts[IssueKey.OFS_AMOUNT][0] == Decimal(500_000_000)
 
 
+def test_three_column_cover_table_does_not_hand_the_fresh_amount_to_the_offer_for_sale() -> None:
+    """Shiprocket: the cover table flattens to 'Fresh Issue and Offer for Sale | up to ... 11,000 |
+    up to ... 12,423.53 | up to ... 23,423.53' and the sentence on page 3 states the same three
+    figures. The three must be read as fresh + OFS = total, however the layout interleaves them."""
+    table = (
+        "Fresh Issue and Offer for Sale Up to [●] Equity Shares of face value of ₹ 10 each "
+        "aggregating up to ₹ 11,000.00 million Up to [●] Equity Shares of face value of ₹ 10 each "
+        "aggregating up to ₹ 12,423.53 million Up to [●] Equity Shares of face value of ₹ 10 each "
+        "aggregating up to ₹ 23,423.53 million"
+    )
+    sentence = (
+        "AT A PRICE OF ₹ [●] PER EQUITY SHARE AGGREGATING UP TO ₹ 23,423.53 MILLION COMPRISING A "
+        "FRESH ISSUE OF UP TO [●] EQUITY SHARES OF FACE VALUE OF ₹ 10 EACH AGGREGATING UP TO "
+        "₹ 11,000.00 MILLION BY OUR COMPANY (“FRESH ISSUE”) AND AN OFFER FOR SALE OF UP TO [●] "
+        "EQUITY SHARES OF FACE VALUE OF ₹ 10 EACH AGGREGATING UP TO ₹ 12,423.53 MILLION "
+        "(“OFFERED SHARES”) BY THE SELLING SHAREHOLDERS (“OFFER FOR SALE”)"
+    )
+    facts = _facts(_doc(_page(1, table), _page(3, sentence)))
+    assert facts[IssueKey.FRESH_ISSUE_AMOUNT][0] == Decimal(11_000_000_000)
+    assert facts[IssueKey.OFS_AMOUNT][0] == Decimal(12_423_530_000)
+    assert facts[IssueKey.TOTAL_ISSUE_AMOUNT][0] == Decimal(23_423_530_000)
+
+
+def test_total_stated_before_comprising_a_fresh_issue_is_the_total() -> None:
+    doc = _doc(
+        _page(
+            2,
+            "AGGREGATING UP TO ₹ 7,000.00 MILLION COMPRISING A FRESH ISSUE OF UP TO [●] EQUITY "
+            "SHARES AGGREGATING UP TO ₹ 6,500.00 MILLION BY OUR COMPANY",
+        )
+    )
+    facts = _facts(doc)
+    assert facts[IssueKey.TOTAL_ISSUE_AMOUNT][0] == Decimal(7_000_000_000)
+    assert facts[IssueKey.FRESH_ISSUE_AMOUNT][0] == Decimal(6_500_000_000)
+
+
+def test_sme_type_row_gives_fresh_and_total_and_nil_offer_for_sale() -> None:
+    """Indong Tea: 'Type | Fresh Issue Size | OFS Size | Total Issue Size' then one row."""
+    doc = _doc(
+        _page(
+            1, "Fresh Issue ₹1,301.04 Lakhs Nil ₹1,301.04 Lakhs", "Type Fresh Issue Size OFS Size"
+        )
+    )
+    facts = _facts(doc)
+    assert facts[IssueKey.FRESH_ISSUE_AMOUNT][0] == Decimal(130_104_000)
+    assert facts[IssueKey.TOTAL_ISSUE_AMOUNT][0] == Decimal(130_104_000)
+    assert IssueKey.OFS_AMOUNT not in facts  # "Nil" is not an amount
+
+
 def test_only_early_pages_are_searched() -> None:
     late = _page(60, "Fresh Issue of shares aggregating up to ₹ 1,000 million")
     assert extract_issue_facts(_doc(_page(1, "cover"), late)) == []
@@ -195,6 +244,12 @@ def test_gcp_placeholder_and_unidentified_acquisition_rows() -> None:
 @pytest.mark.parametrize(
     ("text", "expected"),
     [
+        (
+            "In terms of Regulation 41, our Company has appointed India Ratings and Research "
+            "Private Limited to monitor the utilisation of the Gross Proceeds.",
+            1,
+        ),
+        ("Our Company has not appointed any monitoring agency for this Issue.", 0),
         (
             "Our Company has appointed CARE Ratings as the Monitoring Agency for the Issue.",
             1,

@@ -1,5 +1,11 @@
 from redherring.parse.models import BBox, RawTable
-from redherring.parse.tables import inherit_headers, looks_transposed, stitch_tables, transpose
+from redherring.parse.tables import (
+    inherit_headers,
+    inherit_units,
+    looks_transposed,
+    stitch_tables,
+    transpose,
+)
 from redherring.parse.units import Unit
 
 HEIGHTS = {1: 792.0, 2: 792.0, 3: 792.0}
@@ -173,3 +179,54 @@ def test_headerless_continuation_is_still_stitched() -> None:
     (t,) = stitch_tables([p1, p2], HEIGHTS)
     assert t.stitched_from == 2
     assert t.columns == ["FY 2026"]
+
+
+# ---- unit inheritance: a statement with no caption takes the unit of its siblings ----------------
+
+
+def _periods(page: int, unit: Unit | None, columns: list[str]) -> RawTable:
+    return RawTable(
+        pdf_page=page,
+        bbox=BBox(x0=50, top=100, x1=500, bottom=200),
+        rows=[["Total income", *["1.00"] * len(columns)]],
+        strategy="numeric_rows",
+        columns=columns,
+        anchors=[300.0 + 100 * i for i in range(len(columns))],
+        unit=unit,
+        unit_text="(Amount Rs. In Lakh)" if unit else None,
+    )
+
+
+def test_statement_without_a_caption_takes_the_unit_of_the_preceding_statement() -> None:
+    """Indong Tea prints '(Amount Rs. In Lakh)' over the P&L but not over the cash-flow statement
+    two pages later, whose columns are the same three fiscal years."""
+    pnl = _periods(150, Unit.LAKH, ["31-Mar-22", "31-Mar-21", "31-Mar-20"])
+    cash = _periods(152, None, ["For the Year ended on 31-Mar-22", "31-Mar-21", "31-Mar-20"])
+    inherit_units([pnl, cash])
+    assert cash.unit is Unit.LAKH
+    assert cash.unit_inherited_from == 150
+    assert "inherited" in (cash.unit_text or "")
+    assert pnl.unit_inherited_from is None
+
+
+def test_unit_is_not_inherited_across_different_periods_distance_or_conflict() -> None:
+    donor = _periods(10, Unit.LAKH, ["31-Mar-22", "31-Mar-21"])
+    other_periods = _periods(11, None, ["30-Sep-22", "31-Mar-22"])
+    too_far = _periods(14, None, ["31-Mar-22", "31-Mar-21"])
+    inherit_units([donor, other_periods, too_far])
+    assert other_periods.unit is None and too_far.unit is None
+
+    a = _periods(20, Unit.LAKH, ["31-Mar-22", "31-Mar-21"])
+    b = _periods(20, Unit.MILLION, ["31-Mar-22", "31-Mar-21"])
+    c = _periods(21, None, ["31-Mar-22", "31-Mar-21"])
+    inherit_units([a, b, c])
+    assert c.unit is None  # siblings disagree: guessing a scale would be worse than none
+
+
+def test_an_inherited_unit_is_not_passed_on_again() -> None:
+    a = _periods(30, Unit.CRORE, ["31-Mar-22", "31-Mar-21"])
+    b = _periods(31, None, ["31-Mar-22", "31-Mar-21"])
+    c = _periods(33, None, ["31-Mar-22", "31-Mar-21"])
+    inherit_units([a, b, c])
+    assert b.unit is Unit.CRORE
+    assert c.unit is None  # three pages from the caption: out of range, and b is not a source

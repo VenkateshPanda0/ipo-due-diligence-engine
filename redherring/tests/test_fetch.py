@@ -169,7 +169,7 @@ def test_unreachable_robots_txt_is_a_clean_failure_not_a_crash_and_not_permissio
 ) -> None:
     f = Fetcher(tmp_path, opener=_DroppingOpener(), sleep=lambda _s: None)  # type: ignore[arg-type]
     manifest = Manifest(tmp_path / "manifest.jsonl")
-    with pytest.raises(FetchError, match="robots.txt unreachable"):
+    with pytest.raises(FetchError, match=r"robots\.txt unreachable"):
         f.fetch(_spec("http://example.invalid", "/ok.pdf"), manifest)
     assert not (tmp_path / "raw").exists() or not list((tmp_path / "raw").iterdir())
 

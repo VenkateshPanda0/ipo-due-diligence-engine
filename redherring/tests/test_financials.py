@@ -59,6 +59,15 @@ def test_normalise_label(raw: str, expected: str) -> None:
         ("VII Profit/(Loss) Before Tax (V-VI)", Concept.PROFIT_BEFORE_TAX),
         ("IX Profit/(loss) for the year (VII-VIII)", Concept.PROFIT_AFTER_TAX),
         ("Net Cash from/(used in) Operating Activity (A)", Concept.CASH_FROM_OPERATIONS),
+        (
+            "Total Revenue",
+            Concept.TOTAL_INCOME,
+        ),  # SME wording; "Total revenue from operations" is not
+        ("III. Total Revenue (I + II)", Concept.TOTAL_INCOME),
+        ("Profit/Loss before Taxation", Concept.PROFIT_BEFORE_TAX),
+        ("Profit before taxation", Concept.PROFIT_BEFORE_TAX),
+        ("Net Profit /Loss after adjustments", Concept.PROFIT_AFTER_TAX),
+        ("Profit/Loss After Tax but Before Extra ordinary Items", Concept.PROFIT_AFTER_TAX),
         ("EBITDA", Concept.EBITDA),
         ("EBITDA(3) (in ₹ million)", Concept.EBITDA),
         ("Adjusted EBITDA (G = E+F)", Concept.ADJUSTED_EBITDA),

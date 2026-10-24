@@ -111,7 +111,12 @@ def _cmd_analyze(args: argparse.Namespace) -> int:
             failures += 1
             continue
         doc = ParsedDocument.model_validate_json(parsed.read_text(encoding="utf-8"))
-        report = analyze_document(doc, data_dir / e.local_path)
+        report = analyze_document(
+            doc,
+            data_dir / e.local_path,
+            platform=e.platform.value if e.platform else None,
+            as_of=e.filing_date,
+        )
         (out_dir / f"{e.doc_id}.financials.json").write_text(
             report.model_dump_json(indent=1), encoding="utf-8"
         )

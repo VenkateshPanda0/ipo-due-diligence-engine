@@ -69,3 +69,45 @@ def test_analyze_requires_parsed_output(tmp_path: Path, capsys: pytest.CaptureFi
     _register(tmp_path, "demo", build_pdf([_statement_page()]))
     assert main(["--data-dir", str(tmp_path), "analyze"]) == 1
     assert "run `rh parse` first" in capsys.readouterr().err
+
+
+def _offer_page() -> PageSpec:
+    p = PageSpec()
+    p.text(72, 60, "FRESH ISSUE OF 100,000 EQUITY SHARES AGGREGATING TO Rs. 1,000 MILLION", 8)
+    p.text(72, 100, "OBJECTS OF THE ISSUE", 9)
+    p.text(72, 116, "(Rs. in million)", 8)
+    p.grid(
+        72,
+        130,
+        [260, 120],
+        [
+            ["Particulars", "Estimated amount"],
+            ["Repayment of borrowings", "700.00"],
+            ["General corporate purposes", "240.00"],
+            ["Net Proceeds", "940.00"],
+        ],
+    )
+    return p
+
+
+def test_analyze_raises_a_cited_flag_end_to_end(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _register(tmp_path, "demo", build_pdf([_offer_page()]))
+    assert main(["--data-dir", str(tmp_path), "parse"]) == 0
+    capsys.readouterr()
+    assert main(["--data-dir", str(tmp_path), "analyze"]) == 0
+    out = capsys.readouterr().out
+    assert "| demo |" in out
+
+    report = json.loads((tmp_path / "extracted" / "demo.financials.json").read_text())
+    keys = {f["key"] for f in report["issue_facts"]}
+    assert {"issue.fresh_issue_amount", "objects.gcp_amount"} <= keys
+    assert all(f["verified"] for f in report["issue_facts"])
+    (flag,) = [f for f in report["flags"] if f["rule_id"] == "OBJ-GCP-CAP-MAINBOARD"]
+    assert flag["severity"] == "medium"
+    assert "24%" in flag["explanation"]
+    assert flag["citations"] and all(c["pdf_page"] == 1 for c in flag["citations"])
+    assert flag["sources"][0]["clause"] == "Regulation 7(2)"
+    assert report["summary"]["flags"] == 1
+    assert report["summary"]["issue_facts_verified"] == report["summary"]["issue_facts_total"]

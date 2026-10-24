@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from datetime import date
 from decimal import Decimal
 from pathlib import Path
 
@@ -10,14 +11,22 @@ from pydantic import BaseModel
 
 from redherring.extract.consensus import Consensus, build_consensus
 from redherring.extract.financials import extract_financials
+from redherring.extract.issue import IssueFact, extract_issue_facts
 from redherring.extract.models import CitedNumber, Concept
 from redherring.extract.periods import period_key
+from redherring.flags.engine import Flag, evaluate, load_rules
+from redherring.flags.facts import facts_from
 from redherring.parse.models import ParsedDocument
-from redherring.verify.cited import PdfiumPageText, check_cited_number
+from redherring.verify.cited import PdfiumPageText, check_cited_number, check_evidence
 from redherring.verify.footing import FootingCheck, run_footing
 
 
 class VerifiedNumber(CitedNumber):
+    verified: bool
+    failures: list[str]
+
+
+class VerifiedIssueFact(IssueFact):
     verified: bool
     failures: list[str]
 
@@ -56,13 +65,18 @@ class Summary(BaseModel):
     values_without_period: int
     values_without_unit: int
     concepts: dict[str, int]
+    issue_facts_total: int
+    issue_facts_verified: int
+    flags: int
 
 
 class AnalysisReport(BaseModel):
     summary: Summary
     values: list[VerifiedNumber]
+    issue_facts: list[VerifiedIssueFact]
     footing: list[FootingRecord]
     consensus: list[ConsensusRecord]
+    flags: list[Flag]
 
 
 def _footing_record(c: FootingCheck) -> FootingRecord:
@@ -83,16 +97,41 @@ def _consensus_record(c: Consensus) -> ConsensusRecord:
     )
 
 
-def analyze_document(doc: ParsedDocument, pdf_path: Path) -> AnalysisReport:
+def analyze_document(
+    doc: ParsedDocument,
+    pdf_path: Path,
+    *,
+    platform: str | None = None,
+    as_of: date | None = None,
+) -> AnalysisReport:
+    """Extract, verify against the PDF text layer, cross-check, and run the rules.
+
+    Only facts that pass the PDF re-check reach the consensus and the rules, so a flag can never
+    rest on a number that is not on the page it cites.
+    """
     values = extract_financials(doc)
+    issue = extract_issue_facts(doc)
     with PdfiumPageText(pdf_path) as page_text:
-        verified = []
+        verified: list[VerifiedNumber] = []
         for v in values:
             res = check_cited_number(v, page_text)
             verified.append(VerifiedNumber(**v.model_dump(), verified=res.ok, failures=res.reasons))
+        verified_issue: list[VerifiedIssueFact] = []
+        for f in issue:
+            res = check_evidence(f.raw, f.span, f.pdf_page, page_text)
+            verified_issue.append(
+                VerifiedIssueFact(**f.model_dump(), verified=res.ok, failures=res.reasons)
+            )
+    good_values = [v for v, vv in zip(values, verified, strict=True) if vv.verified]
     footing = run_footing(values)
-    consensus = build_consensus(values)
+    consensus = build_consensus(good_values)
     multi = [c for c in consensus if c.total >= 2]
+    good_issue = [f for f, vf in zip(issue, verified_issue, strict=True) if vf.verified]
+    flags: list[Flag] = []
+    if platform is not None:
+        flags = evaluate(
+            load_rules(), facts_from(consensus, good_issue), platform=platform, as_of=as_of
+        )
     summary = Summary(
         doc_id=doc.doc_id,
         values_total=len(values),
@@ -105,12 +144,17 @@ def analyze_document(doc: ParsedDocument, pdf_path: Path) -> AnalysisReport:
         values_without_period=sum(v.period is None for v in values),
         values_without_unit=sum(v.unit is None for v in values),
         concepts=dict(Counter(v.concept.value for v in values)),
+        issue_facts_total=len(issue),
+        issue_facts_verified=sum(f.verified for f in verified_issue),
+        flags=len(flags),
     )
     return AnalysisReport(
         summary=summary,
         values=verified,
+        issue_facts=verified_issue,
         footing=[_footing_record(c) for c in footing],
         consensus=[_consensus_record(c) for c in consensus],
+        flags=flags,
     )
 
 

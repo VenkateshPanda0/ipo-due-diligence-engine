@@ -4,9 +4,11 @@ Forensic analysis of Indian IPO offer documents (DRHP / RHP / Prospectus): struc
 with page-level citations, a red-flag engine, version diffs, and validation against a labelled
 benchmark and post-listing outcomes.
 
-**Status: early (M1 in progress).** See `docs/status.md` for computed numbers and known
-defects, `docs/roadmap.md` for what is done and what is not, and `docs/CHARTER.md` for how the
-project is run. There is no hand-labelled benchmark yet, so no accuracy is claimed.
+**Status: early.** On three filings it had never seen, the first run read 76% of 41 labelled
+figures correctly (4 wrong, 6 abstained, 0 invented); after fixing what that exposed, a fresh
+held-out set is needed to know the new number. Labels were written by an AI with no second reader.
+See `docs/status.md` for all numbers and known defects, `docs/heldout-run-1.md` for what went
+wrong, `docs/roadmap.md` for what is done, and `docs/CHARTER.md` for how the project is run.
 
 > Not investment advice. Automated analysis of public disclosures; verify against the source
 > document.
@@ -21,6 +23,8 @@ independent of the code around it (see `docs/decisions.md` for why, and how to s
 | `rh ingest` | Downloads the PDFs in `data/sources.toml` politely (robots.txt, per-host rate limit, size cap, Range-resume of cut-off transfers, `%%EOF` check) and records URL, SHA-256, size, fetch time in `data/manifest.jsonl`. Idempotent. |
 | `rh parse` | Parses PDFs (in parallel) into page-tagged blocks and tables with units and assembled column headers; writes `data/parsed/` and a parse-quality table. |
 | `rh analyze` | Extracts statement values, issue facts and objects with page citations; re-checks each against the PDF text; runs footing and cross-table consensus; evaluates the red-flag rules in force for the filing's platform and date; writes `data/extracted/` with a per-rule audit. |
+| `rh report` | Writes one self-contained HTML page per filing (`data/reports/`): flags with evidence, issue and objects, annual figures in ₹ crore, what could not be checked, every figure linked to its PDF page. |
+| `rh label-check`, `rh eval` | Validate hand labels (`labels/`) against the PDFs and score the extractor, reporting development and held-out documents separately. |
 
 Red-flag rules live in `src/redherring/flags/rules/*.toml`. A regulatory threshold names the
 clause, effective date and the date it was checked against SEBI's consolidated text; a heuristic

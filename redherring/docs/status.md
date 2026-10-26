@@ -19,7 +19,7 @@ which says the earlier failure modes are gone, on a small and non-random sample.
 Labels were written by the maintainer, an AI, with no second reader (`labels/README.md`).
 
 ### Rules
-Eleven rules. Regulatory ones now start on 10 Nov 2018 (ICDR 2018) unless a later amendment date
+Twelve rules. Regulatory ones now start on 10 Nov 2018 (ICDR 2018) unless a later amendment date
 applies, so a 2005 draft is not judged by 2018 law. The cash-flow rule is not applied to lenders or
 real-estate developers (sector detected from the front of the document). Flags currently raised
 across twelve filings: Paytm trade receivables vs revenue (FY2020 to FY2021, checked against source
@@ -134,7 +134,7 @@ How to read it:
   placeholders); the 2010 Tanla probe states no price, hence no amount.
 - Printed page numbers are found on few SME pages (harmless: citations use the PDF page).
 - No scanned document has been tested; OCR is not implemented.
-- Eleven rules exist; only those whose inputs were extracted can run (see `rules decisive`).
+- Twelve rules exist; only those whose inputs were extracted can run (see `rules decisive`).
 
 ### Next
 Label tooling and an evaluation harness; an LLM layer behind a cost cap (no API key exists in this

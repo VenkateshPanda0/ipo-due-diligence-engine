@@ -45,6 +45,9 @@ class RatioVsCap(BaseModel):
     cap: float
     near_cap_fraction: float = 0.9
     abs_cap: float | None = None  # rupees; effective cap is min(cap, abs_cap / denominator)
+    # Severity when the ratio is above the cap. A regulatory cap breach is "high" (the default); a
+    # heuristic threshold of ours should say less.
+    over_cap_severity: Severity = "high"
 
 
 class RequiredIf(BaseModel):

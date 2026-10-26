@@ -370,3 +370,40 @@ def test_no_icdr_2018_rule_applies_to_a_filing_that_predates_the_regulations() -
         for rule, a in zip(rules, out, strict=True):
             if platform in rule.platforms and not rule.heuristic:
                 assert a.status == "not_in_force", rule.id
+
+
+DEBT = """
+id = "T-DEBT"
+name = "Debt repayment share"
+rationale = "Money raised to repay lenders funds no growth for the new shareholders."
+platforms = ["mainboard"]
+severity = "low"
+heuristic = true
+citation_requirement = "Cite the repayment row and the issue-size row."
+
+[logic]
+kind = "ratio_vs_cap"
+numerators = ["objects.debt_repayment_amount"]
+denominator = "issue.fresh_issue_amount"
+cap = 0.5
+near_cap_fraction = 1.0
+over_cap_severity = "low"
+
+[[sources]]
+kind = "heuristic"
+ref = "project choice"
+checked_on = 2026-10-26
+"""
+
+
+def test_over_cap_severity_can_be_lower_than_high_for_a_heuristic(tmp_path: Path) -> None:
+    rule = spec(DEBT, tmp_path)
+    facts = {
+        "objects.debt_repayment_amount": fact("objects.debt_repayment_amount", "3600"),
+        "issue.fresh_issue_amount": fact("issue.fresh_issue_amount", "4800"),
+    }
+    (flag,) = evaluate([rule], facts, platform="mainboard")
+    assert flag.severity == "low"
+    assert flag.heuristic
+    ok = {**facts, "objects.debt_repayment_amount": fact("objects.debt_repayment_amount", "930")}
+    assert evaluate([rule], ok, platform="mainboard") == []

@@ -24,7 +24,7 @@ Fetcher with integrity checks, page-tagged parser, tables, units, CLI, CI, decis
 | Item | State |
 |---|---|
 | Rule specs (TOML), engine, audit, validity windows, sector exclusions | done |
-| Shipped rules | eleven (nine regulatory with clause and date, two heuristic with literature) |
+| Shipped rules | twelve (nine regulatory with clause and date, three heuristic) |
 | One-page HTML report per filing, figures linked to PDF pages | done (`rh report`) |
 | Further rules: related-party, concentration, pledges, auditor, litigation, valuation | not started |
 | Prompt-injection red-team set (hostile PDFs through parse and extract) | not started; prompt-level defences are tested |

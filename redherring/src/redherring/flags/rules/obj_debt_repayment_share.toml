@@ -1,0 +1,21 @@
+id = "OBJ-DEBT-REPAYMENT-SHARE"
+name = "More than half of the fresh issue repays borrowings"
+rationale = "Fresh-issue money that goes to lenders does not fund growth, so new shareholders mostly pay down debt that existing holders ran up."
+platforms = ["mainboard", "sme"]
+severity = "low"
+heuristic = true
+citation_requirement = "Cite the objects-of-the-issue row for repayment of borrowings and the row giving the fresh issue size."
+
+[logic]
+kind = "ratio_vs_cap"
+numerators = ["objects.debt_repayment_amount"]
+denominator = "issue.fresh_issue_amount"
+cap = 0.5
+near_cap_fraction = 1.0
+over_cap_severity = "low"
+
+[[sources]]
+kind = "heuristic"
+ref = "This project's choice of 50% of the gross fresh issue"
+checked_on = 2026-10-26
+note = "Not a regulatory limit: ICDR does not cap repayment of borrowings from the fresh issue. The ratio uses the gross fresh issue, which understates the share of net proceeds. Informational: repaying debt can be sensible, and the report shows the amounts so the reader can judge."

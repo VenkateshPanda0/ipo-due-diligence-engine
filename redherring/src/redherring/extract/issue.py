@@ -27,6 +27,7 @@ class IssueKey(StrEnum):
     TOTAL_ISSUE_AMOUNT = "issue.total_issue_amount"
     GCP_AMOUNT = "objects.gcp_amount"
     UNIDENTIFIED_ACQUISITION_AMOUNT = "objects.unidentified_acquisition_amount"
+    DEBT_REPAYMENT_AMOUNT = "objects.debt_repayment_amount"
     MONITORING_AGENCY_APPOINTED = "objects.monitoring_agency_appointed"
     ELIGIBILITY_REG_6_2 = "issue.eligibility_reg_6_2"  # 1: made under Reg 6(2), 0: under Reg 6(1)
 
@@ -38,6 +39,10 @@ class IssueFact(BaseModel):
     unit: Unit | None = None
     pdf_page: int
     span: str = Field(description="Text the fact was read from")
+    parts: list[str] = Field(
+        default_factory=list,
+        description="For a sum of printed figures: each part as printed (raw is then the first)",
+    )
     method: str
     confidence: float = Field(ge=0.0, le=1.0)
 
@@ -279,6 +284,21 @@ def _total(fresh: IssueFact, extra: Decimal, span: str) -> IssueFact:
 _GCP_LABEL = re.compile(r"general corporate purposes?(?:\(\d+\))?")
 
 
+def _is_debt_repayment(label: str) -> bool:
+    return bool(re.search(r"re-?pay|pre-?pay", label)) and bool(
+        re.search(r"borrowing|debt|loan|indebtedness", label)
+    )
+
+
+def _debt_total(amounts: list[Decimal]) -> Decimal:
+    """Sum of the repayment rows, unless one of them already is the total of the others."""
+    total = sum(amounts, Decimal(0))
+    for a in amounts:
+        if len(amounts) > 1 and abs(total - a - a) <= Decimal("0.02"):
+            return a
+    return total
+
+
 def _is_unidentified_acquisition(label: str) -> bool:
     has_acq = "acquisition" in label or "inorganic" in label
     return has_acq and any(w in label for w in ("future", "unidentified", "inorganic", "strategic"))
@@ -308,7 +328,13 @@ def _foots(rows: list[tuple[str, list[str]]]) -> bool:
         if amount is None:
             continue
         if label.startswith("total"):
-            return bool(amounts) and abs(sum(amounts, Decimal(0)) - amount[0]) <= Decimal("0.02")
+            # at least two uses of funds, all positive: a lone "repayment" line and its total, or
+            # negative cash-flow lines, are not an objects table
+            return (
+                len(amounts) >= 2
+                and all(a > 0 for a in amounts)
+                and abs(sum(amounts, Decimal(0)) - amount[0]) <= Decimal("0.02")
+            )
         amounts.append(amount[0])
     return False
 
@@ -332,7 +358,12 @@ def _objects_from_tables(doc: ParsedDocument) -> list[IssueFact]:
         split = [(i, sp) for i, row in enumerate(t.rows) if row and (sp := _split_row(row))]
         if unit is None or not _is_objects_table(t, [sp for _, sp in split]):
             continue
+        debt: list[tuple[int, Decimal, str]] = []
         for i, (label, cells) in split:
+            if _is_debt_repayment(label):
+                if (amount := _first_amount(cells)) is not None:
+                    debt.append((i, amount[0], amount[1]))
+                continue
             if _GCP_LABEL.fullmatch(label) or label.startswith("general corporate purpose"):
                 key = IssueKey.GCP_AMOUNT
             elif _is_unidentified_acquisition(label):
@@ -350,6 +381,20 @@ def _objects_from_tables(doc: ParsedDocument) -> list[IssueFact]:
                 unit=unit,
                 pdf_page=t.row_pages[i] if i < len(t.row_pages) else t.pdf_pages[0],
                 span=" | ".join(c for c in t.rows[i] if c),
+                method="table_row",
+                confidence=0.85,
+            )
+        if debt and IssueKey.DEBT_REPAYMENT_AMOUNT not in found:
+            first = debt[0][0]
+            found[IssueKey.DEBT_REPAYMENT_AMOUNT] = IssueFact(
+                key=IssueKey.DEBT_REPAYMENT_AMOUNT,
+                value=_debt_total([d[1] for d in debt]) * MULTIPLIER[unit],
+                raw=debt[0][2],
+                parts=[d[2] for d in debt] if len(debt) > 1 else [],
+                unit=unit,
+                pdf_page=t.row_pages[first] if first < len(t.row_pages) else t.pdf_pages[0],
+                # a long row label must not push a later row's figure out of the cited span
+                span=" || ".join(f"{t.rows[d[0]][0][:80]} | {d[2]}" for d in debt),
                 method="table_row",
                 confidence=0.85,
             )

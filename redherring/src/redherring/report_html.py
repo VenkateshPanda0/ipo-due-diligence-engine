@@ -36,6 +36,7 @@ _ISSUE_ROWS = (
     ("issue.fresh_issue_amount", "Fresh issue"),
     ("issue.ofs_amount", "Offer for sale"),
     ("issue.total_issue_amount", "Total issue"),
+    ("objects.debt_repayment_amount", "Repayment of borrowings"),
     ("objects.gcp_amount", "General corporate purposes"),
     ("objects.unidentified_acquisition_amount", "Unidentified acquisitions"),
 )

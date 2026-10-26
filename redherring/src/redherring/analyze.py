@@ -22,7 +22,7 @@ from redherring.verify.cited import PdfiumPageText, check_cited_number, check_ev
 from redherring.verify.footing import FootingCheck, run_footing, trusted_columns
 
 # Bump when AnalysisReport changes shape or meaning; older files are refused with a clear message.
-ANALYSIS_VERSION = 16
+ANALYSIS_VERSION = 17
 
 # A page is reported as carrying invisible text from this many white-on-nothing characters up: a
 # sentence worth planting is longer, while chart labels and the odd figure on a coloured shape that
@@ -155,9 +155,11 @@ def analyze_document(
             verified.append(VerifiedNumber(**v.model_dump(), verified=res.ok, failures=res.reasons))
         verified_issue: list[VerifiedIssueFact] = []
         for f in issue:
-            res = check_evidence(f.raw, f.span, f.pdf_page, page_text)
+            reasons: list[str] = []
+            for part in f.parts or [f.raw]:  # a sum is verified part by part
+                reasons += check_evidence(part, f.span, f.pdf_page, page_text).reasons
             verified_issue.append(
-                VerifiedIssueFact(**f.model_dump(), verified=res.ok, failures=res.reasons)
+                VerifiedIssueFact(**f.model_dump(), verified=not reasons, failures=reasons)
             )
     good_values = [v for v, vv in zip(values, verified, strict=True) if vv.verified]
     footing = run_footing(good_values)

@@ -271,6 +271,19 @@ header takes the nearest dated header within two cells (the right one on a tie).
 under their headers, behaviour is unchanged (tested). Residual risk: an unlabelled numeric column
 within two cells of a dated header (a blank-headed percentage column) would be given that period.
 
+## D-032 — Debt repayment share of the fresh issue, as a low-severity heuristic (2026-10-26)
+
+New fact `objects.debt_repayment_amount`: the objects-table rows whose label is a repayment or
+prepayment of borrowings, summed (unless one row already totals the others; a repayment made
+through a subsidiary counts), and a heuristic rule that flags more than 50% of the gross fresh
+issue at severity low (new `over_cap_severity`; a regulatory breach stays high). Across the
+filings, LEAP India (75%), Powerica (75%) and Runwal (65%, of which 2,250 million is repayment
+through two subsidiaries) are flagged; Indiqube (14%), Synoptics (14%), Shiprocket (19%) are not.
+Not a regulatory limit, and repaying debt can be sensible: the flag says so in its basis. A
+summed fact is verified part by part against the page (`IssueFact.parts`); a lone "repayment"
+line and its "Total", or negative cash-flow lines, no longer qualify a table as an objects table.
+No labels exist for this fact yet; they belong in the next held-out set.
+
 ## Open items
 
 - Terms-of-use review for SEBI / BSE / NSE (see D-010).

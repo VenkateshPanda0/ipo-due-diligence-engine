@@ -109,5 +109,35 @@ def test_analyze_raises_a_cited_flag_end_to_end(
     assert "24%" in flag["explanation"]
     assert flag["citations"] and all(c["pdf_page"] == 1 for c in flag["citations"])
     assert flag["sources"][0]["clause"] == "Regulation 7(2)"
-    assert report["summary"]["flags"] == 1
+    (debt,) = [f for f in report["flags"] if f["rule_id"] == "OBJ-DEBT-REPAYMENT-SHARE"]
+    assert debt["severity"] == "low" and debt["heuristic"]
+    assert "70%" in debt["explanation"]  # 700 of the 1,000 million fresh issue
+    assert report["summary"]["flags"] == 2
     assert report["summary"]["issue_facts_verified"] == report["summary"]["issue_facts_total"]
+
+
+def test_a_summed_repayment_fact_is_verified_part_by_part_and_a_bad_part_fails(
+    tmp_path: Path,
+) -> None:
+    from redherring.analyze import analyze_document
+    from redherring.parse.pdf import parse_pdf
+
+    p = PageSpec()
+    p.text(72, 60, "FRESH ISSUE OF 100,000 EQUITY SHARES AGGREGATING TO Rs. 1,000 MILLION", 8)
+    p.text(72, 100, "OBJECTS OF THE ISSUE", 9)
+    p.text(72, 116, "(Rs. in million)", 8)
+    p.grid(
+        72, 130, [260, 120],
+        [
+            ["Particulars", "Estimated amount"],
+            ["Repayment of borrowings by our Company", "300.00"],
+            ["Repayment of borrowings by our Subsidiary", "200.00"],
+            ["General corporate purposes", "100.00"],
+            ["Net Proceeds", "600.00"],
+        ],
+    )  # fmt: skip
+    path = tmp_path / "sum.pdf"
+    path.write_bytes(build_pdf([p]))
+    report = analyze_document(parse_pdf(path), path, platform="mainboard")
+    debt = next(f for f in report.issue_facts if f.key.value == "objects.debt_repayment_amount")
+    assert debt.value == 500_000_000 and debt.verified, debt.failures

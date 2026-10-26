@@ -237,6 +237,57 @@ def test_objects_table_without_any_net_proceeds_wording_is_accepted_only_if_it_f
     assert IssueKey.GCP_AMOUNT not in _facts(_doc(_page(1), tables=[table("9999.00")]))
 
 
+def test_debt_repayment_amount_from_objects_table_not_from_a_cash_flow_statement() -> None:
+    objects = Table(
+        pdf_pages=[121],
+        row_pages=[121] * 4,
+        unit=Unit.MILLION,
+        columns=["Amount"],
+        rows=[
+            ["Repayment / prepayment, in full or in part, of certain borrowings", "3,600.00"],
+            ["General corporate purposes", "[●]"],
+            ["Net Proceeds", "[●]"],
+        ],
+    )
+    cash_flow = Table(
+        pdf_pages=[66],
+        row_pages=[66] * 3,
+        unit=Unit.MILLION,
+        columns=["FY2026"],
+        rows=[["Repayment of long-term borrowings", "(1,338.71)"], ["Total", "(1,338.71)"]],
+    )
+    facts = _facts(_doc(_page(1), tables=[cash_flow, objects]))
+    assert facts[IssueKey.DEBT_REPAYMENT_AMOUNT] == (Decimal(3_600_000_000), 121)
+
+
+def test_debt_repayment_rows_are_summed_unless_a_parent_row_already_totals_them() -> None:
+    def table(rows: list[list[str]]) -> Table:
+        return Table(
+            pdf_pages=[104], row_pages=[104] * len(rows), unit=Unit.MILLION, columns=["Amount"],
+            rows=rows,
+        )  # fmt: skip
+
+    split = table(
+        [
+            ["Repayment of borrowings availed by our Company", "400.00"],
+            ["Repayment of borrowings availed by our Subsidiaries", "600.00"],
+            ["Net Proceeds", "5,000.00"],
+        ]
+    )
+    nested = table(
+        [
+            ["Repayment of certain borrowings", "1,000.00"],
+            ["(i) by our Company", "400.00"],
+            ["(ii) by our Subsidiaries", "600.00"],
+            ["Net Proceeds", "5,000.00"],
+        ]
+    )
+    for t in (split, nested):
+        assert _facts(_doc(_page(1), tables=[t]))[IssueKey.DEBT_REPAYMENT_AMOUNT][0] == Decimal(
+            1_000_000_000
+        )
+
+
 def test_gcp_placeholder_and_unidentified_acquisition_rows() -> None:
     t = Table(
         pdf_pages=[104],

@@ -137,15 +137,16 @@ def _ratio_vs_cap(rule: RuleSpec, logic: RatioVsCap, facts: Facts) -> _Result:
     if logic.abs_cap is not None:
         cap = min(cap, Decimal(str(logic.abs_cap)) / den.value)
     numbers = {"ratio": ratio, "cap": cap, "numerator": numerator, "denominator": den.value}
+    word = "threshold" if rule.heuristic else "limit"
     if ratio > cap:
-        text = (
-            f"{rule.name}: {ratio:.0%} against a limit of {cap:.0%}; the figure is above the limit."
-        )
+        text = f"{rule.name}: {ratio:.0%} against a {word} of {cap:.0%}; the figure is above it."
         return _Result(
-            flags=[_flag(rule, "high", text, numbers, used)], evaluated=True, numbers=numbers
+            flags=[_flag(rule, logic.over_cap_severity, text, numbers, used)],
+            evaluated=True,
+            numbers=numbers,
         )
     if ratio >= cap * Decimal(str(logic.near_cap_fraction)):
-        text = f"{rule.name}: {ratio:.0%} against a limit of {cap:.0%}, i.e. close to the limit."
+        text = f"{rule.name}: {ratio:.0%} against a {word} of {cap:.0%}, i.e. close to it."
         flag = _flag(rule, rule.severity, text, numbers, used)
         return _Result(flags=[flag], evaluated=True, numbers=numbers)
     return _Result(evaluated=True, numbers=numbers)

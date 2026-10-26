@@ -5,19 +5,18 @@ filings in `data/sources.toml`; nothing is estimated.
 
 ## 2026-10-24 (evening)
 
-### Benchmark (`rh eval`, 182 labelled fields over twelve filings)
+### Benchmark (`rh eval`, 232 labelled fields over fifteen filings)
 | set | docs | fields (present/absent) | value accuracy | citation accuracy | abstained | wrong | hallucinated |
 |---|---|---|---|---|---|---|---|
 | held-out set 1, **first run** | 3 | 51 (41/10) | 31/41 (76%) | 29/31 | 6 | 4 | 0/10 |
 | held-out set 2, **first run** (after set-1 fixes) | 3 | 49 (42/7) | 32/42 (76%) | 30/32 | 8 | 2 | 0/7 |
-| all twelve filings now (every one has driven a fix) | 12 | 182 (153/29) | 152/153 (99%) | 143/152 | 1 | 0 | 0/29 |
+| held-out set 3, **first run** (after set-2 fixes) | 3 | 50 (39/11) | 38/39 (97%) | 35/38 | 1 | 0 | 0/11 |
+| all fifteen filings now (every one has driven a fix) | 15 | 232 (192/40) | 191/192 (99%) | 179/191 | 1 | 0 | 0/40 |
 
-Read the first two rows, not the last. A filing stops being held out the moment a defect it exposed
-is fixed, so the last row is development data and overstates what a new filing will get. Two
-independent first runs both gave 76% value accuracy, 2 to 4 wrong values in 41 to 42 and nothing
-invented; the fixes between them did not move the number because each new filing fails in new
-ways. `docs/heldout-run-1.md` and `docs/heldout-run-2.md` list every miss and its cause. Labels
-were written by the maintainer, an AI, with no second reader (`labels/README.md`).
+Read the first three rows, not the last. A filing stops being held out the moment a defect it
+exposed is fixed. Sets 1 and 2 both scored 76%; set 3 scored 97% after the fixes from sets 1 and 2,
+which says the earlier failure modes are gone, on a small and non-random sample. `docs/heldout-run-*.md` list every miss and its cause.
+Labels were written by the maintainer, an AI, with no second reader (`labels/README.md`).
 
 ### Rules
 Eleven rules. Regulatory ones now start on 10 Nov 2018 (ICDR 2018) unless a later amendment date

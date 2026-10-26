@@ -255,6 +255,22 @@ from 8,500 to 7,000 million) in them. Issue and objects keys that appear or vani
 placeholder packages (`diff`, `report`, `research`) from the first skeleton were deleted because
 `redherring/diff/` shadowed the new `diff.py`.
 
+## D-030 — The daily run resumes this session (2026-10-26)
+
+The fresh-session scheduled task of D-026 ran on 25 Oct, wrote labels for three filings, and could
+not push: its session had no authorisation for this repository (git proxy 403), and the work was
+lost with the session. It is disabled. A task bound to this session (which can push) replaced it,
+same time of day. Lesson: a scheduled task that must push needs a session that already holds the
+repository; check the first run's output rather than its "succeeded" status.
+
+## D-031 — Figures under misaligned headers (2026-10-26)
+
+Ruled tables with spacer columns can print right-aligned figures up to two cells left of
+left-aligned "As at ..." headers, and rows differ among themselves. A figure column with no dated
+header takes the nearest dated header within two cells (the right one on a tie). Where figures sit
+under their headers, behaviour is unchanged (tested). Residual risk: an unlabelled numeric column
+within two cells of a dated header (a blank-headed percentage column) would be given that period.
+
 ## Open items
 
 - Terms-of-use review for SEBI / BSE / NSE (see D-010).

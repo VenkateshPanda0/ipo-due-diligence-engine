@@ -147,10 +147,43 @@ def _confidence(has_period: bool, has_unit: bool, period_has_duration: bool) -> 
     return min(1.0, score + (0.1 if period_has_duration else 0.0))
 
 
+def _header_by_cell(t: Table, body: list[list[str]], label_idx: int) -> dict[int, str]:
+    """Header text for each cell index of a data row (cell k sits under `t.columns[k - 1]`).
+
+    Ruled tables with blank spacer columns put right-aligned figures up to two cells left of their
+    left-aligned "As at March 31, 2024" headers (and some rows are aligned differently from
+    others). A figure column with no dated header of its own takes the nearest dated header at most
+    two cells away, the one on its right on a tie; where figures already sit under their headers
+    this changes nothing.
+    """
+    by_cell = {k: t.columns[k - 1] if 0 <= k - 1 < len(t.columns) else "" for k in range(1, 400)}
+    dated = [k for k in sorted(by_cell) if k <= len(t.columns) and parse_period(by_cell[k])]
+    if len(dated) < 2:
+        return by_cell
+    width = max((len(r) for r in body), default=0)
+    for k in range(label_idx + 1, width):
+        if parse_period(by_cell[k]) or _skip_column(by_cell[k]):
+            continue
+        n_figures = sum(
+            1
+            for r in body
+            if k < len(r)
+            and parse_amount(r[k]) is not None
+            and not _looks_like_note_ref(r[k], r[label_idx:])
+        )
+        if n_figures < 2:
+            continue
+        near = min(dated, key=lambda d: (abs(d - k), -d))
+        if abs(near - k) <= 2 and not by_cell[k]:
+            by_cell[k] = by_cell[near]
+    return by_cell
+
+
 def _extract_table(table_id: int, t: Table) -> list[CitedNumber]:
     out: list[CitedNumber] = []
     body = t.rows[t.n_header_rows :]
     label_idx = _label_index(body)
+    headers = _header_by_cell(t, body, label_idx)
     for i, row in enumerate(t.rows):
         if i < t.n_header_rows or label_idx >= len(row):
             continue
@@ -162,7 +195,7 @@ def _extract_table(table_id: int, t: Table) -> list[CitedNumber]:
         span = " | ".join(c for c in row if c)
         for k in range(label_idx + 1, len(row)):
             cell = row[k]
-            header = t.columns[k - 1] if 0 <= k - 1 < len(t.columns) else ""
+            header = headers.get(k, "")
             if _skip_column(header):
                 continue
             value = parse_amount(cell)

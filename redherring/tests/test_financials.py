@@ -291,3 +291,40 @@ def test_annexure_and_serial_columns_are_skipped_by_header() -> None:
         }
     )
     assert [v.raw for v in extract_financials(_doc(t))] == ["100.00"]
+
+
+def test_right_aligned_numbers_under_left_aligned_headers_take_their_own_period() -> None:
+    """Veritas: a ruled summary balance sheet whose figures sit one cell left of their 'As at'
+    headers for three of the four columns; matching value columns to header columns in order."""
+    pad = [""]
+    at = ["As at", *pad * 2]
+    header = ["Particulars", *pad * 3, *at, *at, *at, "As at", ""]
+    dates = [
+        *["", *pad * 3, "September 30, 2024", *pad * 2, "March 31, 2024", *pad * 2],
+        *["March 31, 2023", *pad * 2, "March 31, 2022", ""],
+    ]
+
+    def figures(label: str, a: str, b: str, c: str, d: str) -> list[str]:
+        return [label, *pad * 3, a, "", b, *pad * 2, c, *pad * 2, d, *pad * 2]
+
+    rows = [
+        header,
+        dates,
+        figures("Total Assets", "76,056.60", "64,215.93", "40,862.81", "26,424.74"),
+        figures("Loans", "70,000.10", "50,000.20", "30,000.30", "20,000.40"),
+    ]
+    columns = [" ".join(x for x in (h, d) if x) for h, d in zip(header[1:], dates[1:], strict=True)]
+    t = Table(
+        pdf_pages=[78], row_pages=[78] * 4, unit=Unit.MILLION, columns=columns, rows=rows,
+        n_header_rows=2,
+    )  # fmt: skip
+    got = {v.raw: v.period for v in extract_financials(_doc(t))}
+    expected = {
+        "76,056.60": date(2024, 9, 30),
+        "64,215.93": date(2024, 3, 31),
+        "40,862.81": date(2023, 3, 31),
+        "26,424.74": date(2022, 3, 31),
+    }
+    for raw, end in expected.items():
+        period = got[raw]
+        assert period is not None and period.end == end, raw

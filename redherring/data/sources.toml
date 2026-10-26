@@ -140,3 +140,31 @@ doc_type = "drhp"
 platform = "mainboard"
 filing_date = 2024-12-30
 notes = "Draft offer document filed with SEBI (filings/public-issues/dec-2024/indiqube-spaces-limited_90321.html); the RHP in indiqube_rhp_2025 cut the issue (press: 850 crore to 700 crore)."
+
+# Held-out set 3, added 2026-10-26. Labels are committed before the extractor is run on them.
+[[document]]
+doc_id = "powerica_rhp_2026"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/mar-2026/1773810485107.PDF"
+issuer = "Powerica Limited"
+doc_type = "rhp"
+platform = "mainboard"
+filing_date = 2026-03-17
+notes = "Held-out set 3. Manufacturer. SEBI listing: filings/public-issues/mar-2026/powerica-limited-rhp_100434.html"
+
+[[document]]
+doc_id = "srit_india_drhp_2026"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/feb-2026/1770358047774.pdf"
+issuer = "SRIT India Limited"
+doc_type = "drhp"
+platform = "mainboard"
+filing_date = 2026-02-06
+notes = "Held-out set 3. SEBI listing: filings/public-issues/feb-2026/srit-india-limited-drhp_99558.html"
+
+[[document]]
+doc_id = "veritas_finance_drhp_2025"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/jan-2025/1737459004758_655.pdf"
+issuer = "Veritas Finance Limited"
+doc_type = "drhp"
+platform = "mainboard"
+filing_date = 2025-01-21
+notes = "Held-out set 3. NBFC, offer-for-sale heavy. SEBI listing: filings/public-issues/jan-2025/veritas-finance-limited_91063.html"

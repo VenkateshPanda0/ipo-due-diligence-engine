@@ -3,8 +3,8 @@
  "doc_id": "shiprocket_udrhp_2025",
  "doc_sha256": "b1bcb28b1698c63a5e1e7b9324cdae642c596a77aa87dd544d91986306c6ff34",
  "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
- "labelled_on": "2026-10-24",
- "split": "heldout",
+ "labelled_on": "2026-10-26",
+ "split": "dev",
  "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
  "fields": [
   {

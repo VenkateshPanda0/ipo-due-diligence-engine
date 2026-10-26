@@ -1,0 +1,263 @@
+{
+ "schema_version": 1,
+ "doc_id": "veritas_finance_drhp_2025",
+ "doc_sha256": "cf4a79ebe63c680fff9e3db0a087a4b097c3a180673ef1dbee948b898fdad837",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-26",
+ "split": "heldout",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "present",
+   "value_rupees": "6000000000",
+   "raw": "6,000",
+   "pages": [
+    4,
+    12,
+    29,
+    75,
+    91,
+    129
+   ],
+   "span": "OF FACE VALUE OF ₹ 10 EACH AGGREGATING UP TO ₹6,000 MILLION BY OUR COMPANY (“FRESH ISSUE”) AND AN OFFER FOR SALE OF UP TO [●] EQUITY SHARES OF FACE VALUE OF ₹ 10 EACH",
+   "note": ""
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "present",
+   "value_rupees": "22000000000",
+   "raw": "22,000",
+   "pages": [
+    14,
+    29,
+    75,
+    129
+   ],
+   "span": "Offer for Sale Offer for Sale of up to [●] Equity Shares of face value of ₹10 each aggregating up to ₹22,000 million",
+   "note": ""
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "present",
+   "value_rupees": "28000000000",
+   "raw": "28,000",
+   "pages": [
+    4,
+    13,
+    29,
+    75,
+    91,
+    489
+   ],
+   "span": "OF ₹[●] PER EQUITY SHARE (INCLUDING A SHARE PREMIUM OF ₹[●] PER EQUITY SHARE) (“OFFER PRICE”) AGGREGATING UP TO ₹28,000 MILLION COMPRISING A FRESH ISSUE OF UP TO [●] EQUITY SHARES",
+   "note": ""
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "absent",
+   "note": "Single object: augmenting capital base (p129); no general corporate purposes amount."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "No such object."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "absent",
+   "note": "'Our Company will appoint a monitoring agency' (p89, p134); agency shown as [●]."
+  },
+  {
+   "key": "financials.total_income.FY2024",
+   "status": "present",
+   "value_rupees": "11174930000.00",
+   "raw": "11,174.93",
+   "pages": [
+    31,
+    47,
+    79,
+    139,
+    226,
+    297,
+    317,
+    422,
+    445
+   ],
+   "span": "Total income 7,201.12 11,174.93 6,807.97 4,422.27",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2023",
+   "status": "present",
+   "value_rupees": "6807970000.00",
+   "raw": "6,807.97",
+   "pages": [
+    31,
+    47,
+    79,
+    139,
+    226,
+    297,
+    317,
+    422,
+    445,
+    446,
+    448
+   ],
+   "span": "Total income 7,201.12 11,174.93 6,807.97 4,422.27",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2024",
+   "status": "present",
+   "value_rupees": "11112030000.00",
+   "raw": "11,112.03",
+   "pages": [
+    72,
+    79,
+    317,
+    447
+   ],
+   "span": "Total revenue from operations 7,168.54 11,112.03 6,802.31 4,420.85",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2023",
+   "status": "present",
+   "value_rupees": "6802310000.00",
+   "raw": "6,802.31",
+   "pages": [
+    72,
+    79,
+    317,
+    447,
+    448
+   ],
+   "span": "Total revenue from operations 7,168.54 11,112.03 6,802.31 4,420.85",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2024",
+   "status": "present",
+   "value_rupees": "3229640000.00",
+   "raw": "3,229.64",
+   "pages": [
+    79,
+    80,
+    297,
+    317,
+    318,
+    380,
+    423,
+    445,
+    448,
+    451
+   ],
+   "span": "Profit before tax 1,772.00 3,229.64 2,328.50 1,013.63",
+   "note": ""
+  },
+  {
+   "key": "financials.tax_expense.FY2024",
+   "status": "present",
+   "value_rupees": "779120000.00",
+   "raw": "779.12",
+   "pages": [
+    79,
+    317,
+    424,
+    446,
+    448
+   ],
+   "span": "Total tax expense 440.92 779.12 564.46 259.59",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2024",
+   "status": "present",
+   "value_rupees": "2450520000.00",
+   "raw": "2,450.52",
+   "pages": [
+    31,
+    47,
+    72,
+    79,
+    139,
+    226,
+    297,
+    317,
+    375,
+    384,
+    424
+   ],
+   "span": "Profit for the period/year 1,331.08 2,450.52 1,764.04 754.04",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2023",
+   "status": "present",
+   "value_rupees": "1764040000.00",
+   "raw": "1,764.04",
+   "pages": [
+    31,
+    47,
+    72,
+    79,
+    139,
+    226,
+    297,
+    317,
+    375,
+    384,
+    424
+   ],
+   "span": "Profit for the period/year 1,331.08 2,450.52 1,764.04 754.04",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2024",
+   "status": "present",
+   "value_rupees": "64215930000.00",
+   "raw": "64,215.93",
+   "pages": [
+    78,
+    297,
+    316,
+    411,
+    449,
+    450
+   ],
+   "span": "Total Assets 76,056.60 64,215.93 40,862.81 26,424.74",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2023",
+   "status": "present",
+   "value_rupees": "40862810000.00",
+   "raw": "40,862.81",
+   "pages": [
+    78,
+    297,
+    316,
+    411,
+    449
+   ],
+   "span": "Total Assets 76,056.60 64,215.93 40,862.81 26,424.74",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2024",
+   "status": "present",
+   "value_rupees": "-19365630000.00",
+   "raw": "(19,365.63)",
+   "pages": [
+    60,
+    80,
+    318,
+    451
+   ],
+   "span": "Net cash used in operating activities (A) (6,784.94) (19,365.63) (11,727.95) (5,531.47)",
+   "note": ""
+  }
+ ]
+}

@@ -3,8 +3,8 @@
  "doc_id": "leap_india_rhp_2026",
  "doc_sha256": "25543f664eebb171de8c639d8876c9bac6d40223c19ca629f2d804ef2d32f0b5",
  "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
- "labelled_on": "2026-10-24",
- "split": "heldout",
+ "labelled_on": "2026-10-26",
+ "split": "dev",
  "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
  "fields": [
   {

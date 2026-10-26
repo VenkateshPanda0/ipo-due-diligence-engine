@@ -1,0 +1,250 @@
+{
+ "schema_version": 1,
+ "doc_id": "powerica_rhp_2026",
+ "doc_sha256": "d357838f19500e6d351e52952144223848c4c7f6eeeaad28b1f194a5eef6f3a1",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-26",
+ "split": "heldout",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "present",
+   "value_rupees": "7000000000.00",
+   "raw": "700.00",
+   "pages": [
+    3,
+    11,
+    19,
+    125
+   ],
+   "span": "PREMIUM OF ₹[●] PER EQUITY SHARE) (“OFFER PRICE”) AGGREGATING UP TO ₹1,100.00 CRORES COMPRISING A FRESH ISSUE OF UP TO [●] EQUITY SHARES OF FACE VALUE OF ₹ 5 EACH AGGREGATING UP TO ₹700.00",
+   "note": ""
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "present",
+   "value_rupees": "4000000000.00",
+   "raw": "400.00",
+   "pages": [
+    3,
+    12,
+    19
+   ],
+   "span": "CRORES BY OUR COMPANY (“FRESH ISSUE”) AND AN OFFER FOR SALE OF UP TO [●] EQUITY SHARES OF FACE VALUE OF ₹ 5 EACH AGGREGATING UP TO ₹400.00 CRORES (“OFFERED SHARES”) BY THE PROMOTER",
+   "note": ""
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "present",
+   "value_rupees": "11000000000.00",
+   "raw": "1,100.00",
+   "pages": [
+    1,
+    3,
+    12,
+    19,
+    102,
+    449
+   ],
+   "span": "aggregating up to ₹400.00 crores ₹1,100.00 crores further details, see “Other Regulatory and Statutory",
+   "note": ""
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "absent",
+   "note": "General corporate purposes shown as [●] (p20)."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "Objects are debt repayment and general corporate purposes."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "1",
+   "raw": "has appointed Crisil Ratings Limited as the Monitoring Agency",
+   "pages": [
+    99
+   ],
+   "span": "Our Company has appointed Crisil Ratings Limited as the Monitoring Agency in accordance with Regulation 41 of the SEBI",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2025",
+   "status": "present",
+   "value_rupees": "27109300000.00",
+   "raw": "2,710.93",
+   "pages": [
+    92,
+    139,
+    140,
+    141,
+    142,
+    143,
+    325,
+    405
+   ],
+   "span": "Total Income 1,474.87 2,710.93 2,356.77 2,422.42",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2024",
+   "status": "present",
+   "value_rupees": "23567700000.00",
+   "raw": "2,356.77",
+   "pages": [
+    92,
+    139,
+    140,
+    141,
+    142,
+    143,
+    325,
+    405
+   ],
+   "span": "Total Income 1,474.87 2,710.93 2,356.77 2,422.42",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "26532700000.00",
+   "raw": "2,653.27",
+   "pages": [
+    21,
+    44,
+    62,
+    92,
+    135,
+    139,
+    140,
+    141,
+    142,
+    143,
+    246,
+    248,
+    325,
+    405,
+    406
+   ],
+   "span": "Revenue from operations 1,447.44 2,653.27 2,210.00 2,378.26",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2024",
+   "status": "present",
+   "value_rupees": "22100000000.00",
+   "raw": "2,210.00",
+   "pages": [
+    21,
+    44,
+    62,
+    92,
+    135,
+    139,
+    140,
+    141,
+    142,
+    143,
+    246,
+    248,
+    325,
+    405,
+    406,
+    407
+   ],
+   "span": "Revenue from operations 1,447.44 2,653.27 2,210.00 2,378.26",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2025",
+   "status": "present",
+   "value_rupees": "2546600000.00",
+   "raw": "254.66",
+   "pages": [
+    21,
+    92,
+    325,
+    407
+   ],
+   "span": "Restated Profit Before Tax 181.55 254.66 340.71 185.85",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2025",
+   "status": "present",
+   "value_rupees": "1758300000.00",
+   "raw": "175.83",
+   "pages": [
+    92,
+    325,
+    387,
+    388,
+    406,
+    407
+   ],
+   "span": "Restated Profit After Tax 134.55 175.83 226.11 106.45",
+   "note": "Before the split between owners and non-controlling interest (166.82 attributable to owners)."
+  },
+  {
+   "key": "financials.profit_after_tax.FY2024",
+   "status": "present",
+   "value_rupees": "2261100000.00",
+   "raw": "226.11",
+   "pages": [
+    92,
+    325,
+    387,
+    388,
+    406,
+    409
+   ],
+   "span": "Restated Profit After Tax 134.55 175.83 226.11 106.45",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2025",
+   "status": "present",
+   "value_rupees": "24148300000.00",
+   "raw": "2,414.83",
+   "pages": [
+    91,
+    324,
+    362,
+    430
+   ],
+   "span": "Total Assets 2,729.73 2,414.83 2,084.91 2,125.81",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2024",
+   "status": "present",
+   "value_rupees": "20849100000.00",
+   "raw": "2,084.91",
+   "pages": [
+    91,
+    324,
+    362,
+    430
+   ],
+   "span": "Total Assets 2,729.73 2,414.83 2,084.91 2,125.81",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "2474100000.00",
+   "raw": "247.41",
+   "pages": [
+    93,
+    326,
+    409,
+    410
+   ],
+   "span": "Net Cash from Operating Activities (A) 219.72 247.41 283.38 252.17",
+   "note": ""
+  }
+ ]
+}

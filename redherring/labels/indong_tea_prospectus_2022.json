@@ -3,8 +3,8 @@
  "doc_id": "indong_tea_prospectus_2022",
  "doc_sha256": "62998a7ff4487a10fc6498d399286a3301057dcef8425cc21b086713ca462a47",
  "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
- "labelled_on": "2026-10-24",
- "split": "heldout",
+ "labelled_on": "2026-10-26",
+ "split": "dev",
  "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
  "fields": [
   {

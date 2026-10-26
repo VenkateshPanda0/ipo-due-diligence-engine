@@ -27,7 +27,7 @@ Fetcher with integrity checks, page-tagged parser, tables, units, CLI, CI, decis
 | Shipped rules | twelve (nine regulatory with clause and date, three heuristic) |
 | One-page HTML report per filing, figures linked to PDF pages | done (`rh report`) |
 | Further rules: related-party, concentration, pledges, auditor, litigation, valuation | not started |
-| Prompt-injection red-team set (hostile PDFs through parse and extract) | not started; prompt-level defences are tested |
+| Prompt-injection red-team set (hostile PDFs through parse and extract) | started: four end-to-end cases in `tests/test_redteam.py` plus hidden-text tests; no corpus of real attack PDFs |
 
 ## Next, in order
 1. A fourth held-out set (three more filings, labels first). Sets 1 to 3 are now development data.

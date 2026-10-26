@@ -16,6 +16,9 @@ not.
 | A server that lies about its size or cuts the connection | length and `%%EOF` checks, bounded Range resumes | `ingest/fetch.py` | `tests/test_fetch.py` |
 | robots.txt unreachable | the fetch stops (RFC 9309: unavailable means do not crawl); the tool does not change its identity to get through | `ingest/fetch.py` | `tests/test_fetch.py` |
 
+| Broken or hostile files (garbage bytes, empty file, a page of thousands of tiny words) | a bad file fails alone with its name in the error and the rest of the batch continues; parse time is bounded on dense pages | `cli.py`, `parse/pdf.py` | `tests/test_redteam.py` |
+| Instructions or planted statements in visible prose | the deterministic pipeline reads figures only from labelled cells and cited sentences, never obeys text; numbers in prose are not statement rows | `extract/` | `tests/test_redteam.py` |
+
 ## Not defended (known)
 
 - **Text drawn as an image.** There is no OCR; a page of pixels contributes nothing, true or false.

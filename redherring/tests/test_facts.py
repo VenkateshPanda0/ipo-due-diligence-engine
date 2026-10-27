@@ -75,13 +75,27 @@ def test_balance_sheet_items_are_keyed_by_fiscal_year_for_trend_rules() -> None:
 
 def test_a_strong_plurality_is_kept_but_a_weak_one_is_not() -> None:
     def many(raws: list[str]) -> list[CitedNumber]:
-        return [cn(Concept.TOTAL_INCOME, r, FY26, table_id=i) for i, r in enumerate(raws)]
+        return [cn(Concept.PROFIT_AFTER_TAX, r, FY26, table_id=i) for i, r in enumerate(raws)]
 
     strong = facts_from(build_consensus(many(["100.00"] * 4 + ["55.00"] * 2 + ["7.00"])), [])
-    assert "financials.total_income.FY2026" in strong  # 4 supporters vs runner-up 2
+    assert "financials.profit_after_tax.FY2026" in strong  # 4 supporters vs runner-up 2
     weak = facts_from(build_consensus(many(["100.00"] * 3 + ["55.00"] * 2 + ["7.00"] * 2)), [])
     assert weak == {}  # 3 vs 2: not decisive
     tie = facts_from(build_consensus(many(["100.00"] * 2 + ["55.00"] * 2)), [])
     assert tie == {}
     lone = facts_from(build_consensus(many(["100.00"])), [])
-    assert "financials.total_income.FY2026" in lone
+    assert "financials.profit_after_tax.FY2026" in lone
+
+
+def test_a_size_with_a_narrow_lead_is_kept_only_when_it_is_also_the_largest_figure() -> None:
+    def sizes(raws: list[str]) -> list[CitedNumber]:
+        return [cn(Concept.TOTAL_ASSETS, r, FY26, table_id=i) for i, r in enumerate(raws)]
+
+    largest_leads = facts_from(build_consensus(sizes(["100.00"] * 3 + ["55.00"] * 2)), [])
+    assert (
+        "financials.total_assets.FY2026" in largest_leads
+    )  # a subsidiary is smaller than its group
+    smaller_leads = facts_from(build_consensus(sizes(["55.00"] * 3 + ["100.00"] * 2)), [])
+    assert smaller_leads == {}  # the bigger figure has fewer sightings: not decisive
+    tie = facts_from(build_consensus(sizes(["100.00"] * 2 + ["55.00"] * 2)), [])
+    assert tie == {}

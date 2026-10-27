@@ -284,6 +284,19 @@ summed fact is verified part by part against the page (`IssueFact.parts`); a lon
 line and its "Total", or negative cash-flow lines, no longer qualify a table as an objects table.
 No labels exist for this fact yet; they belong in the next held-out set.
 
+## D-033 — Position and entity awareness in extraction and consensus (2026-10-27)
+
+Held-out run 4 (`docs/heldout-run-4.md`, first run 54%) showed that repetition is a poor proxy for
+correctness in 1,000-page filings. Decisions: (1) cover-table amounts are read by column position,
+not order of appearance; (2) consensus weights front-of-document readings double, gives readings
+under entity-qualified headers (excluding, standalone, subsidiary, segment, pro forma) weight 0,
+and lets trusted columns be corroborated by agreeing untrusted ones; (3) a figure is kept on a
+weighted lead of at least 2x, or, for size concepts only, a narrower lead when it is also the
+largest figure; (4) kerned labels ("T otal") are repaired before matching. Cost: a genuine
+subsidiary-only figure under a header that happens to say "subsidiary" is down-weighted, and the
+front-weight assumes the issuer's own figures come first; both were true for all 18 filings but
+that is a small sample. Abstention is preferred where definitions conflict (Tata Capital's PAT).
+
 ## Open items
 
 - Terms-of-use review for SEBI / BSE / NSE (see D-010).

@@ -30,7 +30,8 @@ _REJECT = re.compile(
     r"\bas a\b|\bturnover\b|\bcagr\b|(?:including|incl\.?|after|net of) oci\b"
 )
 # qualifiers such as "(A)", "(net)" and a trailing formula like "(VIII) = (V-VII)"
-_PARENS = r"(?:\s*\([^)]*\))*(?:\s*=\s*\([^)]*\))?"
+# (a last group may be left open where the label wraps: "(IX=")
+_PARENS = r"(?:\s*\([^)]*\))*(?:\s*=\s*\([^)]*\))?(?:\s*\([^)]*)?"
 
 # (concept, head pattern). The head must match the whole normalised label, optionally followed by
 # parenthetical qualifiers such as "(A)", "(net)" or "(I= a+b)". First match wins.
@@ -46,12 +47,13 @@ _HEADS: tuple[tuple[Concept, str], ...] = (
     ),
     (
         Concept.TAX_EXPENSE,
-        r"total tax expenses?|tax expenses?|total income tax expenses?|income tax expenses?",
+        r"(?:total |net )?(?:income )?tax expenses?(?:/\(?(?:credit|charge|benefit)\)?)?",
     ),
     (
         Concept.PROFIT_AFTER_TAX,
         r"(?:restated )?(?:net )?(?:profit|loss)(?:/\(?(?:loss|profit)\)?)?"
-        r"(?: for the (?:year|period)(?:/(?:year|period))?"
+        r"(?: for(?: the (?:year|period)(?:/(?:year|period))?"
+        r"(?: from continuing(?: operations)?)?)?"
         r"| after tax(?: but before extra[- ]?ordinary items)?"
         r"| after adjustments)",
     ),
@@ -78,10 +80,28 @@ _HEADS: tuple[tuple[Concept, str], ...] = (
 _COMPILED = tuple((c, re.compile(f"(?:{head}){_PARENS}")) for c, head in _HEADS)
 
 
+# Some PDFs print a capital apart from its word ("T otal assets"); rejoin only where the result is
+# a word statement labels use, so a real one-letter word ("a loss") is never glued on.
+_LABEL_WORDS = frozenset(
+    {
+        "total", "revenue", "other", "income", "profit", "loss", "tax", "trade", "net", "cash",
+        "finance", "employee", "depreciation", "borrowings", "current", "equity", "liabilities",
+        "expenses", "interest",
+    }
+)  # fmt: skip
+_SPLIT_CAP = re.compile(r"\b([a-z]) ([a-z]{2,})\b")
+
+
+def _rejoin(m: re.Match[str]) -> str:
+    joined = m.group(1) + m.group(2)
+    return joined if joined in _LABEL_WORDS else m.group(0)
+
+
 def normalise_label(raw: str) -> str:
     """Lower-case a row label and strip enumerators, footnote marks and note references."""
     s = raw.lower().replace(" ", " ")
     s = re.sub(r"[#*†‡]+", "", s)
+    s = _SPLIT_CAP.sub(_rejoin, s)
     while True:
         stripped = _ENUMERATOR.sub("", s, count=1)
         if stripped == s:

@@ -405,3 +405,53 @@ def test_defined_term_roles() -> None:
     assert IssueKey.FRESH_ISSUE_AMOUNT not in ofs_only
     price = _facts(_doc(_page(1, "aggregating to Rs. 34 million (the “Offer Price”)")))
     assert price == {}  # a price is not an issue size
+
+
+def _cover_table(first: str, fresh: str, ofs: str, total: str, head: list[list[str]]) -> Table:
+    row = [
+        first,
+        f"Up to [●] Equity Shares of face value of ₹2 each aggregating up to {fresh}",
+        f"Up to 127,562,573 Equity Shares of face value of ₹2 each aggregating up to {ofs}",
+        f"Up to [●] Equity Shares of face value of ₹2 each aggregating up to {total}",
+        "This Offer is being made in terms of Regulation 6(2) of the SEBI ICDR Regulations",
+    ]
+    rows = [*head, row]
+    return Table(pdf_pages=[1], row_pages=[1] * len(rows), unit=None, columns=[], rows=rows)
+
+
+LENSKART_HEAD = [
+    ["TYPE", "FRESH ISSUE", "OFFER", "TOTAL OFFER", "ELIGIBILITY"],
+    ["", "SIZE", "FOR SALE", "SIZE", ""],
+]
+
+
+def test_cover_table_cells_are_read_by_column_so_a_placeholder_does_not_shift_the_amounts() -> None:
+    """Lenskart: fresh ₹21,500.00 million, offer for sale and total still [●]. The text-proximity
+    reading took 21,500 for the offer for sale too and derived a total of 43,000."""
+    t = _cover_table(
+        "Fresh Issue and Offer for Sale",
+        "₹21,500.00 million",
+        "₹[●] million",
+        "₹[●] million",
+        LENSKART_HEAD,
+    )
+    facts = _facts(_doc(_page(1), tables=[t]))
+    assert facts[IssueKey.FRESH_ISSUE_AMOUNT][0] == Decimal(21_500_000_000)
+    assert IssueKey.OFS_AMOUNT not in facts
+    assert IssueKey.TOTAL_ISSUE_AMOUNT not in facts or facts[IssueKey.TOTAL_ISSUE_AMOUNT][
+        0
+    ] == Decimal(21_500_000_000)
+
+
+def test_cover_table_with_all_three_amounts_reads_them_by_column() -> None:
+    t = _cover_table(
+        "Fresh Issue and Offer for Sale",
+        "₹700.00 crores",
+        "₹400.00 crores",
+        "₹1,100.00 crores",
+        LENSKART_HEAD,
+    )
+    facts = _facts(_doc(_page(1), tables=[t]))
+    assert facts[IssueKey.FRESH_ISSUE_AMOUNT][0] == Decimal(7_000_000_000)
+    assert facts[IssueKey.OFS_AMOUNT][0] == Decimal(4_000_000_000)
+    assert facts[IssueKey.TOTAL_ISSUE_AMOUNT][0] == Decimal(11_000_000_000)

@@ -217,6 +217,56 @@ def _resolve(cands: dict[IssueKey, list[IssueFact]]) -> dict[IssueKey, IssueFact
     return {key: groups[key][value][0] for key, value in chosen.items()}
 
 
+_COVER_ORDER = re.compile(r"fresh.*offer\s+for\s+sale.*total", re.I | re.S)
+
+
+def _row_text(row: list[str]) -> str:
+    return " ".join(" ".join(c for c in row if c).split())
+
+
+def _cover_table_rows(doc: ParsedDocument, max_page: int) -> tuple[list[IssueFact], set[str]]:
+    """Fresh / offer-for-sale / total from a cover table read by column.
+
+    The standard cover table has the columns "Fresh Issue size | Offer for Sale size | Total Offer
+    size" and one row "Fresh Issue and Offer for Sale | cell | cell | cell". Read as flattened text,
+    a "[●]" cell lets the next amount slide into the wrong role (Lenskart: the fresh issue's
+    ₹21,500 million became the offer for sale as well). Here the three cells after the type cell
+    are fresh, offer for sale and total, in that order, when the rows above name the columns in
+    that order. Returns the facts and the row texts handled, so the text readers skip them.
+    """
+    facts: list[IssueFact] = []
+    handled: set[str] = set()
+    for t in doc.tables:
+        if t.pdf_pages[0] > max_page:
+            continue
+        for i, row in enumerate(t.rows):
+            first = row[0].lower() if row else ""
+            if "fresh issue" not in first or "offer for sale" not in first:
+                continue
+            above = t.rows[max(0, i - 5) : i]
+            width = max((len(r) for r in above), default=0)
+            # column by column: a header split over rows ("OFFER" / "FOR SALE") reads in order
+            head = " ".join(
+                " ".join(r[j] for r in above if j < len(r) and r[j]) for j in range(width)
+            )
+            cells = [c for c in row[1:] if c.strip()]
+            slots = [c for c in cells if "aggregat" in c.lower()][:3]
+            if len(slots) < 3 or not _COVER_ORDER.search(head):
+                continue
+            page = t.row_pages[i] if i < len(t.row_pages) else t.pdf_pages[0]
+            text = _row_text(row)
+            handled.add(text)
+            for key, cell in zip(
+                (IssueKey.FRESH_ISSUE_AMOUNT, IssueKey.OFS_AMOUNT, IssueKey.TOTAL_ISSUE_AMOUNT),
+                slots,
+                strict=True,
+            ):
+                m = re.search(_AMT, " ".join(cell.split()), re.I)
+                if m and (amount := _amount(m)):
+                    facts.append(_fact(key, amount, page, " ".join(cell.split())[:200], 0.9))
+    return facts, handled
+
+
 def _cover_amounts(doc: ParsedDocument, max_page: int) -> list[IssueFact]:
     cands: dict[IssueKey, list[IssueFact]] = {}
     row_na: dict[int, bool] = {}
@@ -224,7 +274,12 @@ def _cover_amounts(doc: ParsedDocument, max_page: int) -> list[IssueFact]:
     def add(fact: IssueFact) -> None:
         cands.setdefault(fact.key, []).append(fact)
 
+    positional, handled = _cover_table_rows(doc, max_page)
+    for fact in positional:
+        add(fact)
     for page, text in _segments(doc, max_page):
+        if text in handled:
+            continue  # read by column above
         for dm in _DEFINED_AFTER.finditer(text):
             amount = _amount(dm)
             if amount:

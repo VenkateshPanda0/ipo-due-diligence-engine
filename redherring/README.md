@@ -5,10 +5,12 @@ with page-level citations, a red-flag engine, version diffs, and validation agai
 benchmark and post-listing outcomes.
 
 **Status: early.** On filings it had never seen, the first run read about 76% of labelled figures
-correctly, twice in a row (2 to 4 wrong values per 41, none invented, the rest withheld); after
-the fixes a third unseen set of three scored 97% (38 of 39, none wrong, none invented). Three
-filings is a small sample, and every filing scored is development data once its defects are fixed. Labels were written by an AI with no second reader. See `docs/status.md` for
-all numbers and known defects, `docs/heldout-run-1.md`, `-2.md` and `-3.md` for what went
+correctly, twice in a row (2 to 4 wrong values per 41, none invented, the rest withheld); a
+third unseen set scored 97% (38 of 39) and a fourth, made of three 1,000-page filings, only 54%
+(21 of 39, three wrong, three invented values). Three filings is a small sample, the extractor
+does not yet generalise reliably to long and complex filings, and every filing scored is
+development data once its defects are fixed. Labels were written by an AI with no second reader. See `docs/status.md` for
+all numbers and known defects, `docs/heldout-run-1.md`, `-2.md`, `-3.md` and `-4.md` for what went
 wrong, `docs/roadmap.md` for what is done, and `docs/CHARTER.md` for how the project is run.
 
 > Not investment advice. Automated analysis of public disclosures; verify against the source

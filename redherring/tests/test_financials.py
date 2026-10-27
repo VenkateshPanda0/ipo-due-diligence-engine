@@ -28,6 +28,10 @@ from redherring.parse.units import Unit
         ("  Total   assets  ", "total assets"),
         ("III Total Income (I+II)", "total income (i+ii)"),  # roman numeral without a full stop
         ("VII Profit/(Loss) Before Tax (V-VI)", "profit/(loss) before tax (v-vi)"),
+        ("T otal assets", "total assets"),  # a capital split from its word by kerning (Lenskart)
+        ("T otal Current Liabilities", "total current liabilities"),
+        ("R evenue from operations", "revenue from operations"),
+        ("a loss on sale", "a loss on sale"),  # a real article is left alone
         ("Civil works", "civil works"),  # "civil" is not a numeral
         ("Mix of products", "mix of products"),
     ],
@@ -68,6 +72,17 @@ def test_normalise_label(raw: str, expected: str) -> None:
         ("Profit before taxation", Concept.PROFIT_BEFORE_TAX),
         ("Net Profit /Loss after adjustments", Concept.PROFIT_AFTER_TAX),
         ("Profit/Loss After Tax but Before Extra ordinary Items", Concept.PROFIT_AFTER_TAX),
+        ("T otal assets", Concept.TOTAL_ASSETS),
+        ("Total tax expense / (credit) (VIII)", Concept.TAX_EXPENSE),
+        ("Total tax expense/(credit)", Concept.TAX_EXPENSE),
+        ("Net tax expenses", Concept.TAX_EXPENSE),
+        ("Restated Profit/ (loss) for the period/ year (IX=", Concept.PROFIT_AFTER_TAX),  # wrapped
+        (
+            "Profit for the period / year from continuing operations (VIII-IX)",
+            Concept.PROFIT_AFTER_TAX,
+        ),
+        ("Restated loss for", Concept.PROFIT_AFTER_TAX),  # label cut by a line wrap
+        ("Profit for the period / year from continuing", Concept.PROFIT_AFTER_TAX),
         ("EBITDA", Concept.EBITDA),
         ("EBITDA(3) (in ₹ million)", Concept.EBITDA),
         ("Adjusted EBITDA (G = E+F)", Concept.ADJUSTED_EBITDA),

@@ -1,7 +1,7 @@
 from datetime import date
 from decimal import Decimal
 
-from redherring.extract.consensus import build_consensus
+from redherring.extract.consensus import Consensus, build_consensus
 from redherring.extract.models import CitedNumber, Concept
 from redherring.extract.periods import Period, period_key
 from redherring.parse.units import Unit
@@ -393,3 +393,78 @@ def test_trusted_columns_are_those_that_foot_and_never_fail() -> None:
         cn(Concept.TOTAL_INCOME, "1.00", table_id=3, period=FY25),
     ]
     assert trusted_columns(run_footing([*ok, *bad, *mixed])) == {(1, K26), (3, K26)}
+
+
+def test_figures_printed_in_the_front_of_the_document_outweigh_a_subsidiary_appendix() -> None:
+    """Lenskart: the group's total income 70,092.76 is in the offer summary and the financial
+    information; two subsidiary statements near the end each foot on their own and tied it 2-2."""
+    main = [
+        cn(Concept.TOTAL_INCOME, "70,092.76", table_id=1, page=35),
+        cn(Concept.TOTAL_INCOME, "70,092.76", table_id=2, page=124),
+        cn(Concept.TOTAL_INCOME, "70,092.76", table_id=3, page=412),
+    ]
+    subs = [
+        cn(Concept.TOTAL_INCOME, "2,726.38", table_id=4, page=800),
+        cn(Concept.TOTAL_INCOME, "2,726.38", table_id=5, page=826),
+    ]
+    (c,) = build_consensus([*main, *subs], n_pages=1000)
+    assert c.chosen.raw == "70,092.76"
+    assert c.strength == 5 and c.rival_strength == 2
+    assert _kept(c)
+
+
+def _kept(c: Consensus) -> bool:
+    from redherring.flags.facts import _keep
+
+    return _keep(c)
+
+
+def test_untrusted_readings_that_agree_with_a_trusted_figure_corroborate_it() -> None:
+    """Lenskart: the offer-summary table has no other-income line, so it cannot foot and is not
+    trusted, but it prints the same 70,092.76 as the two statements that do foot."""
+    trusted_main = [
+        cn(Concept.TOTAL_INCOME, "70,092.76", table_id=2, page=124),
+        cn(Concept.TOTAL_INCOME, "70,092.76", table_id=3, page=412),
+    ]
+    summary = cn(Concept.TOTAL_INCOME, "70,092.76", table_id=1, page=35)  # not trusted, agrees
+    noise = cn(Concept.TOTAL_INCOME, "9,999.00", table_id=9, page=90)  # not trusted, disagrees
+    sub = [cn(Concept.TOTAL_INCOME, "2,726.38", table_id=t, page=800 + t) for t in (4, 5)]
+    trusted = {(t, K26) for t in (2, 3, 4, 5)}
+    (c,) = build_consensus([*trusted_main, summary, noise, *sub], trusted=trusted, n_pages=1000)
+    assert c.chosen.raw == "70,092.76"
+    assert c.supporters == 3  # the trusted two plus the agreeing summary
+    assert c.untrusted_ignored == 1  # only the disagreeing reading is set aside
+    assert _kept(c)
+
+
+def test_a_reading_under_a_qualified_entity_header_does_not_count_for_the_group() -> None:
+    """Tata Capital prints 'TCL (excluding TMFL)' columns with their own total income beside the
+    consolidated ones; the qualified reading is another entity's figure."""
+    group = [cn(Concept.TOTAL_INCOME, "283,698.7", table_id=t, page=20 + t) for t in (1, 2)]
+    qualified = []
+    for t in (3, 4, 5):
+        v = cn(Concept.TOTAL_INCOME, "235,673.1", table_id=t, page=300 + t)
+        qualified.append(v.model_copy(update={"column_header": "TCL (excluding TMFL) Fiscal 2025"}))
+    (c,) = build_consensus([*group, *qualified], n_pages=800)
+    assert c.chosen.raw == "283,698.7"
+    assert _kept(c)
+
+
+def test_for_size_concepts_the_larger_supported_figure_breaks_a_near_tie_with_a_subsidiary() -> (
+    None
+):
+    """Lenskart total assets: the group's 104,710 (front page weight 2, plus one more) against a
+    subsidiary's 1,099.6 printed twice; a subsidiary cannot be larger than its group."""
+    main = [
+        cn(Concept.TOTAL_ASSETS, "104,710.19", table_id=1, page=122),
+        cn(Concept.TOTAL_ASSETS, "104,710.19", table_id=2, page=700),
+    ]
+    sub = [cn(Concept.TOTAL_ASSETS, "1,099.60", table_id=t, page=800 + t) for t in (3, 4)]
+    (c,) = build_consensus([*main, *sub], n_pages=1000)
+    assert c.chosen.raw == "104,710.19"
+    assert _kept(c)
+    # profit is not a size: a subsidiary may out-earn its group, so a 3-2 split is still withheld
+    prof = [cn(Concept.PROFIT_AFTER_TAX, "100.00", table_id=t, page=700 + t) for t in (1, 2)]
+    prof_sub = [cn(Concept.PROFIT_AFTER_TAX, "900.00", table_id=t, page=800 + t) for t in (3, 4)]
+    (p,) = build_consensus([*prof, *prof_sub], n_pages=1000)
+    assert not _kept(p)

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-from redherring.extract.consensus import Consensus
+from redherring.extract.consensus import SIZE_CONCEPTS, Consensus
 from redherring.extract.issue import IssueFact
 from redherring.flags.engine import Citation, Fact
 from redherring.parse.units import MULTIPLIER
@@ -21,7 +21,16 @@ def _keep(c: Consensus) -> bool:
     """
     if c.total == 1:
         return True
-    return c.supporters >= 2 and c.supporters >= 2 * c.runner_up
+    if c.supporters >= 2 and c.strength >= 2 * c.rival_strength:
+        return True
+    # a size cannot be smaller for the group than for one of its subsidiaries: where the rival is
+    # the smaller figure, outweighing it, even by less than two to one, is enough
+    return (
+        c.concept in SIZE_CONCEPTS
+        and c.chosen_is_largest
+        and c.supporters >= 2
+        and c.strength > c.rival_strength
+    )
 
 
 def facts_from(consensus: list[Consensus], issue_facts: list[IssueFact]) -> dict[str, Fact]:

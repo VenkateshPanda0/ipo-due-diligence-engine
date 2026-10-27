@@ -3,6 +3,28 @@
 Latest first. Every number below was printed by `rh parse`, `rh analyze` or `rh eval` on the nine
 filings in `data/sources.toml`; nothing is estimated.
 
+## 2026-10-27
+
+### Benchmark (`rh eval`, 283 labelled fields over eighteen filings)
+| set | docs | fields (present/absent) | value accuracy | citation accuracy | abstained | wrong | hallucinated |
+|---|---|---|---|---|---|---|---|
+| held-out set 1, **first run** | 3 | 51 (41/10) | 31/41 (76%) | 29/31 | 6 | 4 | 0/10 |
+| held-out set 2, **first run** (after set-1 fixes) | 3 | 49 (42/7) | 32/42 (76%) | 30/32 | 8 | 2 | 0/7 |
+| held-out set 3, **first run** (after set-2 fixes) | 3 | 50 (39/11) | 38/39 (97%) | 35/38 | 1 | 0 | 0/11 |
+| held-out set 4, **first run** (after set-3 fixes) | 3 | 51 (39/12) | 21/39 (54%) | 16/21 | 15 | 3 | 3/12 |
+| set 4 after its fixes (no longer held out) | 3 | 51 (40/11) | 38/40 (95%) | 33/38 | 2 | 0 | 0/11 |
+| all eighteen filings now (every one has driven a fix) | 18 | 283 (232/51) | 229/232 (99%) | 203/229 | 3 | 0 | 0/51 |
+
+Set 4 is the worst first run so far: three 1,000-page filings with subsidiary statements that also
+foot, wrapped and kerned labels, and a cover table with a placeholder column. Three flagged
+hallucinations of which one was a labeller error (disclosed and corrected in
+`docs/heldout-run-4.md`). Honest reading of the first-run column: 76%, 76%, 97%, 54%; the extractor
+does not yet generalise reliably to long, complex filings, and each batch has still exposed new
+failure modes. Three abstentions remain (Synoptics FY2022 total income, Tata Capital PAT FY2025
+and FY2024, where the filing's KPI tables print owners' profit and the statement total includes
+minority interests: a definitional conflict the tool declines to guess).
+Labels were written by the maintainer, an AI, with no second reader (`labels/README.md`).
+
 ## 2026-10-24 (evening)
 
 ### Benchmark (`rh eval`, 232 labelled fields over fifteen filings)

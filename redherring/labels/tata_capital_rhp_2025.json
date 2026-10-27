@@ -1,0 +1,196 @@
+{
+ "schema_version": 1,
+ "doc_id": "tata_capital_rhp_2025",
+ "doc_sha256": "fab5028547f218ad942df616b77c4fc985f4b911aced59cc65e74ba69c2e1e86",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-27",
+ "split": "heldout",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "absent",
+   "note": "Fresh issue of 210,000,000 shares, amount [●] million."
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "absent",
+   "note": "Offer for sale of 265,824,280 shares, amount [●] million."
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "absent",
+   "note": "Offer amount [●] million."
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "absent",
+   "note": "Single object: augmenting Tier-I capital (p144); no general corporate purposes amount."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "No such object."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "1",
+   "raw": "has appointed CARE Ratings Limited",
+   "pages": [
+    115,
+    148
+   ],
+   "span": "Our Company has appointed CARE Ratings Limited, a credit rating agency registered with SEBI, as the monitoring agency to",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2025",
+   "status": "present",
+   "value_rupees": "283698700000.0",
+   "raw": "283,698.7",
+   "pages": [
+    23,
+    106,
+    153,
+    159,
+    161,
+    316,
+    326,
+    424,
+    433,
+    630
+   ],
+   "span": "Total Income 76,916.5 65,574.0 283,698.7 181,983.8 136,374.9",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2024",
+   "status": "present",
+   "value_rupees": "181983800000.0",
+   "raw": "181,983.8",
+   "pages": [
+    23,
+    106,
+    153,
+    159,
+    161,
+    316,
+    326,
+    424,
+    630
+   ],
+   "span": "Total Income 76,916.5 65,574.0 283,698.7 181,983.8 136,374.9",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "283127400000.0",
+   "raw": "283,127.4",
+   "pages": [
+    106
+   ],
+   "span": "Total revenue from operations 76,648.1 65,462.8 283,127.4 181,748.2 136,288.5",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2024",
+   "status": "present",
+   "value_rupees": "181748200000.0",
+   "raw": "181,748.2",
+   "pages": [
+    106
+   ],
+   "span": "Total revenue from operations 76,648.1 65,462.8 283,127.4 181,748.2 136,288.5",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2025",
+   "status": "present",
+   "value_rupees": "49185600000.0",
+   "raw": "49,185.6",
+   "pages": [
+    106,
+    454
+   ],
+   "span": "Profit before tax from continuing operations (VI + 13,821.9 6,416.3 49,185.6 43,920.3 39,365.6",
+   "note": ""
+  },
+  {
+   "key": "financials.tax_expense.FY2025",
+   "status": "present",
+   "value_rupees": "12635400000.0",
+   "raw": "12,635.4",
+   "pages": [
+    106,
+    454,
+    634
+   ],
+   "span": "Net tax expenses 3,412.6 1,694.2 12,635.4 10,650.7 9,907.9",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2025",
+   "status": "present",
+   "value_rupees": "36550200000.0",
+   "raw": "36,550.2",
+   "pages": [
+    106
+   ],
+   "span": "Profit for the period / year from continuing 10,409.3 4,722.1 36,550.2 33,269.6 29,457.7",
+   "note": "The statement has no other profit line; 'from continuing operations' is the profit for the year."
+  },
+  {
+   "key": "financials.profit_after_tax.FY2024",
+   "status": "present",
+   "value_rupees": "33269600000.0",
+   "raw": "33,269.6",
+   "pages": [
+    106
+   ],
+   "span": "Profit for the period / year from continuing 10,409.3 4,722.1 36,550.2 33,269.6 29,457.7",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2025",
+   "status": "present",
+   "value_rupees": "2484650100000.0",
+   "raw": "2,484,650.1",
+   "pages": [
+    105,
+    423,
+    431,
+    637
+   ],
+   "span": "Total assets 2,522,542.8 2,187,374.4 2,484,650.1 1,766,939.8 1,356,261.0",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2024",
+   "status": "present",
+   "value_rupees": "1766939800000.0",
+   "raw": "1,766,939.8",
+   "pages": [
+    105,
+    423,
+    431,
+    637
+   ],
+   "span": "Total assets 2,522,542.8 2,187,374.4 2,484,650.1 1,766,939.8 1,356,261.0",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "-298724800000.0",
+   "raw": "(298,724.8)",
+   "pages": [
+    83,
+    641
+   ],
+   "span": "Net cash used in operating activities (48,799.8) (75,194.3) (298,724.8) (379,985.4) (231,896.0)",
+   "note": ""
+  }
+ ]
+}

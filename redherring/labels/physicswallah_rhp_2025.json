@@ -1,0 +1,235 @@
+{
+ "schema_version": 1,
+ "doc_id": "physicswallah_rhp_2025",
+ "doc_sha256": "ad4ff1fe70e4a141bd8dc25473bd077aa7c1816efc725cf4aa8508d6b6600129",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-27",
+ "split": "heldout",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "present",
+   "value_rupees": "31000000000.00",
+   "raw": "31,000.00",
+   "pages": [
+    3,
+    31,
+    163
+   ],
+   "span": "THE OFFER COMPRISES A FRESH ISSUE OF [●] EQUITY SHARES OF FACE VALUE OF ₹ 1 BY OUR COMPANY AGGREGATING UP TO ₹ 31,000.00 MILLION (“FRESH ISSUE”) AND AN OFFER FOR",
+   "note": ""
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "present",
+   "value_rupees": "3800000000.00",
+   "raw": "3,800.00",
+   "pages": [
+    3
+   ],
+   "span": "SALE OF [●] EQUITY SHARES OF FACE VALUE OF ₹ 1 EACH AGGREGATING UP TO ₹ 3,800.00 MILLION (“OFFER FOR SALE”) COMPRISING AN OFFER FOR SALE OF [●] EQUITY SHARES OF",
+   "note": ""
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "present",
+   "value_rupees": "34800000000.00",
+   "raw": "34,800.00",
+   "pages": [
+    3,
+    14,
+    31,
+    581
+   ],
+   "span": "A PRICE OF ₹ [●] PER EQUITY SHARE INCLUDING A SECURITIES PREMIUM OF ₹ [●] PER EQUITY SHARE (THE “OFFER PRICE”) AGGREGATING UP TO ₹ 34,800.00 MILLION (THE “OFFER”).",
+   "note": ""
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "absent",
+   "note": "Combined object with unidentified acquisitions; amounts [●] (p32)."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "Object VIII amount [●] (p32)."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "1",
+   "raw": "has appointed CARE Ratings Limited as a Monitoring Agency",
+   "pages": [
+    132
+   ],
+   "span": "Our Company has appointed CARE Ratings Limited as a Monitoring Agency in accordance with Regulation 41",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2025",
+   "status": "present",
+   "value_rupees": "30390890000.00",
+   "raw": "30,390.89",
+   "pages": [
+    34,
+    121,
+    365,
+    503
+   ],
+   "span": "Total income 9,054.11 6,602.45 30,390.89 20,153.48 7,725.44",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2024",
+   "status": "present",
+   "value_rupees": "20153480000.00",
+   "raw": "20,153.48",
+   "pages": [
+    34,
+    121,
+    265,
+    365,
+    503
+   ],
+   "span": "Total income 9,054.11 6,602.45 30,390.89 20,153.48 7,725.44",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "28866430000.00",
+   "raw": "28,866.43",
+   "pages": [
+    34,
+    59,
+    60,
+    84,
+    86,
+    121,
+    264,
+    365,
+    437
+   ],
+   "span": "Revenue from operations 8,470.88 6,351.96 28,866.43 19,407.10 7,443.18",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2024",
+   "status": "present",
+   "value_rupees": "19407100000.00",
+   "raw": "19,407.10",
+   "pages": [
+    34,
+    59,
+    60,
+    84,
+    86,
+    121,
+    264,
+    365,
+    437
+   ],
+   "span": "Revenue from operations 8,470.88 6,351.96 28,866.43 19,407.10 7,443.18",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2025",
+   "status": "present",
+   "value_rupees": "-2585520000.00",
+   "raw": "(2,585.52)",
+   "pages": [
+    121,
+    123,
+    265,
+    365,
+    369
+   ],
+   "span": "V Restated loss before tax (1,520.31) (1,021.72) (2,585.52) (11,926.94) (894.46)",
+   "note": ""
+  },
+  {
+   "key": "financials.tax_expense.FY2025",
+   "status": "present",
+   "value_rupees": "-152940000.00",
+   "raw": "(152.94)",
+   "pages": [
+    121,
+    510
+   ],
+   "span": "Total tax expense/(credit) (250.22) (303.60) (152.94) (615.64) (53.71)",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2025",
+   "status": "present",
+   "value_rupees": "-2432580000.00",
+   "raw": "(2,432.58)",
+   "pages": [
+    58,
+    121,
+    265,
+    365,
+    510,
+    515,
+    516
+   ],
+   "span": "Restated loss for (1,270.09) (718.12) (2,432.58) (11,311.30) (840.75)",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2024",
+   "status": "present",
+   "value_rupees": "-11311300000.00",
+   "raw": "(11,311.30)",
+   "pages": [
+    58,
+    121,
+    265,
+    365,
+    514,
+    515,
+    516
+   ],
+   "span": "Restated loss for (1,270.09) (718.12) (2,432.58) (11,311.30) (840.75)",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2025",
+   "status": "present",
+   "value_rupees": "41563810000.00",
+   "raw": "41,563.81",
+   "pages": [
+    119,
+    363
+   ],
+   "span": "Total assets 50,756.74 31,399.07 41,563.81 24,807.40 20,821.76",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2024",
+   "status": "present",
+   "value_rupees": "24807400000.00",
+   "raw": "24,807.40",
+   "pages": [
+    119,
+    363
+   ],
+   "span": "Total assets 50,756.74 31,399.07 41,563.81 24,807.40 20,821.76",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "5068970000.00",
+   "raw": "5,068.97",
+   "pages": [
+    123,
+    369,
+    517
+   ],
+   "span": "Net cash inflow from operating activities (A) 9,667.05 6,904.55 5,068.97 2,120.28 2,700.03",
+   "note": ""
+  }
+ ]
+}

@@ -3,8 +3,8 @@
  "doc_id": "veritas_finance_drhp_2025",
  "doc_sha256": "cf4a79ebe63c680fff9e3db0a087a4b097c3a180673ef1dbee948b898fdad837",
  "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
- "labelled_on": "2026-10-26",
- "split": "heldout",
+ "labelled_on": "2026-10-27",
+ "split": "dev",
  "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
  "fields": [
   {

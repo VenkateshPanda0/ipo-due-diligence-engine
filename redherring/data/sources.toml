@@ -168,3 +168,31 @@ doc_type = "drhp"
 platform = "mainboard"
 filing_date = 2025-01-21
 notes = "Held-out set 3. NBFC, offer-for-sale heavy. SEBI listing: filings/public-issues/jan-2025/veritas-finance-limited_91063.html"
+
+# Held-out set 4, added 2026-10-27. Labels are committed before the extractor is run on them.
+[[document]]
+doc_id = "lenskart_rhp_2025"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/oct-2025/1761802414095.pdf"
+issuer = "Lenskart Solutions Limited"
+doc_type = "rhp"
+platform = "mainboard"
+filing_date = 2025-10-30
+notes = "Held-out set 4. Retail. SEBI listing: filings/public-issues/oct-2025/lenskart-solutions-limited-rhp_97530.html"
+
+[[document]]
+doc_id = "tata_capital_rhp_2025"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/sep-2025/1759136346791.pdf"
+issuer = "Tata Capital Limited"
+doc_type = "rhp"
+platform = "mainboard"
+filing_date = 2025-09-26
+notes = "Held-out set 4. Large NBFC. SEBI listing: filings/public-issues/sep-2025/tata-capital-limited-rhp_96899.html"
+
+[[document]]
+doc_id = "physicswallah_rhp_2025"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/nov-2025/1762496128413.pdf"
+issuer = "PhysicsWallah Limited"
+doc_type = "rhp"
+platform = "mainboard"
+filing_date = 2025-11-07
+notes = "Held-out set 4. Edtech, loss-making. SEBI listing: filings/public-issues/nov-2025/physicswallah-limited-rhp_97665.html"

@@ -414,7 +414,7 @@ def test_a_leading_stub_column_left_of_years_that_hold_figures_stays_undated() -
 
 
 def test_label_column_is_found_behind_serial_and_blank_columns() -> None:
-    """Shah Investor's Home: Sr. No. | blank | blank | label | figures (label in the fourth cell)."""
+    """Shah Investor's Home: Sr. No. | blank | blank | label | figures."""
     columns = [
         "Sr. No.",
         "",

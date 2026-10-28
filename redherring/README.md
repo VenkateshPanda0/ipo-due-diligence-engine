@@ -65,8 +65,8 @@ A flag is a prompt to read the cited pages, not a verdict.
 
 ## How well does it work?
 
-Measured, not claimed. `rh eval` scores the extractor against 334 hand-labelled fields (272 present,
-62 deliberately absent) across 21 filings. The key number is the **first run on filings the tool
+Measured, not claimed. `rh eval` scores the extractor against 392 hand-labelled fields (318 present,
+74 deliberately absent) across 24 filings. The key number is the **first run on filings the tool
 had never seen**, with labels committed before the extractor was run:
 
 | Held-out set | Filings | Fields correct (first run) | Wrong | Invented |
@@ -76,9 +76,10 @@ had never seen**, with labels committed before the extractor was run:
 | 3 | Powerica, SRIT India, Veritas Finance | 38/39 (97%) | 0 | 0/11 |
 | 4 | Lenskart, Tata Capital, PhysicsWallah | 21/39 (54%) | 3 | 3/12 |
 | 5 | Zetwerk, Tonbo Imaging, Paras Healthcare | 33/38 (87%) | 1 | 2/13 |
+| 6 | Shah Investor's Home, Orient Cables, Nityas Gems | 40/46 (87%) | 0 | 0/12 |
 
-After the defects each set exposed were fixed, all 21 filings together read 267 of 272 present
-fields correctly (98%), with none wrong and none invented in 62 absent fields. That second number is
+After the defects each set exposed were fixed, all 24 filings together read 313 of 318 present
+fields correctly (98%), with none wrong and none invented in 74 absent fields. That second number is
 **development accuracy** and will flatter the tool; the first-run column is the honest estimate of
 how it will do on your next filing: roughly three fields in four to nine in ten, with the
 remainder withheld.
@@ -128,7 +129,7 @@ stages together and `report_html.py` and `diff.py` producing the outputs.
 | | |
 |---|---|
 | `docs/status.md` | Every current number and known defect |
-| `docs/heldout-run-1.md` … `-5.md` | Each held-out run: what failed, why, what changed |
+| `docs/heldout-run-1.md` … `-6.md` | Each held-out run: what failed, why, what changed |
 | `docs/decisions.md` | Design decisions and their trade-offs |
 | `docs/security.md` | Threat model for untrusted PDFs |
 | `docs/roadmap.md` | What is done and what is next |

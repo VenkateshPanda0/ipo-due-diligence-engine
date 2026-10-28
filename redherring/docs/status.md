@@ -3,6 +3,21 @@
 Latest first. Every number below was printed by `rh parse`, `rh analyze` or `rh eval` on the nine
 filings in `data/sources.toml`; nothing is estimated.
 
+## 2026-10-28 (evening)
+
+### Benchmark (`rh eval`, 392 labelled fields over twenty-four filings)
+| set | docs | fields (present/absent) | value accuracy | citation accuracy | abstained | wrong | hallucinated |
+|---|---|---|---|---|---|---|---|
+| held-out sets 1 to 5, **first runs** | 15 | see below | 76%, 76%, 97%, 54%, 87% | | | | |
+| held-out set 6, **first run** (after set-5 fixes) | 3 | 58 (46/12) | 40/46 (87%) | 33/40 | 6 | 0 | 0/12 |
+| set 6 after its fixes (no longer held out) | 3 | 58 (46/12) | 46/46 (100%) | 43/46 | 0 | 0 | 0/12 |
+| all twenty-four filings now (every one has driven a fix) | 24 | 392 (318/74) | 313/318 (98%) | 276/313 | 5 | 0 | 0/74 |
+
+Set 6 was the first run with the "re-read every absent label" check and found no labeller error.
+All six first-run misses were one filing whose summary statements put row labels in the fourth
+cell. Remaining abstentions are unchanged (Synoptics FY2022 total income; Tata Capital and
+Zetwerk profit after tax, each a definitional conflict). See `docs/heldout-run-6.md`.
+
 ## 2026-10-28
 
 ### Benchmark (`rh eval`, 334 labelled fields over twenty-one filings)

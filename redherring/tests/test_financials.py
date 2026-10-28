@@ -411,3 +411,42 @@ def test_a_leading_stub_column_left_of_years_that_hold_figures_stays_undated() -
     for raw, year in (("699.59", 2026), ("992.65", 2025), ("945.50", 2024)):
         p = got[raw]
         assert p is not None and p.end == date(year, 3, 31), raw
+
+
+def test_label_column_is_found_behind_serial_and_blank_columns() -> None:
+    """Shah Investor's Home: Sr. No. | blank | blank | label | figures (label in the fourth cell)."""
+    columns = [
+        "Sr. No.",
+        "",
+        "Particulars",
+        "Year ended March 31, 2026",
+        "",
+        "",
+        "Year ended March 31, 2025",
+    ]
+    rows = [
+        ["(II)", "", "", "Other Income", "92.33", "", "", "19.12"],
+        ["(III)", "", "", "Total Income (I+II)", "7,240.00", "", "", "9,446.51"],
+        ["(X)", "", "", "Profit after tax for the year", "1,310.64", "", "", "2,341.56"],
+    ]
+    t = Table(pdf_pages=[81], row_pages=[81] * 3, unit=Unit.LAKH, columns=columns, rows=rows)
+    by_concept = {v.concept: v.raw for v in extract_financials(_doc(t)) if v.raw == "7,240.00"}
+    assert by_concept == {Concept.TOTAL_INCOME: "7,240.00"}
+
+
+def test_a_dateless_caption_over_figures_does_not_hide_the_dated_header_beside_it() -> None:
+    columns = [
+        "Sr. No.",
+        "Consolidated",
+        "Year ended March 31, 2026",
+        "",
+        "Year ended March 31, 2025",
+    ]
+    rows = [
+        ["a", "Cash", "6,429.16", "", "", "5,000.10"],
+        ["", "Total assets", "30,443.85", "", "", "30,256.51"],
+    ]
+    t = Table(pdf_pages=[80], row_pages=[80] * 2, unit=Unit.LAKH, columns=columns, rows=rows)
+    got = {v.raw: v.period for v in extract_financials(_doc(t))}
+    p = got["30,443.85"]
+    assert p is not None and p.end == date(2026, 3, 31)

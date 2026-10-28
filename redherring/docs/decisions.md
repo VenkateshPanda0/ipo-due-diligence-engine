@@ -312,6 +312,15 @@ a label whose field is absent must be re-read on the cover and the summary pages
 (two label errors this run). Residual risk: a bare year after an unrelated dated header cell
 inherits its wording.
 
+## D-035 — Label column and dateless captions (2026-10-28)
+
+Held-out run 6 (`docs/heldout-run-6.md`). The label column is searched among the first five cells
+(was three): numeric columns never qualify, so the cost of a wider search is nil, and statements
+with a serial, two blank cells and then the label are common in financial-services filings. A
+dateless header cell over figures borrows the dated header in the next cell only if that dated
+column holds no figures of its own; where the dated header has figures it is left alone. Residual
+risk: a genuine undated column immediately left of an empty dated column would be given that date.
+
 ## Open items
 
 - Terms-of-use review for SEBI / BSE / NSE (see D-010).

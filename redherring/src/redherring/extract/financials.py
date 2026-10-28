@@ -141,10 +141,10 @@ def _label_index(rows: list[list[str]]) -> int:
     """Index of the column holding row labels.
 
     Usually 0, but SME statements put a serial ("(a)", "1") first, then the particulars. The label
-    column is the first of the leading three whose cells are mostly words, not enumerators.
+    column is the first of the leading five whose cells are mostly words, not enumerators.
     """
     width = max((len(r) for r in rows), default=0)
-    for j in range(min(width, 3)):
+    for j in range(min(width, 5)):
         cells = [r[j] for r in rows if j < len(r) and r[j].strip()]
         if not cells:
             continue
@@ -190,7 +190,10 @@ def _header_by_cell(t: Table, body: list[list[str]], label_idx: int) -> dict[int
         if _own_figures(body, k, label_idx) < 2:
             continue
         near = min(dated, key=lambda d: (abs(d - k), -d))
-        if abs(near - k) <= 2 and not by_cell[k]:
+        # a caption without a date ("Consolidated") over figures whose dated header sits in the
+        # next cell, and holds none of its own, is only a caption
+        caption = bool(by_cell[k]) and near == k + 1 and _own_figures(body, near, label_idx) < 2
+        if abs(near - k) <= 2 and (not by_cell[k] or caption):
             if k < dated[0] and _own_figures(body, near, label_idx) >= 2:
                 continue  # a stub column (a quarter) left of years that each hold figures
             by_cell[k] = by_cell[near]

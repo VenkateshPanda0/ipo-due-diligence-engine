@@ -1,57 +1,146 @@
 # RedHerring
 
-Forensic analysis of Indian IPO offer documents (DRHP / RHP / Prospectus): structured extraction
-with page-level citations, a red-flag engine, version diffs, and validation against a labelled
-benchmark and post-listing outcomes.
+**A forensic reader for Indian IPO offer documents.** Give it a DRHP, RHP or Prospectus; it gives
+back the numbers that matter, each tied to the PDF page it came from, and a short list of
+diligence flags with the evidence beside them. Where it cannot be sure, it says nothing rather
+than guess.
 
-**Status: early.** On filings it had never seen, the first run read about 76% of labelled figures
-correctly, twice in a row (2 to 4 wrong values per 41, none invented, the rest withheld); a
-third unseen set scored 97% (38 of 39), a fourth, made of three 1,000-page filings, only 54%
-(21 of 39, three wrong, three invented values, one of them a labelling error), and a fifth 87%
-(33 of 38, one wrong). Three filings is a small sample, the extractor
-does not yet generalise reliably to long and complex filings, and every filing scored is
-development data once its defects are fixed. Labels were written by an AI with no second reader. See `docs/status.md` for
-all numbers and known defects, `docs/heldout-run-1.md`, `-2.md`, `-3.md`, `-4.md` and `-5.md` for what went
-wrong, `docs/roadmap.md` for what is done, and `docs/CHARTER.md` for how the project is run.
+> Not investment advice. This is automated analysis of public filings. Verify every figure
+> against the source document; each one links to its page.
 
-> Not investment advice. Automated analysis of public disclosures; verify against the source
-> document.
+---
 
-This project lives in the `redherring/` folder of the `ipo-due-diligence-engine` repository and is
-independent of the code around it (see `docs/decisions.md` for why, and how to split it out).
+## Why it exists
 
-## What works
+An offer document runs to 400 to 1,500 pages. The facts a reader needs (how much is fresh issue
+versus offer for sale, how much of the money is "general corporate purposes", whether profits turn
+into cash, whether receivables are outrunning sales) are spread across the cover, the summary, the
+objects section and the restated financial statements, often printed several times and sometimes
+inconsistently. RedHerring reads all the copies, checks them against each other, and shows its
+work.
 
-| Command | Does |
+## What you get
+
+For each filing, `rh report` writes one self-contained HTML page:
+
+- **Issue and objects**: fresh issue, offer for sale, total size, general corporate purposes,
+  unidentified acquisitions, debt repayment, monitoring agency, eligibility route (Reg. 6(1) or
+  6(2)).
+- **Annual figures in ₹ crore**: revenue, total income, profit before and after tax, total assets,
+  operating cash flow. Every number links to the PDF page it was read from.
+- **Flags with evidence**: what was tested, the figures used, the threshold, and the clause or
+  paper behind the threshold.
+- **What could not be checked**: missing inputs, withheld figures, pages with hidden text.
+
+`rh diff OLD NEW` compares two versions of one offering (for example a DRHP and its RHP) figure by
+figure and shows what changed in issue size, restated numbers and flags.
+
+## How it avoids being confidently wrong
+
+| Principle | What it means in practice |
 |---|---|
-| `rh ingest` | Downloads the PDFs in `data/sources.toml` politely (robots.txt, per-host rate limit, size cap, Range-resume of cut-off transfers, `%%EOF` check) and records URL, SHA-256, size, fetch time in `data/manifest.jsonl`. Idempotent. |
-| `rh parse` | Parses PDFs (in parallel) into page-tagged blocks and tables with units and assembled column headers; writes `data/parsed/` and a parse-quality table. |
-| `rh analyze` | Extracts statement values, issue facts and objects with page citations; re-checks each against the PDF text; runs footing and cross-table consensus; evaluates the red-flag rules in force for the filing's platform and date; writes `data/extracted/` with a per-rule audit. |
-| `rh report` | Writes one self-contained HTML page per filing (`data/reports/`): flags with evidence, issue and objects, annual figures in ₹ crore, what could not be checked, every figure linked to its PDF page. |
-| `rh diff OLD NEW` | Compares two versions of one offering (draft, updated draft, RHP, prospectus) figure by figure within printed precision, with both pages linked: issue size changes, restated annual figures, flags that appeared or went away. Writes `data/reports/diff_OLD__NEW.html`. Text changes are not compared yet. |
-| `rh label-check`, `rh eval` | Validate hand labels (`labels/`) against the PDFs and score the extractor, reporting development and held-out documents separately. |
+| **Cite or stay silent** | Every extracted value carries a page number and the text span it came from. After extraction the span is re-read from the PDF; a value that cannot be found on its cited page is discarded. |
+| **Cross-check the filing against itself** | A total income that appears in four tables must agree across them. Statement columns are tested for footing (assets = equity + liabilities; total income = revenue + other income; profit = PBT − tax). Disagreement is shown, not resolved by guesswork. |
+| **Prefer the issuer's own figures** | Subsidiary and peer statements foot just as well as the issuer's. Readings from the front of the document count more; columns headed "excluding", "standalone" or "subsidiary" count for nothing; a subsidiary figure cannot beat a group figure for size measures. |
+| **Abstain when definitions conflict** | Where a filing prints owners' profit in one table and total profit including minority interests in another, the tool declines to pick one. |
+| **Thresholds say where they come from** | A regulatory threshold names the SEBI ICDR clause, its effective date and the date it was last checked. A heuristic says it is a heuristic. Rules are not applied to a filing the rule was not in force for, nor to sectors where the test means something else (cash-flow tests skip lenders and developers). |
+| **Untrusted input** | Offer documents are treated as hostile text. Text a reader cannot see (tiny, off-page, white on white) is dropped or flagged, and facts resting on it are kept out of the rules. The shipped pipeline is deterministic and uses no language model; an optional LLM layer exists but is untested against a real model, and its output would be re-checked against the PDF. See `docs/security.md`. |
 
-Red-flag rules live in `src/redherring/flags/rules/*.toml`. A regulatory threshold names the
-clause, effective date and the date it was checked against SEBI's consolidated text; a heuristic
-threshold says so and cites the literature. Output is diligence flags with evidence, not advice.
+## Red-flag rules
 
-## Develop
+Twelve rules, each a TOML file in `src/redherring/flags/rules/`:
+
+| Area | Rule | Severity |
+|---|---|---|
+| Financials | Operating cash flow persistently below reported profit | medium |
+| Financials | Trade receivables growing much faster than revenue | medium |
+| Objects | No monitoring agency although the issue is above the threshold (mainboard, SME, SME before 8 Mar 2025) | high |
+| Objects | General corporate purposes close to the regulatory cap (mainboard, SME, SME before 8 Mar 2025) | medium |
+| Objects | General corporate purposes plus unidentified acquisitions close to the combined cap | medium |
+| Objects | Unidentified acquisitions close to their own cap | medium |
+| Objects | More than half of the fresh issue repays borrowings (heuristic) | low |
+| Issue | Offer for sale close to the SME limit | medium |
+
+A flag is a prompt to read the cited pages, not a verdict.
+
+## How well does it work?
+
+Measured, not claimed. `rh eval` scores the extractor against 334 hand-labelled fields (272 present,
+62 deliberately absent) across 21 filings. The key number is the **first run on filings the tool
+had never seen**, with labels committed before the extractor was run:
+
+| Held-out set | Filings | Fields correct (first run) | Wrong | Invented |
+|---|---|---|---|---|
+| 1 | Indiqube, Laxmi India Finance, Vishal Mega Mart | 31/41 (76%) | 4 | 0/10 |
+| 2 | LEAP India, Shiprocket, Indong Tea | 32/42 (76%) | 2 | 0/7 |
+| 3 | Powerica, SRIT India, Veritas Finance | 38/39 (97%) | 0 | 0/11 |
+| 4 | Lenskart, Tata Capital, PhysicsWallah | 21/39 (54%) | 3 | 3/12 |
+| 5 | Zetwerk, Tonbo Imaging, Paras Healthcare | 33/38 (87%) | 1 | 2/13 |
+
+After the defects each set exposed were fixed, all 21 filings together read 267 of 272 present
+fields correctly (98%), with none wrong and none invented in 62 absent fields. That second number is
+**development accuracy** and will flatter the tool; the first-run column is the honest estimate of
+how it will do on your next filing: roughly three fields in four to nine in ten, with the
+remainder withheld.
+
+Caveats you should know about:
+
+- A filing stops being held out the moment its failures are fixed, so each set is a one-time
+  measurement. Five sets of three is a small, non-random sample.
+- Labels were written by an AI reading the PDFs with a different tool; there is no second human
+  reader. Three "hallucinations" in sets 4 and 5 turned out to be labeller errors, disclosed in
+  `docs/heldout-run-4.md` and `-5.md`.
+- Long filings with many subsidiary statements remain the hardest case.
+
+## Quick start
 
 ```bash
 cd redherring
 uv sync
-uv run ruff check . && uv run ruff format --check .
-uv run mypy
-uv run pytest
+uv run rh --data-dir data ingest        # fetch the filings listed in data/sources.toml (polite, hashed)
+uv run rh --data-dir data parse         # PDF -> page-tagged text and tables
+uv run rh --data-dir data analyze       # extract, verify, cross-check, run rules
+uv run rh --data-dir data report        # HTML per filing in data/reports/
+uv run rh --data-dir data diff OLD NEW  # compare two versions of an offering
+uv run rh --data-dir data eval --labels-dir labels
 ```
 
-Python 3.12, `uv`, Pydantic v2, pdfplumber + pypdfium2 (both permissive licences; PyMuPDF is
-deliberately avoided because it is AGPL).
+Add a filing by appending a `[[document]]` entry to `data/sources.toml` with its public URL.
+Python 3.12, `uv`, Pydantic v2, pdfplumber and pypdfium2 (permissive licences; PyMuPDF is avoided
+because it is AGPL).
+
+## How it works
+
+```
+PDF ──► parse ──► extract ──► verify ──► rules ──► report / diff
+        │          │           │          │
+        │          │           │          └ TOML specs, dated, sector-aware, audited
+        │          │           └ re-read cited page; footing identities; cross-table consensus
+        │          └ statement lines, issue facts, objects tables, each with page + span
+        └ text blocks, ruled and unruled tables, units, column headers, hidden-text defence
+```
+
+Source layout: `src/redherring/{ingest,parse,extract,verify,flags,eval}`, with `analyze.py` tying the
+stages together and `report_html.py` and `diff.py` producing the outputs.
+
+## Documentation
+
+| | |
+|---|---|
+| `docs/status.md` | Every current number and known defect |
+| `docs/heldout-run-1.md` … `-5.md` | Each held-out run: what failed, why, what changed |
+| `docs/decisions.md` | Design decisions and their trade-offs |
+| `docs/security.md` | Threat model for untrusted PDFs |
+| `docs/roadmap.md` | What is done and what is next |
+| `docs/CHARTER.md` | How the project is run |
 
 ## Data hygiene
 
-Only public filings are fetched. Source URLs and hashes are recorded. PDFs and parsed outputs are
-git-ignored; only `data/sources.toml` and `data/manifest.jsonl` are committed.
+Only public filings are fetched, with robots.txt respected, a per-host rate limit and a descriptive
+User-Agent. Source URLs and SHA-256 hashes are recorded; PDFs and parsed outputs are git-ignored.
+
+This folder is independent of the rest of the repository (see `docs/decisions.md` for why, and how
+to split it out).
 
 ## Licence
 

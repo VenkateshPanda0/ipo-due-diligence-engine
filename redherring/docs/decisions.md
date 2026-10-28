@@ -297,6 +297,21 @@ subsidiary-only figure under a header that happens to say "subsidiary" is down-w
 front-weight assumes the issuer's own figures come first; both were true for all 18 filings but
 that is a small sample. Abstention is preferred where definitions conflict (Tata Capital's PAT).
 
+## D-034 — Bare-year headers, net operating cash flow, stub columns (2026-10-28)
+
+Held-out run 5 (`docs/heldout-run-5.md`). (1) A header that is only a year takes the wording of
+the dated header beside it, left first; never from an annual header across a quarter, which would
+turn "June 2024" into a fiscal year. (2) A table that has a "net cash ... operating activities"
+line ignores the "cash generated from operating activities" pre-tax subtotal. (3) A blank-headed
+figure column left of the first dated header, beside a dated header column that holds figures,
+stays undated. The broader rule I tried first (never lend a header to a column whose own header
+column holds figures) cost two correct Veritas readings and was reverted: a blank column that
+borrows a neighbour's header always produces a second reading for that period in the same table,
+which is dropped as ambiguous, so the failure mode is abstention, not a wrong value. (4) Labels:
+a label whose field is absent must be re-read on the cover and the summary pages before commit
+(two label errors this run). Residual risk: a bare year after an unrelated dated header cell
+inherits its wording.
+
 ## Open items
 
 - Terms-of-use review for SEBI / BSE / NSE (see D-010).

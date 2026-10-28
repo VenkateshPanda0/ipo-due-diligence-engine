@@ -96,6 +96,8 @@ def test_normalise_label(raw: str, expected: str) -> None:
         ("Trade receivables", Concept.TRADE_RECEIVABLES),
         ("Inventories", Concept.INVENTORIES),
         ("Net cash generated from operating activities", Concept.CASH_FROM_OPERATIONS),
+        ("Restated Profit for the year, net of Tax", Concept.PROFIT_AFTER_TAX),
+        ("Net Cash from Operating Activities (A) = i+ii+iii", Concept.CASH_FROM_OPERATIONS),
         ("Net cash flow from/(used in) investing activities", Concept.CASH_FROM_INVESTING),
         ("Net cash (used in) financing activities", Concept.CASH_FROM_FINANCING),
     ],
@@ -343,3 +345,69 @@ def test_right_aligned_numbers_under_left_aligned_headers_take_their_own_period(
     for raw, end in expected.items():
         period = got[raw]
         assert period is not None and period.end == end, raw
+
+
+def _stub_table(columns: list[str], rows: list[list[str]]) -> Table:
+    return Table(
+        pdf_pages=[7], row_pages=[7] * len(rows), unit=Unit.MILLION, columns=columns, rows=rows
+    )
+
+
+def test_bare_year_headers_take_the_wording_of_a_full_sibling_header() -> None:
+    columns = ["", "2026", "Fiscal 2025", "2024"]
+    rows = [["Restated profit for the year (I)", "(177.37)", "508.80", "727.57", "685.43"]]
+    got = {v.raw: v.period for v in extract_financials(_doc(_stub_table(columns, rows)))}
+    assert got["(177.37)"] is None
+    for raw, year in (("508.80", 2026), ("727.57", 2025), ("685.43", 2024)):
+        p = got[raw]
+        assert p is not None and (p.end, p.months) == (date(year, 3, 31), 12), raw
+
+
+def test_cash_generated_before_tax_is_not_operating_cash_flow_when_the_net_line_exists() -> None:
+    columns = ["", "For the year ended March 31, 2026", "For the year ended March 31, 2025"]
+    rows = [
+        ["Cash generated from Operating Activities", "(480.16)", "(1,029.03)"],
+        ["Net Cash from Operating Activities (A)", "(632.16)", "(1,361.19)"],
+    ]
+    values = extract_financials(_doc(_stub_table(columns, rows)))
+    assert sorted(v.raw for v in values) == ["(1,361.19)", "(632.16)"]
+    only_gross = extract_financials(_doc(_stub_table(columns, rows[:1])))
+    assert len(only_gross) == 2  # with no net line the figure is all there is: still read
+
+
+def test_a_bare_year_after_a_quarter_header_is_the_same_quarter_a_year_earlier() -> None:
+    """Tata Capital: June-2025 quarter, '2024', 'Fiscal 2025', '2024', '2023' share one caption."""
+    columns = [
+        "As at June 30, / For the three months period ended June 30, 2025",
+        "2024",
+        "As at March 31, /Fiscal 2025",
+        "2024",
+        "2023",
+    ]
+    rows = [["Profit After Tax", "9,898.9", "4,616.6", "36,646.6", "31,502.1", "30,292.0"]]
+    got = {v.raw: v.period for v in extract_financials(_doc(_stub_table(columns, rows)))}
+    q, fy24 = got["4,616.6"], got["31,502.1"]
+    assert q is not None and q.end == date(2024, 6, 30)
+    assert fy24 is not None and fy24.end == date(2024, 3, 31)
+    fy23 = got["30,292.0"]
+    assert fy23 is not None and fy23.end == date(2023, 3, 31)
+
+
+def test_a_leading_stub_column_left_of_years_that_hold_figures_stays_undated() -> None:
+    """Tonbo: four figure columns (June-2026 stub, then three fiscal years) under three headers;
+    the stub must not be read as a second FY2026 figure beside the real one."""
+    columns = [
+        "",
+        "For the year ended March 31, 2026",
+        "For the year ended March 31, 2025",
+        "For the year ended March 31, 2024",
+    ]
+    rows = [
+        ["Net Profit Before Tax", "(237.48)", "699.59", "992.65", "945.50"],
+        ["Total income", "373.24", "3,699.39", "4,743.90", "4,318.96"],
+    ]
+    got = {v.raw: v.period for v in extract_financials(_doc(_stub_table(columns, rows)))}
+    assert got["(237.48)"] is None
+    for raw, year in (("699.59", 2026), ("992.65", 2025), ("945.50", 2024)):
+        p = got[raw]
+        assert p is not None and p.end == date(year, 3, 31), raw

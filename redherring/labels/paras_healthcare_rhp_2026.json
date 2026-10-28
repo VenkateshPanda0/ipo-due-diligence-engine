@@ -4,7 +4,7 @@
  "doc_sha256": "e0a3187fe18d1c12f88f29170291972714cf15be7946e8a7f4a7d8c914570e74",
  "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
  "labelled_on": "2026-10-28",
- "split": "heldout",
+ "split": "dev",
  "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
  "fields": [
   {
@@ -21,8 +21,18 @@
   },
   {
    "key": "issue.ofs_amount",
-   "status": "absent",
-   "note": "OFS amount is not printed (shares [●]); 9,500 would be derived by subtraction."
+   "status": "present",
+   "value_rupees": "9500000000.00",
+   "raw": "9,500.00",
+   "pages": [
+    1,
+    3,
+    12,
+    106,
+    540
+   ],
+   "span": "OF FACE VALUE OF ₹ 1 EACH (“OFFERED SHARES”) AGGREGATING UP TO ₹ 9,500.00 MILLION, COMPRISING UP TO [●] EQUITY SHARES OF FACE VALUE OF ₹ 1 EACH AGGREGATING UP TO ₹",
+   "note": "CORRECTED after run 5: first labelled absent from the p3 wording alone; the cover table (p1) and p3 both print 9,500.00 million."
   },
   {
    "key": "issue.total_issue_amount",

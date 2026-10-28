@@ -4,7 +4,7 @@
  "doc_sha256": "85e1fde8bb467bb48ef2ef63f771bee0992ab0f916e91a63c911a036ec6533bf",
  "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
  "labelled_on": "2026-10-28",
- "split": "heldout",
+ "split": "dev",
  "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
  "fields": [
   {
@@ -34,8 +34,15 @@
   },
   {
    "key": "objects.monitoring_agency_appointed",
-   "status": "absent",
-   "note": "p108: the Company is not required to appoint a monitoring agency in relation to the Offer."
+   "status": "present",
+   "value_rupees": "0",
+   "raw": "not required to appoint a monitoring agency",
+   "pages": [
+    108,
+    142
+   ],
+   "span": "Company is not required to appoint a monitoring agency in relation to the Offer.",
+   "note": "CORRECTED after run 5: first labelled absent; the filing states outright that none is appointed (p108), which is a value of 0, as for Indong Tea."
   },
   {
    "key": "financials.total_income.FY2026",

@@ -30,8 +30,9 @@ _REJECT = re.compile(
     r"\bas a\b|\bturnover\b|\bcagr\b|(?:including|incl\.?|after|net of) oci\b"
 )
 # qualifiers such as "(A)", "(net)" and a trailing formula like "(VIII) = (V-VII)"
-# (a last group may be left open where the label wraps: "(IX=")
-_PARENS = r"(?:\s*\([^)]*\))*(?:\s*=\s*\([^)]*\))?(?:\s*\([^)]*)?"
+# (a last group may be left open where the label wraps: "(IX="; the formula may also come
+# unbracketed: "(A) = i+ii+iii")
+_PARENS = r"(?:\s*\([^)]*\))*(?:\s*=\s*\([^)]*\))?(?:\s*=\s*[a-z0-9+\-]+)?(?:\s*\([^)]*)?"
 
 # (concept, head pattern). The head must match the whole normalised label, optionally followed by
 # parenthetical qualifiers such as "(A)", "(net)" or "(I= a+b)". First match wins.
@@ -53,7 +54,7 @@ _HEADS: tuple[tuple[Concept, str], ...] = (
         Concept.PROFIT_AFTER_TAX,
         r"(?:restated )?(?:net )?(?:profit|loss)(?:/\(?(?:loss|profit)\)?)?"
         r"(?: for(?: the (?:year|period)(?:/(?:year|period))?"
-        r"(?: from continuing(?: operations)?)?)?"
+        r"(?: from continuing(?: operations)?)?)?(?:,? net of tax)?"
         r"| after tax(?: but before extra[- ]?ordinary items)?"
         r"| after adjustments)",
     ),
@@ -177,26 +178,64 @@ def _header_by_cell(t: Table, body: list[list[str]], label_idx: int) -> dict[int
     this changes nothing.
     """
     by_cell = {k: t.columns[k - 1] if 0 <= k - 1 < len(t.columns) else "" for k in range(1, 400)}
+    _complete_bare_years(by_cell, len(t.columns))
     dated = [k for k in sorted(by_cell) if k <= len(t.columns) and parse_period(by_cell[k])]
     if len(dated) < 2:
         return by_cell
     width = max((len(r) for r in body), default=0)
+
     for k in range(label_idx + 1, width):
         if parse_period(by_cell[k]) or _skip_column(by_cell[k]):
             continue
-        n_figures = sum(
-            1
-            for r in body
-            if k < len(r)
-            and parse_amount(r[k]) is not None
-            and not _looks_like_note_ref(r[k], r[label_idx:])
-        )
-        if n_figures < 2:
+        if _own_figures(body, k, label_idx) < 2:
             continue
         near = min(dated, key=lambda d: (abs(d - k), -d))
         if abs(near - k) <= 2 and not by_cell[k]:
+            if k < dated[0] and _own_figures(body, near, label_idx) >= 2:
+                continue  # a stub column (a quarter) left of years that each hold figures
             by_cell[k] = by_cell[near]
     return by_cell
+
+
+def _own_figures(body: list[list[str]], k: int, label_idx: int) -> int:
+    return sum(
+        1
+        for r in body
+        if k < len(r)
+        and parse_amount(r[k]) is not None
+        and not _looks_like_note_ref(r[k], r[label_idx:])
+    )
+
+
+_BARE_YEAR = re.compile(r"\s*((?:19|20)\d{2})\s*")
+_YEAR = re.compile(r"(?:19|20)\d{2}")
+
+
+def _complete_bare_years(by_cell: dict[int, str], n_columns: int) -> None:
+    """A header that is only a year ("2026") takes the wording of its neighbouring header.
+
+    Where a spanning caption ("For the year ended March 31,") is printed once, the table's header
+    cells are often "2026", "Fiscal 2025", "2024": each bare year is the same kind of period as
+    the dated header beside it (on its left once that is dated, else the next one on its right),
+    so "2024" after a June-2025 quarter is a June-2024 quarter and after "Fiscal 2025" a fiscal
+    year.
+    """
+
+    def dated(h: str) -> bool:
+        return parse_period(h) is not None and len(_YEAR.findall(h)) == 1
+
+    for k in range(1, n_columns + 1):
+        m = _BARE_YEAR.fullmatch(by_cell[k])
+        if not m:
+            continue
+        model = by_cell.get(k - 1, "") if k > 1 else ""
+        if not dated(model):
+            j = k + 1
+            while j <= n_columns and _BARE_YEAR.fullmatch(by_cell[j]):
+                j += 1
+            model = by_cell[j] if j <= n_columns else ""
+        if dated(model):
+            by_cell[k] = _YEAR.sub(m.group(1), model)
 
 
 def _extract_table(table_id: int, t: Table) -> list[CitedNumber]:
@@ -204,6 +243,12 @@ def _extract_table(table_id: int, t: Table) -> list[CitedNumber]:
     body = t.rows[t.n_header_rows :]
     label_idx = _label_index(body)
     headers = _header_by_cell(t, body, label_idx)
+    has_net_cash = any(
+        concept_for_label(r[label_idx]) is Concept.CASH_FROM_OPERATIONS
+        and normalise_label(r[label_idx]).startswith("net cash")
+        for r in body
+        if label_idx < len(r)
+    )
     for i, row in enumerate(t.rows):
         if i < t.n_header_rows or label_idx >= len(row):
             continue
@@ -211,6 +256,12 @@ def _extract_table(table_id: int, t: Table) -> list[CitedNumber]:
         concept = concept_for_label(label)
         if concept is None:
             continue
+        if (
+            concept is Concept.CASH_FROM_OPERATIONS
+            and has_net_cash
+            and not normalise_label(label).startswith("net cash")
+        ):
+            continue  # "cash generated from operating activities" is the subtotal before tax
         page = t.row_pages[i] if i < len(t.row_pages) else t.pdf_pages[0]
         span = " | ".join(c for c in row if c)
         for k in range(label_idx + 1, len(row)):

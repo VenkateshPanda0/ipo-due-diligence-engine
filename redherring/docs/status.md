@@ -3,6 +3,25 @@
 Latest first. Every number below was printed by `rh parse`, `rh analyze` or `rh eval` on the nine
 filings in `data/sources.toml`; nothing is estimated.
 
+## 2026-10-28
+
+### Benchmark (`rh eval`, 334 labelled fields over twenty-one filings)
+| set | docs | fields (present/absent) | value accuracy | citation accuracy | abstained | wrong | hallucinated |
+|---|---|---|---|---|---|---|---|
+| held-out set 1, **first run** | 3 | 51 (41/10) | 31/41 (76%) | 29/31 | 6 | 4 | 0/10 |
+| held-out set 2, **first run** (after set-1 fixes) | 3 | 49 (42/7) | 32/42 (76%) | 30/32 | 8 | 2 | 0/7 |
+| held-out set 3, **first run** (after set-2 fixes) | 3 | 50 (39/11) | 38/39 (97%) | 35/38 | 1 | 0 | 0/11 |
+| held-out set 4, **first run** (after set-3 fixes) | 3 | 51 (39/12) | 21/39 (54%) | 16/21 | 15 | 3 | 3/12 |
+| held-out set 5, **first run** (after set-4 fixes) | 3 | 51 (38/13) | 33/38 (87%) | 27/33 | 4 | 1 | 2/13 |
+| set 5 after its fixes and two label corrections (no longer held out) | 3 | 51 (40/11) | 38/40 (95%) | 30/38 | 2 | 0 | 0/11 |
+| all twenty-one filings now (every one has driven a fix) | 21 | 334 (272/62) | 267/272 (98%) | 233/267 | 5 | 0 | 0/62 |
+
+First runs: 76%, 76%, 97%, 54%, 87%. Two of the "hallucinations" in set 5 and one in set 4 were
+the labeller's own errors (disclosed in `docs/heldout-run-4.md`, `-5.md`); labels still have no
+second reader. Five abstentions remain: Synoptics FY2022 total income (duplicate header typo),
+Tata Capital profit after tax FY2025 and FY2024 and Zetwerk profit after tax FY2026 and FY2025
+(each a definitional conflict: owners' share vs total, or continuing vs total operations).
+
 ## 2026-10-27
 
 ### Benchmark (`rh eval`, 283 labelled fields over eighteen filings)

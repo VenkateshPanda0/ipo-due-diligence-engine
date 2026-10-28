@@ -1,0 +1,254 @@
+{
+ "schema_version": 1,
+ "doc_id": "nityas_gems_rhp_2026",
+ "doc_sha256": "df0edd1f1af4387468a67b288a98b76eeb3e65113717c579582d6c120556178a",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-28",
+ "split": "heldout",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "absent",
+   "note": "Issue amount printed as [•] million (p3) and [●] elsewhere."
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "absent",
+   "note": "Fresh issue only: no offer for sale."
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "absent",
+   "note": "Total issue amount printed as [•] million (p3)."
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "absent",
+   "note": "General corporate purposes amount [●] (p145); working capital 700.00 is the only printed object amount."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "No unidentified acquisition object."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "1",
+   "raw": "has appointed CARE",
+   "pages": [
+    124,
+    154
+   ],
+   "span": "In order to comply with Regulation 41 of the SEBI ICDR Regulations, our Company has appointed CARE",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2026",
+   "status": "present",
+   "value_rupees": "2033270000.00",
+   "raw": "2,033.27",
+   "pages": [
+    107,
+    442,
+    443
+   ],
+   "span": "Total Income 2,033.27 968.48 536.61",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2025",
+   "status": "present",
+   "value_rupees": "968480000.00",
+   "raw": "968.48",
+   "pages": [
+    107,
+    442,
+    443,
+    445,
+    446
+   ],
+   "span": "Total Income 2,033.27 968.48 536.61",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "2028940000.00",
+   "raw": "2,028.94",
+   "pages": [
+    75,
+    107,
+    216,
+    222,
+    373,
+    374,
+    419,
+    442,
+    443
+   ],
+   "span": "Revenue from operations (₹ in million) 2,028.94 968.45 536.55",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "968450000.00",
+   "raw": "968.45",
+   "pages": [
+    45,
+    75,
+    107,
+    160,
+    216,
+    222,
+    373,
+    374,
+    419,
+    442,
+    443,
+    445,
+    446
+   ],
+   "span": "Revenue from operations 2028.94 968.45 536.55",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2026",
+   "status": "present",
+   "value_rupees": "269230000.00",
+   "raw": "269.23",
+   "pages": [
+    107,
+    296,
+    442,
+    443
+   ],
+   "span": "Profit / (Loss) before tax 269.23 118.94 49.27",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2025",
+   "status": "present",
+   "value_rupees": "118940000.00",
+   "raw": "118.94",
+   "pages": [
+    107,
+    296,
+    442,
+    443,
+    445
+   ],
+   "span": "Profit / (Loss) before tax 269.23 118.94 49.27",
+   "note": ""
+  },
+  {
+   "key": "financials.tax_expense.FY2026",
+   "status": "present",
+   "value_rupees": "46080000.00",
+   "raw": "46.08",
+   "pages": [
+    107,
+    296,
+    354,
+    442,
+    443
+   ],
+   "span": "Total Tax Expenses 46.08 21.06 9.03",
+   "note": ""
+  },
+  {
+   "key": "financials.tax_expense.FY2025",
+   "status": "present",
+   "value_rupees": "21060000.00",
+   "raw": "21.06",
+   "pages": [
+    107,
+    296,
+    354,
+    442,
+    443,
+    445
+   ],
+   "span": "Total Tax Expenses 46.08 21.06 9.03",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2026",
+   "status": "present",
+   "value_rupees": "223150000.00",
+   "raw": "223.15",
+   "pages": [
+    107,
+    442,
+    443
+   ],
+   "span": "Profit / (Loss) for the period 223.15 97.88 40.24",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2025",
+   "status": "present",
+   "value_rupees": "97880000.00",
+   "raw": "97.88",
+   "pages": [
+    107,
+    442,
+    443,
+    446
+   ],
+   "span": "Profit / (Loss) for the period 223.15 97.88 40.24",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2026",
+   "status": "present",
+   "value_rupees": "1164150000.00",
+   "raw": "1,164.15",
+   "pages": [
+    105,
+    293
+   ],
+   "span": "Total Assets 1,164.15 398.66 117.46",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2025",
+   "status": "present",
+   "value_rupees": "398660000.00",
+   "raw": "398.66",
+   "pages": [
+    105,
+    293,
+    400
+   ],
+   "span": "Total Assets 1,164.15 398.66 117.46",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "-147320000.00",
+   "raw": "(147.32)",
+   "pages": [
+    109,
+    298
+   ],
+   "span": "Net Cash Flow from / (used in) Operating Activities (A) (147.32) (100.52) (10.51)",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "-100520000.00",
+   "raw": "(100.52)",
+   "pages": [
+    109,
+    298
+   ],
+   "span": "Net Cash Flow from / (used in) Operating Activities (A) (147.32) (100.52) (10.51)",
+   "note": ""
+  }
+ ]
+}

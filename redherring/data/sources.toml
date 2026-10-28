@@ -224,3 +224,31 @@ doc_type = "rhp"
 platform = "mainboard"
 filing_date = 2026-10-15
 notes = "Held-out set 5. Hospitals. SEBI listing: filings/public-issues/oct-2026/paras-healthcare-limited-rhp_105284.html"
+
+# Held-out set 6, added 2026-10-28. Labels are committed before the extractor is run on them.
+[[document]]
+doc_id = "shah_investors_home_rhp_2026"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/sep-2026/1790140810519.pdf"
+issuer = "Shah Investor's Home Limited"
+doc_type = "rhp"
+platform = "mainboard"
+filing_date = 2026-09-23
+notes = "Held-out set 6. Broking and financial services. SEBI listing: filings/public-issues/sep-2026/shah-investor-s-home-limited-rhp_104660.html"
+
+[[document]]
+doc_id = "orient_cables_rhp_2026"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/sep-2026/1790144515401.pdf"
+issuer = "Orient Cables (India) Limited"
+doc_type = "rhp"
+platform = "mainboard"
+filing_date = 2026-09-21
+notes = "Held-out set 6. Cables manufacturer. SEBI listing: filings/public-issues/sep-2026/orient-cables-india-limited-rhp_104663.html"
+
+[[document]]
+doc_id = "nityas_gems_rhp_2026"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1791203854275.pdf"
+issuer = "Nityas Gems and Jewellery Limited"
+doc_type = "rhp"
+platform = "mainboard"
+filing_date = 2026-09-25
+notes = "Held-out set 6. Jewellery. SEBI listing: filings/public-issues/sep-2026/nityas-gems-and-jewellery-limited-rhp_105033.html"

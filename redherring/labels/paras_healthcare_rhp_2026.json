@@ -1,0 +1,247 @@
+{
+ "schema_version": 1,
+ "doc_id": "paras_healthcare_rhp_2026",
+ "doc_sha256": "e0a3187fe18d1c12f88f29170291972714cf15be7946e8a7f4a7d8c914570e74",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-28",
+ "split": "heldout",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "present",
+   "value_rupees": "5000000000.00",
+   "raw": "5,000.00",
+   "pages": [
+    3,
+    129
+   ],
+   "span": "UP TO [●] EQUITY SHARES OF FACE VALUE OF ₹ 1 EACH AGGREGATING UP TO ₹ 5,000.00 MILLION BY OUR COMPANY (THE “FRESH ISSUE”) AND AN OFFER FOR SALE OF UP TO [●] EQUITY SHARES",
+   "note": ""
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "absent",
+   "note": "OFS amount is not printed (shares [●]); 9,500 would be derived by subtraction."
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "present",
+   "value_rupees": "14500000000.00",
+   "raw": "14,500.00",
+   "pages": [
+    3,
+    12,
+    540
+   ],
+   "span": "PER EQUITY SHARE (INCLUDING A SHARE PREMIUM OF ₹ [●] PER EQUITY SHARE) (“OFFER PRICE”) AGGREGATING UP TO ₹ 14,500.00 MILLION (THE “OFFER”) COMPRISING A FRESH ISSUE OF",
+   "note": ""
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "absent",
+   "note": "General corporate purposes amount is [●] (p129)."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "No unidentified acquisition object."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "1",
+   "raw": "has appointed CARE Ratings Limited",
+   "pages": [
+    101,
+    143
+   ],
+   "span": "Our Company has appointed CARE Ratings Limited, a credit rating agency registered with SEBI as the monitoring agency to",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2026",
+   "status": "present",
+   "value_rupees": "16287840000.00",
+   "raw": "16,287.84",
+   "pages": [
+    88,
+    157,
+    166,
+    263,
+    372,
+    460,
+    461,
+    465,
+    469
+   ],
+   "span": "Total income 4,787.46 3,742.32 16,287.84 13,142.07 11,510.23",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2025",
+   "status": "present",
+   "value_rupees": "13142070000.00",
+   "raw": "13,142.07",
+   "pages": [
+    88,
+    157,
+    169,
+    263,
+    372,
+    460,
+    461,
+    465,
+    469,
+    472
+   ],
+   "span": "Total income 4,787.46 3,742.32 16,287.84 13,142.07 11,510.23",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "16059520000.00",
+   "raw": "16,059.52",
+   "pages": [
+    26,
+    88,
+    259,
+    263,
+    372,
+    460,
+    465,
+    469
+   ],
+   "span": "Revenue from Operations 4,702.78 3,683.87 16,059.52 12,940.63 11,290.39",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "12940630000.00",
+   "raw": "12,940.63",
+   "pages": [
+    26,
+    88,
+    259,
+    263,
+    372,
+    460,
+    465,
+    469,
+    472
+   ],
+   "span": "Revenue from Operations 4,702.78 3,683.87 16,059.52 12,940.63 11,290.39",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2026",
+   "status": "present",
+   "value_rupees": "760330000.00",
+   "raw": "760.33",
+   "pages": [
+    88,
+    89,
+    157,
+    372,
+    373,
+    411
+   ],
+   "span": "Profit/(loss) before tax 481.20 58.43 760.33 (500.36) 66.30",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2025",
+   "status": "present",
+   "value_rupees": "-500360000.00",
+   "raw": "(500.36)",
+   "pages": [
+    88,
+    89,
+    157,
+    372,
+    373,
+    411
+   ],
+   "span": "Profit/(loss) before tax 481.20 58.43 760.33 (500.36) 66.30",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2026",
+   "status": "present",
+   "value_rupees": "438340000.00",
+   "raw": "438.34",
+   "pages": [
+    88,
+    372
+   ],
+   "span": "Profit/(loss) for the period/year (A) 496.82 (10.24) 438.34 (579.83) (153.31)",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2025",
+   "status": "present",
+   "value_rupees": "-579830000.00",
+   "raw": "(579.83)",
+   "pages": [
+    88,
+    372
+   ],
+   "span": "Profit/(loss) for the period/year (A) 496.82 (10.24) 438.34 (579.83) (153.31)",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2026",
+   "status": "present",
+   "value_rupees": "20711410000.00",
+   "raw": "20,711.41",
+   "pages": [
+    86,
+    371
+   ],
+   "span": "Total assets 22,028.78 19,257.35 20,711.41 18,104.51 14,776.58",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2025",
+   "status": "present",
+   "value_rupees": "18104510000.00",
+   "raw": "18,104.51",
+   "pages": [
+    86,
+    371
+   ],
+   "span": "Total assets 22,028.78 19,257.35 20,711.41 18,104.51 14,776.58",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "1635120000.00",
+   "raw": "1,635.12",
+   "pages": [
+    89,
+    373,
+    475,
+    476
+   ],
+   "span": "Net cash generated from 643.38 379.15 1,635.12 861.91 924.77",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "861910000.00",
+   "raw": "861.91",
+   "pages": [
+    89,
+    373,
+    475,
+    476
+   ],
+   "span": "Net cash generated from 643.38 379.15 1,635.12 861.91 924.77",
+   "note": ""
+  }
+ ]
+}

@@ -1,0 +1,183 @@
+{
+ "schema_version": 1,
+ "doc_id": "zetwerk_rhp_2026",
+ "doc_sha256": "9efc3e117e11dacef58152c2ba2c78166fb4d0f97a45a804786ec5f053efc8ec",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-28",
+ "split": "heldout",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "present",
+   "value_rupees": "28300000000.00",
+   "raw": "28,300.00",
+   "pages": [
+    3,
+    13,
+    205
+   ],
+   "span": "A SHARE PREMIUM OF ₹[●] PER EQUITY SHARE (“OFFER PRICE”) AGGREGATING UP TO ₹[●] MILLION (THE “OFFER”) COMPRISING A FRESH ISSUE OF [●] EQUITY SHARES OF FACE VALUE OF ₹1 EACH AGGREGATING UP TO ₹28,300.00 MILLION",
+   "note": ""
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "absent",
+   "note": "OFS amount is [●] million on the cover (p3); only the share count is printed."
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "absent",
+   "note": "Total offer size is [●] (p1, p3)."
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "absent",
+   "note": "Objects amounts are [●] (p207)."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "Unidentified acquisitions amount [●] (p207, p244)."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "1",
+   "raw": "has appointed CARE Ratings Limited as the monitoring agency",
+   "pages": [
+    122
+   ],
+   "span": "Our Company has appointed CARE Ratings Limited as the monitoring agency in accordance with Regulation 41 of the SEBI",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2026",
+   "status": "present",
+   "value_rupees": "161006320000.00",
+   "raw": "161,006.32",
+   "pages": [
+    88,
+    439,
+    574
+   ],
+   "span": "Total income 41,957.04 27,020.98 161,006.32 114,922.28 125,234.57",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2025",
+   "status": "present",
+   "value_rupees": "114922280000.00",
+   "raw": "114,922.28",
+   "pages": [
+    88,
+    439,
+    574
+   ],
+   "span": "Total income 41,957.04 27,020.98 161,006.32 114,922.28 125,234.57",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "159133230000.00",
+   "raw": "159,133.23",
+   "pages": [
+    47,
+    48,
+    88,
+    256,
+    327,
+    439,
+    560,
+    574
+   ],
+   "span": "Revenue from operations* (₹ million) (B) 41,178.77 26,494.35 159,133.23 113,318.56 123,643.72",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "113318560000.00",
+   "raw": "113,318.56",
+   "pages": [
+    47,
+    48,
+    88,
+    256,
+    327,
+    439,
+    560,
+    574
+   ],
+   "span": "Revenue from operations* (₹ million) (B) 41,178.77 26,494.35 159,133.23 113,318.56 123,643.72",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2026",
+   "status": "present",
+   "value_rupees": "-16061710000.00",
+   "raw": "(16,061.71)",
+   "pages": [
+    33,
+    88,
+    439
+   ],
+   "span": "Restated loss for the period/year (7,329.83) (13,684.72) (16,061.71) (3,707.08) (9,179.49)",
+   "note": "Total of continuing and discontinued operations; continuing alone is (9,643.93)."
+  },
+  {
+   "key": "financials.profit_after_tax.FY2025",
+   "status": "present",
+   "value_rupees": "-3707080000.00",
+   "raw": "(3,707.08)",
+   "pages": [
+    33,
+    88,
+    439
+   ],
+   "span": "Restated loss for the period/year (7,329.83) (13,684.72) (16,061.71) (3,707.08) (9,179.49)",
+   "note": "Total of continuing and discontinued operations; continuing alone is (2,150.69)."
+  },
+  {
+   "key": "financials.total_assets.FY2026",
+   "status": "present",
+   "value_rupees": "133846270000.00",
+   "raw": "133,846.27",
+   "pages": [
+    86,
+    438,
+    533
+   ],
+   "span": "Total assets 120,160.94 90,830.94 133,846.27 103,554.30 103,308.50",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2025",
+   "status": "present",
+   "value_rupees": "103554300000.00",
+   "raw": "103,554.30",
+   "pages": [
+    86,
+    438,
+    534
+   ],
+   "span": "Total assets 120,160.94 90,830.94 133,846.27 103,554.30 103,308.50",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "-6815290000.00",
+   "raw": "(6,815.29)",
+   "pages": [
+    44,
+    91,
+    442,
+    581
+   ],
+   "span": "Net cash flow used in operating activities (5,061.81) (7,964.03) (6,815.29) (3,862.85) (2,815.40)",
+   "note": ""
+  }
+ ]
+}

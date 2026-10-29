@@ -321,6 +321,15 @@ dateless header cell over figures borrows the dated header in the next cell only
 column holds no figures of its own; where the dated header has figures it is left alone. Residual
 risk: a genuine undated column immediately left of an empty dated column would be given that date.
 
+## D-036 — Placements are not the offer (2026-10-29)
+
+Held-out run 7 (`docs/heldout-run-7.md`). The text patterns for the fresh issue and offer for sale
+amounts may not read across "pre-IPO" or "private placement" wording: in a glossary that runs on
+without sentence breaks, the placement's amount was taken as the offer for sale and then summed
+into a derived total. Residual risk: other raises mentioned beside the offer (a rights issue, a
+bonus) are not yet excluded; the cover-table reader, which does not use these patterns, takes
+precedence where it applies.
+
 ## Open items
 
 - Terms-of-use review for SEBI / BSE / NSE (see D-010).

@@ -30,7 +30,7 @@ Fetcher with integrity checks, page-tagged parser, tables, units, CLI, CI, decis
 | Prompt-injection red-team set (hostile PDFs through parse and extract) | started: four end-to-end cases in `tests/test_redteam.py` plus hidden-text tests; no corpus of real attack PDFs |
 
 ## Next, in order
-1. A seventh held-out set (three more filings, labels first), including a lender and an SME prospectus on the SME platform (set 6 had only mainboard RHPs). Sets 1 to 6 are now development data. Every absent label is re-read on the cover and objects pages before commit (done for set 6).
+1. An eighth held-out set (three more filings, labels first), including a lender and an SME prospectus (sets 6 and 7 had only mainboard RHPs from 2026; use earlier listings if the current one has none). Sets 1 to 7 are now development data. Every absent label is re-read on the cover and objects pages before commit (done for set 6).
 2. Rules from Schedule VI sections already parsed (related-party and promoter pledges first).
 3. Segmenter, so rules can cite sections and the report can show them.
 4. Red-team PDFs.

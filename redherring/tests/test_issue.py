@@ -455,3 +455,18 @@ def test_cover_table_with_all_three_amounts_reads_them_by_column() -> None:
     assert facts[IssueKey.FRESH_ISSUE_AMOUNT][0] == Decimal(7_000_000_000)
     assert facts[IssueKey.OFS_AMOUNT][0] == Decimal(4_000_000_000)
     assert facts[IssueKey.TOTAL_ISSUE_AMOUNT][0] == Decimal(11_000_000_000)
+
+
+def test_a_pre_ipo_placement_amount_is_not_the_offer_for_sale_amount() -> None:
+    """Swastika: glossary entries run on, and the 'Offer for Sale' entry ran into the Pre-IPO
+    Placement entry whose amount is a different raise."""
+    doc = _doc(
+        _page(
+            14,
+            "Offered Shares The Equity Shares offered by the Selling Shareholders in the Offer for "
+            "Sale Other Selling Shareholders Ishaan Bhartia Pre-IPO Placement The private "
+            "placement of 24,24,242 Equity Shares at a price of 165 per Equity Share aggregating "
+            "to ₹4,000.00 lakhs.",
+        )
+    )
+    assert IssueKey.OFS_AMOUNT not in _facts(doc)

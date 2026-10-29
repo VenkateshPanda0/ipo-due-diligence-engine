@@ -54,8 +54,10 @@ _AMT = r"(?:₹|rs\.?|inr)\s*([\d,]+(?:\.\d+)?)\s*\**\s*(million|mn|lakhs?|lacs?
 _GAP = r"(?:(?!\.\s+[A-Z])(?!aggregat).){0,1200}?"
 # Laid-out covers flatten a "Fresh issue | Offer for sale" table into one run of text, so an amount
 # found after crossing into the other role's wording belongs to that other role.
-_GAP_NO_OFS = r"(?:(?!\.\s+[A-Z])(?!aggregat)(?!offer\s+for\s+sale).){0,1200}?"
-_GAP_NO_FRESH = r"(?:(?!\.\s+[A-Z])(?!aggregat)(?!fresh\s+issue).){0,1200}?"
+# A pre-IPO or private placement is a separate raise: its amount is not the offer's
+_NOT_PLACEMENT = r"(?!pre-?\s*ipo)(?!private\s+placement)"
+_GAP_NO_OFS = rf"(?:(?!\.\s+[A-Z])(?!aggregat)(?!offer\s+for\s+sale){_NOT_PLACEMENT}.){{0,1200}}?"
+_GAP_NO_FRESH = rf"(?:(?!\.\s+[A-Z])(?!aggregat)(?!fresh\s+issue){_NOT_PLACEMENT}.){{0,1200}}?"
 _NOT_DEFINED = r"(?<![“\"(])"
 _FRESH = re.compile(
     rf"{_NOT_DEFINED}fresh\s+issue\b{_GAP_NO_OFS}aggregat\w*\s*(?:to\s+|up\s+to\s+)?{_AMT}", re.I

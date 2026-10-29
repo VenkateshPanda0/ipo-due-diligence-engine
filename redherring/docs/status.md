@@ -3,6 +3,20 @@
 Latest first. Every number below was printed by `rh parse`, `rh analyze` or `rh eval` on the nine
 filings in `data/sources.toml`; nothing is estimated.
 
+## 2026-10-29
+
+### Benchmark (`rh eval`, 452 labelled fields over twenty-seven filings)
+| set | docs | fields (present/absent) | value accuracy | citation accuracy | abstained | wrong | hallucinated |
+|---|---|---|---|---|---|---|---|
+| held-out sets 1 to 6, **first runs** | 18 | | 76%, 76%, 97%, 54%, 87%, 87% | | | | |
+| held-out set 7, **first run** (after set-6 fixes) | 3 | 60 (49/11) | 49/49 (100%) | 41/49 | 0 | 0 | 2/11 |
+| set 7 after its fix (no longer held out) | 3 | 60 (49/11) | 49/49 (100%) | 41/49 | 0 | 0 | 0/11 |
+| all twenty-seven filings now (every one has driven a fix) | 27 | 452 (367/85) | 362/367 (99%) | 317/362 | 5 | 0 | 0/85 |
+
+Set 7 had no lender and no SME-platform prospectus (none in SEBI's current listing), so it says
+little about those. Its two inventions were one defect: an amount from a pre-IPO placement entry
+read as the offer for sale in a run-on glossary (`docs/heldout-run-7.md`).
+
 ## 2026-10-28 (evening)
 
 ### Benchmark (`rh eval`, 392 labelled fields over twenty-four filings)

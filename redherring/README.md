@@ -65,8 +65,8 @@ A flag is a prompt to read the cited pages, not a verdict.
 
 ## How well does it work?
 
-Measured, not claimed. `rh eval` scores the extractor against 392 hand-labelled fields (318 present,
-74 deliberately absent) across 24 filings. The key number is the **first run on filings the tool
+Measured, not claimed. `rh eval` scores the extractor against 452 hand-labelled fields (367 present,
+85 deliberately absent) across 27 filings. The key number is the **first run on filings the tool
 had never seen**, with labels committed before the extractor was run:
 
 | Held-out set | Filings | Fields correct (first run) | Wrong | Invented |
@@ -77,9 +77,10 @@ had never seen**, with labels committed before the extractor was run:
 | 4 | Lenskart, Tata Capital, PhysicsWallah | 21/39 (54%) | 3 | 3/12 |
 | 5 | Zetwerk, Tonbo Imaging, Paras Healthcare | 33/38 (87%) | 1 | 2/13 |
 | 6 | Shah Investor's Home, Orient Cables, Nityas Gems | 40/46 (87%) | 0 | 0/12 |
+| 7 | Sahajanand Medical, Fusion CX, Swastika Infra | 49/49 (100%) | 0 | 2/11 |
 
-After the defects each set exposed were fixed, all 24 filings together read 313 of 318 present
-fields correctly (98%), with none wrong and none invented in 74 absent fields. That second number is
+After the defects each set exposed were fixed, all 27 filings together read 362 of 367 present
+fields correctly (99%), with none wrong and none invented in 85 absent fields. That second number is
 **development accuracy** and will flatter the tool; the first-run column is the honest estimate of
 how it will do on your next filing: roughly three fields in four to nine in ten, with the
 remainder withheld.
@@ -91,7 +92,8 @@ Caveats you should know about:
 - Labels were written by an AI reading the PDFs with a different tool; there is no second human
   reader. Three "hallucinations" in sets 4 and 5 turned out to be labeller errors, disclosed in
   `docs/heldout-run-4.md` and `-5.md`.
-- Long filings with many subsidiary statements remain the hardest case.
+- Long filings with many subsidiary statements remain the hardest case, and sets 6 and 7 were
+  only recent mainboard RHPs: lenders, SME prospectuses and scanned filings are under-tested.
 
 ## Quick start
 
@@ -129,7 +131,7 @@ stages together and `report_html.py` and `diff.py` producing the outputs.
 | | |
 |---|---|
 | `docs/status.md` | Every current number and known defect |
-| `docs/heldout-run-1.md` … `-6.md` | Each held-out run: what failed, why, what changed |
+| `docs/heldout-run-1.md` … `-7.md` | Each held-out run: what failed, why, what changed |
 | `docs/decisions.md` | Design decisions and their trade-offs |
 | `docs/security.md` | Threat model for untrusted PDFs |
 | `docs/roadmap.md` | What is done and what is next |

@@ -1,0 +1,261 @@
+{
+ "schema_version": 1,
+ "doc_id": "swastika_infra_rhp_2026",
+ "doc_sha256": "92a0cc3e9824d84c18a15f0b808089ed8e6d71718fd59d13f9090c51f119cd99",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-29",
+ "split": "heldout",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "present",
+   "value_rupees": "1290000000.00",
+   "raw": "12,900.00",
+   "pages": [
+    1,
+    2,
+    12,
+    14,
+    76,
+    77,
+    95,
+    99,
+    102,
+    114,
+    115,
+    388
+   ],
+   "span": "to ₹12,900.00 Lakhs aggregating up to ₹[●] Lakhs ₹10 each Requirements) Regulations, 2018, as amended (“SEBI ICDR Regulations”). For further",
+   "note": ""
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "absent",
+   "note": "OFS size is 17,50,000 shares aggregating up to Rs [●] Lakhs (p1)."
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "absent",
+   "note": "Total offer size Rs [●] Lakhs (p1)."
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "absent",
+   "note": "General corporate purposes amount [●] (p114, p115)."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "No unidentified acquisition object."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "1",
+   "raw": "has appointed Crisil",
+   "pages": [
+    95
+   ],
+   "span": "In accordance with Regulation 41 of the SEBI ICDR Regulations, our Company has appointed Crisil Ratings",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2026",
+   "status": "present",
+   "value_rupees": "5055689000.00",
+   "raw": "50,556.89",
+   "pages": [
+    129,
+    131,
+    209,
+    315,
+    329
+   ],
+   "span": "Total Income (₹ in lakhs) 50,556.89 35,260.34 21,133.44",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2025",
+   "status": "present",
+   "value_rupees": "3526034000.00",
+   "raw": "35,260.34",
+   "pages": [
+    129,
+    131,
+    209,
+    315,
+    329
+   ],
+   "span": "Total Income (₹ in lakhs) 50,556.89 35,260.34 21,133.44",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "5035732000.00",
+   "raw": "50,357.32",
+   "pages": [
+    35,
+    80,
+    212,
+    272,
+    329,
+    331
+   ],
+   "span": "Revenue from operations 50,357.32 35,075.82 20,957.53",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "3507582000.00",
+   "raw": "35,075.82",
+   "pages": [
+    35,
+    80,
+    212,
+    272,
+    304,
+    329,
+    331,
+    332,
+    333
+   ],
+   "span": "Revenue from operations 50,357.32 35,075.82 20,957.53",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2026",
+   "status": "present",
+   "value_rupees": "553354000.00",
+   "raw": "5,533.54",
+   "pages": [
+    80,
+    272,
+    329
+   ],
+   "span": "Profit/(Loss) Before Tax (V-VI) 5,533.54 3,701.97 1,882.95",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2025",
+   "status": "present",
+   "value_rupees": "370197000.00",
+   "raw": "3,701.97",
+   "pages": [
+    80,
+    272,
+    304,
+    329,
+    332
+   ],
+   "span": "Profit/(Loss) Before Tax (V-VI) 5,533.54 3,701.97 1,882.95",
+   "note": ""
+  },
+  {
+   "key": "financials.tax_expense.FY2026",
+   "status": "present",
+   "value_rupees": "139073000.00",
+   "raw": "1,390.73",
+   "pages": [
+    80,
+    272,
+    330
+   ],
+   "span": "Total Tax Expenses (VIII) 1,390.73 957.41 484.75",
+   "note": ""
+  },
+  {
+   "key": "financials.tax_expense.FY2025",
+   "status": "present",
+   "value_rupees": "95741000.00",
+   "raw": "957.41",
+   "pages": [
+    80,
+    272,
+    304,
+    330
+   ],
+   "span": "Total Tax Expenses (VIII) 1,390.73 957.41 484.75",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2026",
+   "status": "present",
+   "value_rupees": "414280000.00",
+   "raw": "4,142.80",
+   "pages": [
+    80,
+    272,
+    330
+   ],
+   "span": "IX Profit for the year (VII-VIII) 4,142.80 2,744.55 1,398.21",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2025",
+   "status": "present",
+   "value_rupees": "274455000.00",
+   "raw": "2,744.55",
+   "pages": [
+    80,
+    272,
+    304,
+    330
+   ],
+   "span": "IX Profit for the year (VII-VIII) 4,142.80 2,744.55 1,398.21",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2026",
+   "status": "present",
+   "value_rupees": "4122393000.00",
+   "raw": "41,223.93",
+   "pages": [
+    78,
+    271
+   ],
+   "span": "Total Assets 41,223.93 25,853.98 14,325.89",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2025",
+   "status": "present",
+   "value_rupees": "2585398000.00",
+   "raw": "25,853.98",
+   "pages": [
+    78,
+    271
+   ],
+   "span": "Total Assets 41,223.93 25,853.98 14,325.89",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "-96521000.00",
+   "raw": "(965.21)",
+   "pages": [
+    44,
+    334,
+    335
+   ],
+   "span": "Net cash generated from/ (used in) operating activities (965.21) (7,653.52) (334.25)",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "-765352000.00",
+   "raw": "(7,653.52)",
+   "pages": [
+    44,
+    334,
+    335
+   ],
+   "span": "Net cash generated from/ (used in) operating activities (965.21) (7,653.52) (334.25)",
+   "note": ""
+  }
+ ]
+}

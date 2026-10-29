@@ -252,3 +252,31 @@ doc_type = "rhp"
 platform = "mainboard"
 filing_date = 2026-09-25
 notes = "Held-out set 6. Jewellery. SEBI listing: filings/public-issues/sep-2026/nityas-gems-and-jewellery-limited-rhp_105033.html"
+
+# Held-out set 7, added 2026-10-29. Labels are committed before the extractor is run on them.
+[[document]]
+doc_id = "sahajanand_medical_rhp_2026"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1791785603861.pdf"
+issuer = "Sahajanand Medical Technologies Limited"
+doc_type = "rhp"
+platform = "mainboard"
+filing_date = 2026-10-10
+notes = "Held-out set 7. Medical devices. SEBI listing: filings/public-issues/oct-2026/sahajanand-medical-technologies-limited-rhp_105149.html"
+
+[[document]]
+doc_id = "fusion_cx_rhp_2026"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1791977593178.pdf"
+issuer = "Fusion CX Limited"
+doc_type = "rhp"
+platform = "mainboard"
+filing_date = 2026-10-09
+notes = "Held-out set 7. Customer-experience services. SEBI listing: filings/public-issues/oct-2026/fusion-cx-limited-rhp_105257.html"
+
+[[document]]
+doc_id = "swastika_infra_rhp_2026"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/sep-2026/1789707439481.pdf"
+issuer = "Swastika Infra Limited"
+doc_type = "rhp"
+platform = "mainboard"
+filing_date = 2026-09-17
+notes = "Held-out set 7. Infrastructure construction. SEBI listing: filings/public-issues/sep-2026/swastika-infra-ltd-rhp_104573.html"

@@ -1,0 +1,299 @@
+{
+ "schema_version": 1,
+ "doc_id": "fusion_cx_rhp_2026",
+ "doc_sha256": "633b9f28fb0f750d8b126e5022dd7536651ca669faec65643261bb54c6335da6",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-29",
+ "split": "heldout",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "present",
+   "value_rupees": "5000000000.00",
+   "raw": "5,000.00",
+   "pages": [
+    3,
+    12,
+    76,
+    103
+   ],
+   "span": "FRESH ISSUE OF UPTO [●] EQUITY SHARES BY OUR COMPANY AGGREGATING UPTO ₹ 5,000.00 MILLION (THE “FRESH ISSUE”) AND AN OFFER FOR SALE OF UP TO [●] EQUITY SHARES (THE “OFFERED",
+   "note": ""
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "present",
+   "value_rupees": "2020000000.00",
+   "raw": "2,020.00",
+   "pages": [
+    3,
+    13,
+    76
+   ],
+   "span": "SHARES”) AGGREGATING UP TO ₹ 2,020.00 MILLION (THE “OFFER FOR SALE”), COMPRISING UP TO [●] EQUITY SHARES AGGREGATING TO ₹ 1,010.00 MILLION BY P N S BUSINESS PRIVATE LIMITED",
+   "note": ""
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "present",
+   "value_rupees": "7020000000.00",
+   "raw": "7,020.00",
+   "pages": [
+    3,
+    13,
+    76,
+    506
+   ],
+   "span": "₹ [●] PER EQUITY SHARE (INCLUDING A SHARE PREMIUM OF ₹ [●] PER EQUITY SHARE) (“OFFER PRICE”) AGGREGATING UP TO ₹ 7,020.00 MILLION (THE “OFFER”). THE OFFER COMPRISES OF A",
+   "note": ""
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "absent",
+   "note": "Balance for general corporate purposes is [●] million (p118)."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "Unidentified acquisitions combined with general corporate purposes, amount [●] (p103)."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "1",
+   "raw": "has appointed a monitoring agency",
+   "pages": [
+    84
+   ],
+   "span": "In terms of Regulation 41 of the SEBI ICDR Regulations, our Company has appointed a monitoring agency for monitoring the",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2026",
+   "status": "present",
+   "value_rupees": "18518310000.00",
+   "raw": "18,518.31",
+   "pages": [
+    67,
+    318,
+    419,
+    452,
+    454
+   ],
+   "span": "Total Income 5,038.47 18,518.31 13,520.30 10,215.28",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2025",
+   "status": "present",
+   "value_rupees": "13520300000.00",
+   "raw": "13,520.30",
+   "pages": [
+    67,
+    318,
+    452,
+    454,
+    455
+   ],
+   "span": "Total Income 5,038.47 18,518.31 13,520.30 10,215.28",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "18181380000.00",
+   "raw": "18,181.38",
+   "pages": [
+    47,
+    67,
+    127,
+    131,
+    318,
+    386,
+    419,
+    426,
+    427,
+    452,
+    459
+   ],
+   "span": "Revenue from Operations(1) (in ₹ million) 4,904.84 18,181.38 13,292.96 9,913.15",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "13292960000.00",
+   "raw": "13,292.96",
+   "pages": [
+    47,
+    67,
+    127,
+    131,
+    318,
+    386,
+    426,
+    427,
+    452,
+    459
+   ],
+   "span": "Revenue from Operations(1) (in ₹ million) 4,904.84 18,181.38 13,292.96 9,913.15",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2026",
+   "status": "present",
+   "value_rupees": "1893010000.00",
+   "raw": "1,893.01",
+   "pages": [
+    67,
+    68,
+    318,
+    319,
+    356,
+    419,
+    453
+   ],
+   "span": "Profit before tax 628.15 1,893.01 777.39 366.84",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2025",
+   "status": "present",
+   "value_rupees": "777390000.00",
+   "raw": "777.39",
+   "pages": [
+    67,
+    68,
+    318,
+    319,
+    356,
+    453
+   ],
+   "span": "Profit before tax 628.15 1,893.01 777.39 366.84",
+   "note": ""
+  },
+  {
+   "key": "financials.tax_expense.FY2026",
+   "status": "present",
+   "value_rupees": "194610000.00",
+   "raw": "194.61",
+   "pages": [
+    67,
+    318,
+    419,
+    426,
+    428,
+    453,
+    459,
+    460
+   ],
+   "span": "Total tax expense 71.17 194.61 34.25 4.24",
+   "note": ""
+  },
+  {
+   "key": "financials.tax_expense.FY2025",
+   "status": "present",
+   "value_rupees": "34250000.00",
+   "raw": "34.25",
+   "pages": [
+    67,
+    318,
+    426,
+    428,
+    453,
+    459,
+    460
+   ],
+   "span": "Total tax expense 71.17 194.61 34.25 4.24",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2026",
+   "status": "present",
+   "value_rupees": "1698400000.00",
+   "raw": "1,698.40",
+   "pages": [
+    67,
+    321,
+    419,
+    427,
+    455
+   ],
+   "span": "Profit for the year 556.98 1,698.40 743.14 362.60",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2025",
+   "status": "present",
+   "value_rupees": "743140000.00",
+   "raw": "743.14",
+   "pages": [
+    67,
+    321,
+    427,
+    455,
+    456
+   ],
+   "span": "Profit for the year 556.98 1,698.40 743.14 362.60",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2026",
+   "status": "present",
+   "value_rupees": "13851460000.00",
+   "raw": "13,851.46",
+   "pages": [
+    66,
+    317,
+    418,
+    427,
+    459
+   ],
+   "span": "Total Assets 13,678.47 13,851.46 11,432.52 7,680.16",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2025",
+   "status": "present",
+   "value_rupees": "11432520000.00",
+   "raw": "11,432.52",
+   "pages": [
+    66,
+    317,
+    427,
+    459
+   ],
+   "span": "Total Assets 13,678.47 13,851.46 11,432.52 7,680.16",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "2642240000.00",
+   "raw": "2,642.24",
+   "pages": [
+    68,
+    319,
+    456,
+    457
+   ],
+   "span": "Net cash flows generated from operating activities 232.01 2,642.24 1,024.48 392.58",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "1024480000.00",
+   "raw": "1,024.48",
+   "pages": [
+    68,
+    319,
+    456,
+    457
+   ],
+   "span": "Net cash flows generated from operating activities 232.01 2,642.24 1,024.48 392.58",
+   "note": ""
+  }
+ ]
+}

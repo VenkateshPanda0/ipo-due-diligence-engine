@@ -280,3 +280,32 @@ doc_type = "rhp"
 platform = "mainboard"
 filing_date = 2026-09-17
 notes = "Held-out set 7. Infrastructure construction. SEBI listing: filings/public-issues/sep-2026/swastika-infra-ltd-rhp_104573.html"
+
+# Held-out set 8, added 2026-10-30. Labels are committed before the extractor is run on them.
+# Draft documents (DRHP/UDRHP-I) this time; SEBI's current listing had no lender.
+[[document]]
+doc_id = "carlsberg_india_udrhp1_2026"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1793273741929.pdf"
+issuer = "Carlsberg India Limited"
+doc_type = "drhp"
+platform = "mainboard"
+filing_date = 2026-10-29
+notes = "Held-out set 8. Brewer; updated draft (UDRHP-I), typed drhp. SEBI listing: filings/public-issues/oct-2026/carlsberg-india-limited-udrhp-1_105485.html"
+
+[[document]]
+doc_id = "inox_air_products_drhp_2026"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1791197450320.pdf"
+issuer = "Inox Air Products Limited"
+doc_type = "drhp"
+platform = "mainboard"
+filing_date = 2026-10-05
+notes = "Held-out set 8. Industrial gases, draft. SEBI listing: filings/public-issues/oct-2026/inox-air-products-limited-drhp_105024.html"
+
+[[document]]
+doc_id = "electromech_infra_drhp_2026"
+url = "https://www.sebi.gov.in/sebi_data/attachdocs/oct-2026/1791199559126.pdf"
+issuer = "Electromech Infraprojects Limited"
+doc_type = "drhp"
+platform = "mainboard"
+filing_date = 2026-10-05
+notes = "Held-out set 8. Infrastructure construction, draft. SEBI listing: filings/public-issues/oct-2026/electromech-infraprojects-limited-drhp_105027.html"

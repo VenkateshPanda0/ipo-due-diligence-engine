@@ -1,0 +1,274 @@
+{
+ "schema_version": 1,
+ "doc_id": "inox_air_products_drhp_2026",
+ "doc_sha256": "4180656c4fc114b459b21c621289563f787c272812a4e17d4b7cb10c938b96b0",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-30",
+ "split": "heldout",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "absent",
+   "note": "Offer for sale only (p3)."
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "absent",
+   "note": "OFS amount [●] million (p1, p3)."
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "absent",
+   "note": "Total [●] million (p3)."
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "absent",
+   "note": "No fresh issue, no objects table."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "No fresh issue, no objects table."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "0",
+   "raw": "not required to appoint a monitoring agency",
+   "pages": [
+    102,
+    165
+   ],
+   "span": "As the Offer is an Offer for Sale of Equity Shares, our Company is not required to appoint a monitoring agency",
+   "note": "p102."
+  },
+  {
+   "key": "financials.total_income.FY2026",
+   "status": "present",
+   "value_rupees": "32128690000.00",
+   "raw": "32,128.69",
+   "pages": [
+    89,
+    306,
+    314,
+    411,
+    523,
+    533
+   ],
+   "span": "Total Income 32,128.69 30,486.39 27,737.46",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2025",
+   "status": "present",
+   "value_rupees": "30486390000.00",
+   "raw": "30,486.39",
+   "pages": [
+    89,
+    306,
+    314,
+    411,
+    523,
+    533
+   ],
+   "span": "Total Income 32,128.69 30,486.39 27,737.46",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "30339280000.00",
+   "raw": "30,339.28",
+   "pages": [
+    37,
+    38,
+    41,
+    60,
+    70,
+    89,
+    306,
+    314,
+    333,
+    411,
+    528
+   ],
+   "span": "Revenue from Operations (B) 30,339.28 27,897.81 25,899.35",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "27897810000.00",
+   "raw": "27,897.81",
+   "pages": [
+    37,
+    38,
+    41,
+    60,
+    89,
+    306,
+    314,
+    333,
+    411,
+    528
+   ],
+   "span": "Revenue from Operations (B) 30,339.28 27,897.81 25,899.35",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2026",
+   "status": "present",
+   "value_rupees": "12042490000.00",
+   "raw": "12,042.49",
+   "pages": [
+    89,
+    90,
+    306,
+    314,
+    411,
+    413,
+    476
+   ],
+   "span": "Restated profit before tax 12,042.49 11,555.02 10,187.71",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2025",
+   "status": "present",
+   "value_rupees": "11555020000.00",
+   "raw": "11,555.02",
+   "pages": [
+    89,
+    90,
+    306,
+    314,
+    411,
+    413,
+    476
+   ],
+   "span": "Restated profit before tax 12,042.49 11,555.02 10,187.71",
+   "note": ""
+  },
+  {
+   "key": "financials.tax_expense.FY2026",
+   "status": "present",
+   "value_rupees": "2903790000.00",
+   "raw": "2,903.79",
+   "pages": [
+    89,
+    411,
+    476,
+    523,
+    524,
+    533
+   ],
+   "span": "Total tax expense 2,903.79 2,745.57 2,530.85",
+   "note": ""
+  },
+  {
+   "key": "financials.tax_expense.FY2025",
+   "status": "present",
+   "value_rupees": "2745570000.00",
+   "raw": "2,745.57",
+   "pages": [
+    89,
+    411,
+    476,
+    523,
+    524,
+    533
+   ],
+   "span": "Total tax expense 2,903.79 2,745.57 2,530.85",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2026",
+   "status": "present",
+   "value_rupees": "9138700000.00",
+   "raw": "9,138.70",
+   "pages": [
+    70,
+    89,
+    306,
+    314,
+    411,
+    412,
+    461,
+    523,
+    524
+   ],
+   "span": "Restated profit for the year 9,138.70",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2025",
+   "status": "present",
+   "value_rupees": "8809450000.00",
+   "raw": "8,809.45",
+   "pages": [
+    89,
+    306,
+    314,
+    411,
+    412,
+    461,
+    523,
+    524
+   ],
+   "span": "Restated profit for the year 9,138.70 8,809.45 7,656.86",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2026",
+   "status": "present",
+   "value_rupees": "102488580000.00",
+   "raw": "102,488.58",
+   "pages": [
+    87,
+    409
+   ],
+   "span": "Total Assets (1+2) 102,488.58 94,498.83 80,234.74",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2025",
+   "status": "present",
+   "value_rupees": "94498830000.00",
+   "raw": "94,498.83",
+   "pages": [
+    87,
+    409
+   ],
+   "span": "Total Assets (1+2) 102,488.58 94,498.83 80,234.74",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "12642410000.00",
+   "raw": "12,642.41",
+   "pages": [
+    90,
+    413,
+    539
+   ],
+   "span": "Net cash (used in)/generated from operating activities 12,642.41 8,614.93 8,937.21",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "8614930000.00",
+   "raw": "8,614.93",
+   "pages": [
+    90,
+    413,
+    539
+   ],
+   "span": "Net cash (used in)/generated from operating activities 12,642.41 8,614.93 8,937.21",
+   "note": ""
+  }
+ ]
+}

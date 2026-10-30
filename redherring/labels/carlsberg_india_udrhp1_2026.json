@@ -1,0 +1,237 @@
+{
+ "schema_version": 1,
+ "doc_id": "carlsberg_india_udrhp1_2026",
+ "doc_sha256": "eec61812afad5d2dcfc268d0de6e22bf9095273a3e2ab27b9d4596c85aaec497",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-30",
+ "split": "heldout",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "absent",
+   "note": "Offer for sale only (p3)."
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "absent",
+   "note": "OFS amount [●] million (p3); 86,418,887 shares only."
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "absent",
+   "note": "Total [●] million (p3)."
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "absent",
+   "note": "No fresh issue, no objects table."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "No fresh issue, no objects table."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "0",
+   "raw": "not required to appoint",
+   "pages": [
+    108
+   ],
+   "span": "As the Offer is an Offer for Sale of Equity Shares by the Promoter Selling Shareholder, our Company is not required to appoint",
+   "note": "p108: offer for sale by the promoter selling shareholder, so no agency is required."
+  },
+  {
+   "key": "financials.total_income.FY2026",
+   "status": "present",
+   "value_rupees": "88149600000.00",
+   "raw": "88,149.60",
+   "pages": [
+    94,
+    277,
+    384
+   ],
+   "span": "Total income (I) 30,344.29 25,815.11 88,149.60 90,181.46 80,225.42",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2025",
+   "status": "present",
+   "value_rupees": "90181460000.00",
+   "raw": "90,181.46",
+   "pages": [
+    94,
+    277,
+    384
+   ],
+   "span": "Total income (I) 30,344.29 25,815.11 88,149.60 90,181.46 80,225.42",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "87087900000.00",
+   "raw": "87,087.90",
+   "pages": [
+    31,
+    94,
+    277,
+    376,
+    384,
+    396,
+    397,
+    398
+   ],
+   "span": "Revenue from operations (₹ million) (D) 30,137.26 25,471.67 87,087.90 89,064.95 79,424.91",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "89064950000.00",
+   "raw": "89,064.95",
+   "pages": [
+    31,
+    94,
+    277,
+    376,
+    384,
+    396,
+    397,
+    398
+   ],
+   "span": "Revenue from operations (₹ million) (D) 30,137.26 25,471.67 87,087.90 89,064.95 79,424.91",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2026",
+   "status": "present",
+   "value_rupees": "7174180000.00",
+   "raw": "7,174.18",
+   "pages": [
+    94,
+    277,
+    384
+   ],
+   "span": "Restated profit before tax (V - VI = VII) 2,123.32 2,222.28 7,174.18 5,933.69 4,132.43",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2025",
+   "status": "present",
+   "value_rupees": "5933690000.00",
+   "raw": "5,933.69",
+   "pages": [
+    94,
+    277,
+    384
+   ],
+   "span": "Restated profit before tax (V - VI = VII) 2,123.32 2,222.28 7,174.18 5,933.69 4,132.43",
+   "note": ""
+  },
+  {
+   "key": "financials.tax_expense.FY2026",
+   "status": "present",
+   "value_rupees": "-1829110000.00",
+   "raw": "(1,829.11)",
+   "pages": [
+    94,
+    277,
+    317,
+    384
+   ],
+   "span": "Total income tax expense (VIII) (541.01) (575.95) (1,829.11) (1,554.26) (922.18)",
+   "note": ""
+  },
+  {
+   "key": "financials.tax_expense.FY2025",
+   "status": "present",
+   "value_rupees": "-1554260000.00",
+   "raw": "(1,554.26)",
+   "pages": [
+    94,
+    277,
+    317,
+    384
+   ],
+   "span": "Total income tax expense (VIII) (541.01) (575.95) (1,829.11) (1,554.26) (922.18)",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2026",
+   "status": "present",
+   "value_rupees": "5345070000.00",
+   "raw": "5,345.07",
+   "pages": [
+    94,
+    277
+   ],
+   "span": "Restated profit for the period/year (VII + VIII = IX) 1,582.31 1,646.33 5,345.07 4,379.43 3,210.25",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2025",
+   "status": "present",
+   "value_rupees": "4379430000.00",
+   "raw": "4,379.43",
+   "pages": [
+    94,
+    277
+   ],
+   "span": "Restated profit for the period/year (VII + VIII = IX) 1,582.31 1,646.33 5,345.07 4,379.43 3,210.25",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2026",
+   "status": "present",
+   "value_rupees": "33505520000.00",
+   "raw": "33,505.52",
+   "pages": [
+    92,
+    276
+   ],
+   "span": "Total assets 37,788.10 36,195.92 33,505.52 32,324.91 26,420.12",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2025",
+   "status": "present",
+   "value_rupees": "32324910000.00",
+   "raw": "32,324.91",
+   "pages": [
+    92,
+    276
+   ],
+   "span": "Total assets 37,788.10 36,195.92 33,505.52 32,324.91 26,420.12",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2026",
+   "status": "present",
+   "value_rupees": "3011530000.00",
+   "raw": "3,011.53",
+   "pages": [
+    95,
+    280,
+    392
+   ],
+   "span": "Net cash inflow from operating activities (A) 6,071.22 3,055.27 3,011.53 4,820.55 1,670.53",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2025",
+   "status": "present",
+   "value_rupees": "4820550000.00",
+   "raw": "4,820.55",
+   "pages": [
+    95,
+    280,
+    392
+   ],
+   "span": "Net cash inflow from operating activities (A) 6,071.22 3,055.27 3,011.53 4,820.55 1,670.53",
+   "note": ""
+  }
+ ]
+}

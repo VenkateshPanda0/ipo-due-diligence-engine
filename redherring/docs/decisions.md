@@ -330,6 +330,14 @@ into a derived total. Residual risk: other raises mentioned beside the offer (a 
 bonus) are not yet excluded; the cover-table reader, which does not use these patterns, takes
 precedence where it applies.
 
+## D-037 — A set that causes no code change stays held out (2026-10-30)
+
+Held-out set 8 (`docs/heldout-run-8.md`) was read correctly on the first run except for one value
+that was my labelling error. With no extractor change to make, the set was not turned into
+development data: its numbers still describe the shipped code, so it is a clean baseline for the
+next change. The rule is now: a set becomes development data when, and only when, a defect it
+exposed is fixed. Label corrections do not count.
+
 ## Open items
 
 - Terms-of-use review for SEBI / BSE / NSE (see D-010).

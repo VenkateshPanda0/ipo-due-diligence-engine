@@ -41,8 +41,14 @@
   },
   {
    "key": "objects.monitoring_agency_appointed",
-   "status": "absent",
-   "note": "Draft says the company 'shall ... appoint a monitoring agency ... prior to filing of the Red Herring Prospectus' (p101): neither appointed nor stated not required."
+   "status": "present",
+   "value_rupees": "1",
+   "raw": "has appointed [●]",
+   "pages": [
+    152
+   ],
+   "span": "In terms of Regulation 41 of the SEBI ICDR Regulations, our Company has appointed [●], as the monitoring",
+   "note": "CORRECTED after run 8: first labelled absent from p101 ('shall ... appoint'); the general-information statement (p152) says 'has appointed [●], as the monitoring agency' (name blank in the draft). My first search listed only the first four hits and missed p152."
   },
   {
    "key": "financials.total_income.FY2026",

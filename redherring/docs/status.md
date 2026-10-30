@@ -3,6 +3,22 @@
 Latest first. Every number below was printed by `rh parse`, `rh analyze` or `rh eval` on the nine
 filings in `data/sources.toml`; nothing is estimated.
 
+## 2026-10-30
+
+### Benchmark (`rh eval`, 512 labelled fields over thirty filings)
+| set | docs | fields (present/absent) | value accuracy | citation accuracy | abstained | wrong | hallucinated |
+|---|---|---|---|---|---|---|---|
+| held-out sets 1 to 7, **first runs** | 21 | | 76%, 76%, 97%, 54%, 87%, 87%, 100% | | | | |
+| held-out set 8, **first run** (extractor unchanged since set 7) | 3 | 60 (45/15) | 45/45 (100%) | 41/45 | 0 | 0 | 1/15 |
+| set 8 with the label corrected (still held out: no extractor change) | 3 | 60 (46/14) | 46/46 (100%) | 42/46 | 0 | 0 | 0/14 |
+| development, 27 filings | 27 | 452 (367/85) | 362/367 (99%) | 317/362 | 5 | 0 | 0/85 |
+| all thirty filings | 30 | 512 (413/99) | 408/413 (99%) | 359/408 | 5 | 0 | 0/99 |
+
+The single first-run "hallucination" was a labelling error (third in four runs): a draft says
+"shall appoint" on one page and "has appointed [●]" on another. Set 8 caused no code change, so it
+remains a held-out set. Drafts only; no lender or SME prospectus in SEBI's current listings
+(`docs/heldout-run-8.md`).
+
 ## 2026-10-29
 
 ### Benchmark (`rh eval`, 452 labelled fields over twenty-seven filings)

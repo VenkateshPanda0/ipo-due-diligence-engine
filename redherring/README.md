@@ -65,8 +65,8 @@ A flag is a prompt to read the cited pages, not a verdict.
 
 ## How well does it work?
 
-Measured, not claimed. `rh eval` scores the extractor against 452 hand-labelled fields (367 present,
-85 deliberately absent) across 27 filings. The key number is the **first run on filings the tool
+Measured, not claimed. `rh eval` scores the extractor against 512 hand-labelled fields (413 present,
+99 deliberately absent) across 30 filings. The key number is the **first run on filings the tool
 had never seen**, with labels committed before the extractor was run:
 
 | Held-out set | Filings | Fields correct (first run) | Wrong | Invented |
@@ -78,12 +78,16 @@ had never seen**, with labels committed before the extractor was run:
 | 5 | Zetwerk, Tonbo Imaging, Paras Healthcare | 33/38 (87%) | 1 | 2/13 |
 | 6 | Shah Investor's Home, Orient Cables, Nityas Gems | 40/46 (87%) | 0 | 0/12 |
 | 7 | Sahajanand Medical, Fusion CX, Swastika Infra | 49/49 (100%) | 0 | 2/11 |
+| 8 | Carlsberg India (UDRHP-I), Inox Air Products, Electromech Infra (drafts) | 45/45 (100%) | 0 | 1/15* |
 
-After the defects each set exposed were fixed, all 27 filings together read 362 of 367 present
-fields correctly (99%), with none wrong and none invented in 85 absent fields. That second number is
+\* a labelling error, not an extractor error (disclosed in `docs/heldout-run-8.md`). Set 8 needed no
+code change, so it is still a held-out set.
+
+After the defects each set exposed were fixed, all 30 filings together read 408 of 413 present
+fields correctly (99%), with none wrong and none invented in 99 absent fields. That second number is
 **development accuracy** and will flatter the tool; the first-run column is the honest estimate of
-how it will do on your next filing: roughly three fields in four to nine in ten, with the
-remainder withheld.
+how it will do on your next filing: about three fields in four on the early, harder sets and nine in
+ten or better on recent, well-formed filings, with the remainder withheld.
 
 Caveats you should know about:
 
@@ -131,7 +135,7 @@ stages together and `report_html.py` and `diff.py` producing the outputs.
 | | |
 |---|---|
 | `docs/status.md` | Every current number and known defect |
-| `docs/heldout-run-1.md` … `-7.md` | Each held-out run: what failed, why, what changed |
+| `docs/heldout-run-1.md` … `-8.md` | Each held-out run: what failed, why, what changed |
 | `docs/decisions.md` | Design decisions and their trade-offs |
 | `docs/security.md` | Threat model for untrusted PDFs |
 | `docs/roadmap.md` | What is done and what is next |

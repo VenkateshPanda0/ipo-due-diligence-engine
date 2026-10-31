@@ -470,3 +470,16 @@ def test_a_pre_ipo_placement_amount_is_not_the_offer_for_sale_amount() -> None:
         )
     )
     assert IssueKey.OFS_AMOUNT not in _facts(doc)
+
+
+def test_public_issue_is_the_total_when_the_whole_issue_is_fresh() -> None:
+    """Neev Credit (SME draft): 'AGGREGATING UP TO Rs 1500.00 LAKHS (\u201cPUBLIC ISSUE\u201d)'."""
+    doc = _doc(
+        _page(
+            2,
+            "PUBLIC ISSUE OF [\u25cf] EQUITY SHARES OF FACE VALUE OF \u20b910 EACH FOR CASH AT A "
+            "PRICE OF \u20b9[\u25cf] PER EQUITY SHARE AGGREGATING UP TO \u20b91500.00 LAKHS "
+            "(\u201cPUBLIC ISSUE\u201d) OUT OF WHICH [\u25cf] EQUITY SHARES",
+        )
+    )
+    assert _facts(doc)[IssueKey.TOTAL_ISSUE_AMOUNT] == (Decimal(150_000_000), 2)

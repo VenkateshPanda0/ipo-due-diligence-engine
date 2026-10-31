@@ -3,6 +3,23 @@
 Latest first. Every number below was printed by `rh parse`, `rh analyze` or `rh eval` on the nine
 filings in `data/sources.toml`; nothing is estimated.
 
+## 2026-10-31
+
+### Benchmark (`rh eval`, 566 labelled fields over thirty-three filings)
+| set | docs | fields (present/absent) | value accuracy | citation accuracy | abstained | wrong | hallucinated |
+|---|---|---|---|---|---|---|---|
+| held-out sets 1 to 8, **first runs** | 24 | | 76%, 76%, 97%, 54%, 87%, 87%, 100%, 100% | | | | |
+| held-out set 9, **first run** (two lenders, two SME drafts) | 3 | 54 (47/7) | 42/47 (89%) | 31/42 | 4 | 1 | 0/7 |
+| set 9 after its fixes (no longer held out) | 3 | 54 (47/7) | 46/47 (98%) | | 1 | 0 | 0/7 |
+| development, 30 filings | 30 | 506 (414/92) | 410/414 (99%) | 352/410 | 4 | 0 | 0/92 |
+| held out: set 8 (not used for any fix) | 3 | 60 (46/14) | 46/46 (100%) | 42/46 | 0 | 0 | 0/14 |
+| all thirty-three filings | 33 | 566 (460/106) | 456/460 (99%) | 394/456 | 4 | 0 | 0/106 |
+
+Set 9 was the first lender and SME set since set 3 and read worse again (89%, one wrong value from a
+lost header cell). Remaining abstentions: Spinaroo general corporate purposes (unitless table),
+Tata Capital profit after tax FY2024 and Zetwerk profit after tax FY2026 and FY2025 (definitional
+conflicts). `docs/heldout-run-9.md`.
+
 ## 2026-10-30
 
 ### Benchmark (`rh eval`, 512 labelled fields over thirty filings)

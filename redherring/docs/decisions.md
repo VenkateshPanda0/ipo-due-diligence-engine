@@ -349,6 +349,20 @@ could contradict an "absent" label (three label errors in four runs came from ca
 absent after reading too little). `label_build.py` was checked by rebuilding set 7's Tonbo labels
 from a spec derived from the committed file: all 18 values reproduced.
 
+## D-039 — A column dated against the consensus is set aside; a unit may come from the next statement (2026-10-31)
+
+Held-out run 9 (`docs/heldout-run-9.md`). (1) When a table loses a header cell every figure sits one
+period late, and a table repeated on two pages outvotes the correct reading. A (table, period)
+column is now set aside when every one of its revenue, income and profit readings contradicts a
+decisive consensus for its period (two or more supporters, at least double any rival); the failure
+mode is a withheld figure, not a wrong one. Residual risk: a column that is correctly dated but
+carries different definitions for all its anchors (a subsidiary) is also set aside, which is where
+it would not be trusted anyway; a decisive consensus that is itself wrong would discard the one good
+column. (2) A statement with no unit caption borrows the unit of the statement up to two pages
+after it when none before it supplies one, under the same all-agree and same-dates conditions.
+(3) "Public Issue" is a defined term for the total issue. Not done: guessing a unit for a table that
+prints none anywhere on its page.
+
 ## Open items
 
 - Terms-of-use review for SEBI / BSE / NSE (see D-010).

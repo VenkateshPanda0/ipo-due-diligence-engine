@@ -30,7 +30,7 @@ Fetcher with integrity checks, page-tagged parser, tables, units, CLI, CI, decis
 | Prompt-injection red-team set (hostile PDFs through parse and extract) | started: four end-to-end cases in `tests/test_redteam.py` plus hidden-text tests; no corpus of real attack PDFs |
 
 ## Next, in order
-1. A ninth held-out set (three more filings, labels first), including a lender and an SME prospectus (sets 6 to 8 were mainboard filings from 2026 and SEBI's current listings have no lender; try Truhome Finance or InCred Holdings from the March and May 2026 draft listings, found via the exchange sites). Sets 1 to 7 are development data; set 8 is still held out because it caused no code change. Add a labelling check that lists ALL hits for the monitoring-agency phrase, not the first few. Every absent label is re-read on the cover and objects pages before commit (done for set 6).
+1. A tenth held-out set (three more filings, labels first): another lender and an SME prospectus or draft, plus a filing with an unusual statement layout. Sets 1 to 7 and 9 are development data; set 8 is still held out. Exchange and lead-manager sites host filings SEBI's listing lacks (BSE `corporates/download`, Kotak/other lead managers); use `tools/label_build.py --audit-absent` before committing labels.
 2. Rules from Schedule VI sections already parsed (related-party and promoter pledges first).
 3. Segmenter, so rules can cite sections and the report can show them.
 4. Red-team PDFs.

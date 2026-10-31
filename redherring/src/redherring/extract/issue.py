@@ -94,7 +94,9 @@ def _roles(term: str) -> set[IssueKey]:
     if words[:1] == ["the"]:
         words = words[1:]
     roles: set[IssueKey] = set()
-    if words in (["offer"], ["issue"]) or (words[:1] in (["offer"], ["issue"]) and "or" in words):
+    if words in (["offer"], ["issue"], ["public", "issue"]) or (
+        words[:1] in (["offer"], ["issue"]) and "or" in words
+    ):
         roles.add(IssueKey.TOTAL_ISSUE_AMOUNT)
     if "fresh issue" in " ".join(words):
         roles.add(IssueKey.FRESH_ISSUE_AMOUNT)

@@ -1,0 +1,236 @@
+{
+ "schema_version": 1,
+ "doc_id": "spinaroo_commercial_drhp_2024",
+ "doc_sha256": "c37e0460b781a95cb33cac100c5a473d357c7ddaf140fad6d39b63549f0d2e7c",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-31",
+ "split": "heldout",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "present",
+   "value_rupees": "101694000.00",
+   "raw": "1,016.94",
+   "pages": [
+    1,
+    2,
+    8,
+    19,
+    49,
+    61,
+    75,
+    241
+   ],
+   "span": "INCLUDING A SHARE PREMIUM OF ₹41/- PER EQUITY SHARE (THE “ISSUE PRICE”), AGGREGATING TO ₹ 1,016.94 LAKHS (“THE",
+   "note": ""
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "absent",
+   "note": "Issue is entirely fresh: no offer for sale amount (p1 table, p2)."
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "present",
+   "value_rupees": "101694000.00",
+   "raw": "1,016.94",
+   "pages": [
+    1,
+    2,
+    8,
+    19,
+    49,
+    61,
+    75,
+    241
+   ],
+   "span": "INCLUDING A SHARE PREMIUM OF ₹41/- PER EQUITY SHARE (THE “ISSUE PRICE”), AGGREGATING TO ₹ 1,016.94 LAKHS (“THE",
+   "note": ""
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "present",
+   "value_rupees": "20000000.00",
+   "raw": "200.00",
+   "pages": [
+    37,
+    79
+   ],
+   "span": "42. Portion of our Issue Proceeds are proposed to be utilized for general corporate purposes amounting to ₹ 200.00",
+   "note": "p37 and p79: Rs 200.00 lakhs (19.67% of the issue)."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "No unidentified acquisition object."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "0",
+   "raw": "not be subject to any Monitoring Agency",
+   "pages": [
+    42
+   ],
+   "span": "60. The deployment of funds raised through this Issue shall not be subject to any Monitoring Agency and shall be",
+   "note": "p42; p56: not mandatory under regulation 262(1), none appointed."
+  },
+  {
+   "key": "financials.total_income.FY2024",
+   "status": "present",
+   "value_rupees": "412131000.00",
+   "raw": "4,121.31",
+   "pages": [
+    51,
+    83,
+    107,
+    176,
+    204
+   ],
+   "span": "Total Income 2,101.65 4,121.31 5,319.30 4,757.60",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2023",
+   "status": "present",
+   "value_rupees": "531930000.00",
+   "raw": "5,319.30",
+   "pages": [
+    51,
+    83,
+    107,
+    176,
+    204
+   ],
+   "span": "Total Income 2,101.65 4,121.31 5,319.30 4,757.60",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2024",
+   "status": "present",
+   "value_rupees": "408368000.00",
+   "raw": "4,083.68",
+   "pages": [
+    51,
+    176,
+    204
+   ],
+   "span": "Revenue from Operations 2,101.50 4,083.68 5,312.50 4,744.43",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2023",
+   "status": "present",
+   "value_rupees": "531250000.00",
+   "raw": "5,312.50",
+   "pages": [
+    51,
+    176,
+    204
+   ],
+   "span": "Revenue from Operations 2,101.50 4,083.68 5,312.50 4,744.43",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2024",
+   "status": "present",
+   "value_rupees": "18602000.00",
+   "raw": "186.02",
+   "pages": [
+    51,
+    176,
+    204
+   ],
+   "span": "Profit before Taxation 82.61 186.02 97.88 92.84",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2023",
+   "status": "present",
+   "value_rupees": "9788000.00",
+   "raw": "97.88",
+   "pages": [
+    51,
+    176,
+    204
+   ],
+   "span": "Profit before Taxation 82.61 186.02 97.88 92.84",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2024",
+   "status": "present",
+   "value_rupees": "14005000.00",
+   "raw": "140.05",
+   "pages": [
+    51,
+    176
+   ],
+   "span": "Profit After Tax but Before Extra ordinary Items 61.48 140.05 93.06 51.89",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2023",
+   "status": "present",
+   "value_rupees": "9306000.00",
+   "raw": "93.06",
+   "pages": [
+    51,
+    176
+   ],
+   "span": "Profit After Tax but Before Extra ordinary Items 61.48 140.05 93.06 51.89",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2024",
+   "status": "present",
+   "value_rupees": "190528000.00",
+   "raw": "1,905.28",
+   "pages": [
+    50,
+    175
+   ],
+   "span": "Total Assets 2,194.39 1,905.28 1,947.62 1,782.45",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2023",
+   "status": "present",
+   "value_rupees": "194762000.00",
+   "raw": "1,947.62",
+   "pages": [
+    50,
+    175
+   ],
+   "span": "Total Assets 2,194.39 1,905.28 1,947.62 1,782.45",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2024",
+   "status": "present",
+   "value_rupees": "8639000.00",
+   "raw": "86.39",
+   "pages": [
+    26,
+    52,
+    177
+   ],
+   "span": "Net cash generated/(used) from operating activities 38.80 86.39 180.75 122.91",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2023",
+   "status": "present",
+   "value_rupees": "18075000.00",
+   "raw": "180.75",
+   "pages": [
+    26,
+    52,
+    177
+   ],
+   "span": "Net cash generated/(used) from operating activities 38.80 86.39 180.75 122.91",
+   "note": ""
+  }
+ ]
+}

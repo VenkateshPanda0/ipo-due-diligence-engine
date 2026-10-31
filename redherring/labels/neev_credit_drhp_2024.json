@@ -1,0 +1,216 @@
+{
+ "schema_version": 1,
+ "doc_id": "neev_credit_drhp_2024",
+ "doc_sha256": "05e55f003c0888d99402267a185ac68dbdcd962c41ec0f957f1bc10b0d381734",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-31",
+ "split": "heldout",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "present",
+   "value_rupees": "150000000.00",
+   "raw": "1500.00",
+   "pages": [
+    1,
+    2,
+    10,
+    24,
+    52,
+    69,
+    91,
+    255,
+    263
+   ],
+   "span": "₹ 1500.00 lakhs Regulations. For further details, see “Other Regulatory and Statutory",
+   "note": "p1 cover table and p2: public issue of up to Rs 1500.00 lakhs, all fresh."
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "absent",
+   "note": "'Not Applicable' (p1): no offer for sale."
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "present",
+   "value_rupees": "150000000.00",
+   "raw": "1500.00",
+   "pages": [
+    2
+   ],
+   "span": "AGGREGATING UP TO ₹1500.00 LAKHS (“PUBLIC ISSUE”) OUT OF WHICH [●] EQUITY SHARES OF FACE VALUE OF ₹10 EACH, AT AN ISSUE PRICE OF ₹[●]",
+   "note": "p2: 'PUBLIC ISSUE' aggregating up to Rs 1500.00 lakhs; the p1 total row says [●] equity shares."
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "absent",
+   "note": "General corporate purposes amount is [●] (p25, p91)."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "No unidentified acquisition object."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "0",
+   "raw": "has not appointed any monitoring agency",
+   "pages": [
+    46
+   ],
+   "span": "Company has not appointed any monitoring agency for this Issue. Hence, we have not appointed a monitoring",
+   "note": "p46: 'Company has not appointed any monitoring agency for this Issue'; p62, p96 say it is not mandatory."
+  },
+  {
+   "key": "financials.total_income.FY2024",
+   "status": "present",
+   "value_rupees": "141436000.00",
+   "raw": "1,414.36",
+   "pages": [
+    56,
+    175
+   ],
+   "span": "(III) Total Income (I+II) 1,414.36 389.22 320.03",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2023",
+   "status": "present",
+   "value_rupees": "38922000.00",
+   "raw": "389.22",
+   "pages": [
+    56,
+    175
+   ],
+   "span": "(III) Total Income (I+II) 1,414.36 389.22 320.03",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2024",
+   "status": "present",
+   "value_rupees": "139900000.00",
+   "raw": "1,399.00",
+   "pages": [
+    56,
+    175
+   ],
+   "span": "(I) Total Revenue from operations 1,399.00 380.50 318.38",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2023",
+   "status": "present",
+   "value_rupees": "38050000.00",
+   "raw": "380.50",
+   "pages": [
+    56,
+    175
+   ],
+   "span": "(I) Total Revenue from operations 1,399.00 380.50 318.38",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2024",
+   "status": "present",
+   "value_rupees": "21865000.00",
+   "raw": "218.65",
+   "pages": [
+    56,
+    175
+   ],
+   "span": "(VII) Profit/(loss) before tax (V -VI) 218.65 8.44 0.39",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2023",
+   "status": "present",
+   "value_rupees": "844000.00",
+   "raw": "8.44",
+   "pages": [
+    56,
+    175
+   ],
+   "span": "(VII) Profit/(loss) before tax (V -VI) 218.65 8.44 0.39",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2024",
+   "status": "present",
+   "value_rupees": "22297000.00",
+   "raw": "222.97",
+   "pages": [
+    56,
+    175
+   ],
+   "span": "(XII) Profit/(loss) for the period (IX+XII) 222.97 6.30 0.31",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2023",
+   "status": "present",
+   "value_rupees": "630000.00",
+   "raw": "6.30",
+   "pages": [
+    56,
+    175
+   ],
+   "span": "(XII) Profit/(loss) for the period (IX+XII) 222.97 6.30 0.31",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2024",
+   "status": "present",
+   "value_rupees": "263389000.00",
+   "raw": "2,633.89",
+   "pages": [
+    55,
+    174
+   ],
+   "span": "Total Assets 2,633.89 2,487.54 2,344.11",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2023",
+   "status": "present",
+   "value_rupees": "248754000.00",
+   "raw": "2,487.54",
+   "pages": [
+    55,
+    174
+   ],
+   "span": "Total Assets 2,633.89 2,487.54 2,344.11",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2024",
+   "status": "present",
+   "value_rupees": "32129000.00",
+   "raw": "321.29",
+   "pages": [
+    40,
+    57,
+    176,
+    230
+   ],
+   "span": "Net cash flow from Operating activities 321.29 887.02 (1108.96)",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2023",
+   "status": "present",
+   "value_rupees": "88702000.00",
+   "raw": "887.02",
+   "pages": [
+    40,
+    57,
+    176,
+    230,
+    231
+   ],
+   "span": "Net cash flow from Operating activities 321.29 887.02 (1108.96)",
+   "note": ""
+  }
+ ]
+}

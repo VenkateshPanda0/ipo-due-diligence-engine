@@ -309,3 +309,33 @@ doc_type = "drhp"
 platform = "mainboard"
 filing_date = 2026-10-05
 notes = "Held-out set 8. Infrastructure construction, draft. SEBI listing: filings/public-issues/oct-2026/electromech-infraprojects-limited-drhp_105027.html"
+
+# Held-out set 9, added 2026-10-31. Labels are committed before the extractor is run on them.
+# Chosen to cover what sets 6 to 8 did not: two lenders and an SME-platform draft. Hosted by the
+# exchange (BSE) and by a book running lead manager (Kotak); dates to be confirmed on page 1.
+[[document]]
+doc_id = "neev_credit_drhp_2024"
+url = "https://bseindia.com/corporates/download/385514/DRHP_Neev%20Credit%20Limited_20240930132649.pdf"
+issuer = "Neev Credit Limited"
+doc_type = "drhp"
+platform = "sme"
+filing_date = 2024-09-25
+notes = "Held-out set 9. NBFC; SME platform draft hosted by BSE; date from page 1."
+
+[[document]]
+doc_id = "aadhar_housing_rhp_2024"
+url = "https://investmentbank.kotak.com/downloads/aadhar-housing-finance-limited-RHP.pdf"
+issuer = "Aadhar Housing Finance Limited"
+doc_type = "rhp"
+platform = "mainboard"
+filing_date = 2024-04-30
+notes = "Held-out set 9. Housing finance company; mainboard RHP hosted by the lead manager (Kotak); date from page 1."
+
+[[document]]
+doc_id = "spinaroo_commercial_drhp_2024"
+url = "https://bseindia.com/corporates/download/300498/1_DP_BSE_Spinaroo_21112024_Final_20241121210654.pdf"
+issuer = "Spinaroo Commercial Limited"
+doc_type = "drhp"
+platform = "sme"
+filing_date = 2024-11-21
+notes = "Held-out set 9. SME-platform draft hosted by BSE; date from page 1."

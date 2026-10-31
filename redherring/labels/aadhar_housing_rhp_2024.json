@@ -1,0 +1,248 @@
+{
+ "schema_version": 1,
+ "doc_id": "aadhar_housing_rhp_2024",
+ "doc_sha256": "f5677b28f8736ade55836b26c049bf29f55d7e38fb83510772b6c6183cf854f2",
+ "labelled_by": "maintainer (an AI) reading the PDF text; not independent human labelling",
+ "labelled_on": "2026-10-31",
+ "split": "heldout",
+ "method": "Each value was read from the cited page of the PDF (poppler pdftotext, a different extraction path from the extractor) and typed in; pages/spans were then located mechanically as lines carrying both the concept wording and the figure. No inter-annotator agreement has been measured. ",
+ "fields": [
+  {
+   "key": "issue.fresh_issue_amount",
+   "status": "present",
+   "value_rupees": "10000000000",
+   "raw": "10,000",
+   "pages": [
+    3
+   ],
+   "span": "COMPRISING A FRESH ISSUANCE OF UP TO [●] EQUITY SHARES AGGREGATING UP TO ₹10,000 MILLION BY OUR",
+   "note": ""
+  },
+  {
+   "key": "issue.ofs_amount",
+   "status": "present",
+   "value_rupees": "20000000000",
+   "raw": "20,000",
+   "pages": [
+    3,
+    13,
+    20,
+    66,
+    81
+   ],
+   "span": "COMPANY (“FRESH ISSUE”) AND AN OFFER FOR SALE OF UP TO [●] EQUITY SHARES AGGREGATING UP TO ₹20,000",
+   "note": ""
+  },
+  {
+   "key": "issue.total_issue_amount",
+   "status": "present",
+   "value_rupees": "30000000000",
+   "raw": "30,000",
+   "pages": [
+    3,
+    13,
+    20,
+    66,
+    407
+   ],
+   "span": "SHARE PREMIUM OF ₹ [●] PER EQUITY SHARE) (“OFFER PRICE”) AGGREGATING UP TO ₹30,000 MILLION",
+   "note": ""
+  },
+  {
+   "key": "objects.gcp_amount",
+   "status": "absent",
+   "note": "General corporate purposes amount is [●] (p20, p98, p99, p100)."
+  },
+  {
+   "key": "objects.unidentified_acquisition_amount",
+   "status": "absent",
+   "note": "No unidentified acquisition object."
+  },
+  {
+   "key": "objects.monitoring_agency_appointed",
+   "status": "present",
+   "value_rupees": "1",
+   "raw": "has appointed ICRA Limited as the monitoring agency",
+   "pages": [
+    78,
+    102
+   ],
+   "span": "Our Company has appointed ICRA Limited as the monitoring agency in accordance with Regulation 41 of the SEBI ICDR",
+   "note": "p78, p102"
+  },
+  {
+   "key": "financials.total_income.FY2023",
+   "status": "present",
+   "value_rupees": "20435200000.0",
+   "raw": "20,435.2",
+   "pages": [
+    21,
+    49,
+    70,
+    223,
+    229,
+    242,
+    243,
+    252,
+    351,
+    354
+   ],
+   "span": "Total income 15,755.5 17,285.6 20,435.2 14,882.1 18,951.7",
+   "note": ""
+  },
+  {
+   "key": "financials.total_income.FY2022",
+   "status": "present",
+   "value_rupees": "17285600000.0",
+   "raw": "17,285.6",
+   "pages": [
+    21,
+    49,
+    70,
+    223,
+    229,
+    242,
+    243,
+    252,
+    351,
+    354,
+    355
+   ],
+   "span": "Total income 15,755.5 17,285.6 20,435.2 14,882.1 18,951.7",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2023",
+   "status": "present",
+   "value_rupees": "20432300000.0",
+   "raw": "20,432.3",
+   "pages": [
+    70,
+    252
+   ],
+   "span": "Total revenue from operations 15,753.3 17,282.7 20,432.3 14,878.0 18,950.2",
+   "note": ""
+  },
+  {
+   "key": "financials.revenue_from_operations.FY2022",
+   "status": "present",
+   "value_rupees": "17282700000.0",
+   "raw": "17,282.7",
+   "pages": [
+    70,
+    252
+   ],
+   "span": "Total revenue from operations 15,753.3 17,282.7 20,432.3 14,878.0 18,950.2",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2023",
+   "status": "present",
+   "value_rupees": "6958200000.0",
+   "raw": "6,958.2",
+   "pages": [
+    70,
+    252
+   ],
+   "span": "5 Profit before tax 4,325.1 5,673.6 6,958.2 5,162.6 7,009.8",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_before_tax.FY2022",
+   "status": "present",
+   "value_rupees": "5673600000.0",
+   "raw": "5,673.6",
+   "pages": [
+    70,
+    252
+   ],
+   "span": "5 Profit before tax 4,325.1 5,673.6 6,958.2 5,162.6 7,009.8",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2023",
+   "status": "present",
+   "value_rupees": "5447600000.0",
+   "raw": "5,447.6",
+   "pages": [
+    70,
+    252
+   ],
+   "span": "7 Profit for the period 3,401.3 4,448.5 5,447.6 4,040.6 5,478.8",
+   "note": ""
+  },
+  {
+   "key": "financials.profit_after_tax.FY2022",
+   "status": "present",
+   "value_rupees": "4448500000.0",
+   "raw": "4,448.5",
+   "pages": [
+    70,
+    252
+   ],
+   "span": "7 Profit for the period 3,401.3 4,448.5 5,447.6 4,040.6 5,478.8",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2023",
+   "status": "present",
+   "value_rupees": "166178700000.0",
+   "raw": "166,178.7",
+   "pages": [
+    69,
+    177,
+    222,
+    223,
+    242,
+    356,
+    357,
+    385
+   ],
+   "span": "Total assets 136,303.3 143,758.1 166,178.7 158,916.6 180,355.7",
+   "note": ""
+  },
+  {
+   "key": "financials.total_assets.FY2022",
+   "status": "present",
+   "value_rupees": "143758100000.0",
+   "raw": "143,758.1",
+   "pages": [
+    69,
+    177,
+    222,
+    223,
+    242,
+    356,
+    357,
+    385
+   ],
+   "span": "Total assets 136,303.3 143,758.1 166,178.7 158,916.6 180,355.7",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2023",
+   "status": "present",
+   "value_rupees": "-11556900000.0",
+   "raw": "(11,556.9)",
+   "pages": [
+    33,
+    71,
+    253
+   ],
+   "span": "Net cash used in operating (12,022.9) (9,067.5) (11,556.9) (10,065.7) (16,582.2)",
+   "note": ""
+  },
+  {
+   "key": "financials.cash_from_operations.FY2022",
+   "status": "present",
+   "value_rupees": "-9067500000.0",
+   "raw": "(9,067.5)",
+   "pages": [
+    33,
+    253
+   ],
+   "span": "Net cash used in operating (12,022.9) (9,067.5) (11,556.9) (10,065.7) (16,582.2)",
+   "note": ""
+  }
+ ]
+}

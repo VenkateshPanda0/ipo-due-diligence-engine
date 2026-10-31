@@ -9,7 +9,12 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from redherring.extract.consensus import Consensus, build_consensus, drop_ambiguous
+from redherring.extract.consensus import (
+    Consensus,
+    build_consensus,
+    drop_ambiguous,
+    quarantine_misdated_columns,
+)
 from redherring.extract.financials import extract_financials
 from redherring.extract.issue import IssueFact, extract_issue_facts
 from redherring.extract.models import CitedNumber, Concept
@@ -22,7 +27,7 @@ from redherring.verify.cited import PdfiumPageText, check_cited_number, check_ev
 from redherring.verify.footing import FootingCheck, run_footing, trusted_columns
 
 # Bump when AnalysisReport changes shape or meaning; older files are refused with a clear message.
-ANALYSIS_VERSION = 24
+ANALYSIS_VERSION = 25
 
 # A page is reported as carrying invisible text from this many white-on-nothing characters up: a
 # sentence worth planting is longer, while chart labels and the odd figure on a coloured shape that
@@ -87,6 +92,7 @@ class Summary(BaseModel):
     issue_facts_total: int
     issue_facts_verified: int
     values_ambiguous_dropped: int
+    columns_quarantined: int = 0  # columns whose dating contradicted decisive consensus
     flags: int
     rules_decisive: int  # rules that could be evaluated (flagged or clear)
     rules_applicable: int  # rules in force for this platform and date
@@ -165,6 +171,9 @@ def analyze_document(
     footing = run_footing(good_values)
     unambiguous, ambiguous_dropped = drop_ambiguous(good_values)
     consensus = build_consensus(unambiguous, trusted_columns(footing), n_pages=doc.n_pages)
+    unambiguous, columns_quarantined = quarantine_misdated_columns(unambiguous, consensus)
+    if columns_quarantined:
+        consensus = build_consensus(unambiguous, trusted_columns(footing), n_pages=doc.n_pages)
     multi = [c for c in consensus if c.total >= 2]
     good_issue = [f for f, vf in zip(issue, verified_issue, strict=True) if vf.verified]
     hidden_pages = _hidden_pages(doc)
@@ -200,6 +209,7 @@ def analyze_document(
         issue_facts_total=len(issue),
         issue_facts_verified=sum(f.verified for f in verified_issue),
         values_ambiguous_dropped=ambiguous_dropped,
+        columns_quarantined=columns_quarantined,
         flags=len(flags),
         rules_decisive=sum(a.status in ("flagged", "clear") for a in rule_audit),
         rules_applicable=sum(

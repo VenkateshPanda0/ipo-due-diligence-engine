@@ -24,7 +24,7 @@ from redherring.parse.units import Unit
 # 12: ...also when a "Note No." column sits among the period columns.
 # 13: text no reader can see is dropped (tiny, off-page) or counted (white on nothing).
 # 14: coloured curves (charts, arrows) count as something behind white text.
-PARSER_VERSION = 14
+PARSER_VERSION = 15
 
 
 def page_tag(pdf_page: int) -> str:

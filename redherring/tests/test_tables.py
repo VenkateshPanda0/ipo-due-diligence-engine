@@ -237,3 +237,14 @@ def test_a_note_column_does_not_stop_the_periods_from_matching() -> None:
     cash = _periods(151, None, ["For the Year ended on 31-Mar-22", "31-Mar-21"])
     inherit_units([pnl, cash])
     assert cash.unit is Unit.LAKH
+
+
+def test_a_statement_takes_the_unit_of_the_statement_after_it_when_none_precedes() -> None:
+    """Spinaroo: the caption '(Rs. In lakhs)' is over the P&L on page 51, not the balance sheet on
+    page 50, and both name the same four dates."""
+    cols = ["30-09-2024", "31-03-2024", "31-03-2023", "31-03-2022"]
+    balance = _periods(50, None, cols)
+    pnl = _periods(51, Unit.LAKH, ["For the Period/Year ended on 30-09-2024", *cols[1:]])
+    inherit_units([balance, pnl])
+    assert balance.unit is Unit.LAKH and balance.unit_inherited_from == 51
+    assert pnl.unit_inherited_from is None

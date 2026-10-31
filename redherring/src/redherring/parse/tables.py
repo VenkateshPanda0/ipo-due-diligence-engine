@@ -132,13 +132,29 @@ def _period_signature(columns: list[str]) -> tuple[str, ...]:
     return tuple(sig) if len(sig) >= 2 else ()
 
 
+def _donors(
+    pool: list[RawTable], page: int, sig: tuple[str, ...], *, before: bool
+) -> list[RawTable]:
+    """Tables with their own unit, within MAX_UNIT_PAGES of `page`, naming the dates `sig`."""
+    return [
+        d
+        for d in pool
+        if d.unit is not None
+        and d.unit_inherited_from is None
+        and 0 <= (page - d.pdf_page if before else d.pdf_page - page) <= MAX_UNIT_PAGES
+        and _period_signature(d.columns) == sig
+    ]
+
+
 def inherit_units(raw: list[RawTable]) -> None:
     """Give a statement without a unit caption the unit of the sibling statements before it.
 
     Some filings print "(Amount Rs. In Lakh)" over the balance sheet and income statement but not
-    over the cash-flow statement two pages on. The unit is borrowed only from tables within two
-    pages whose columns name exactly the same dates, only if all such tables agree, and never from
-    a table that itself borrowed. The source page is recorded in `unit_inherited_from`.
+    over the cash-flow statement two pages on, or over the income statement but not the balance
+    sheet before it. The unit is borrowed only from tables within two pages (the ones before first,
+    then the ones after) whose columns name exactly the same dates, only if all such tables agree,
+    and never from a table that itself borrowed. The source page is recorded in
+    `unit_inherited_from`.
     """
     ordered = sorted(raw, key=lambda t: (t.pdf_page, t.bbox.top))
     for i, t in enumerate(ordered):
@@ -147,14 +163,10 @@ def inherit_units(raw: list[RawTable]) -> None:
         sig = _period_signature(t.columns)
         if not sig:
             continue
-        donors = [
-            d
-            for d in ordered[:i]
-            if d.unit is not None
-            and d.unit_inherited_from is None
-            and 0 <= t.pdf_page - d.pdf_page <= MAX_UNIT_PAGES
-            and _period_signature(d.columns) == sig
-        ]
+
+        donors = _donors(ordered[:i], t.pdf_page, sig, before=True)
+        if not donors:  # the caption may sit on the next statement (a balance sheet before its P&L)
+            donors = _donors(ordered[i + 1 :], t.pdf_page, sig, before=False)
         if donors and len({d.unit for d in donors}) == 1:
             src = donors[-1]
             t.unit = src.unit

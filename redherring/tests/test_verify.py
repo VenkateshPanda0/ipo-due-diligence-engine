@@ -1,7 +1,7 @@
 from datetime import date
 from decimal import Decimal
 
-from redherring.extract.consensus import Consensus, build_consensus
+from redherring.extract.consensus import Consensus, build_consensus, quarantine_misdated_columns
 from redherring.extract.models import CitedNumber, Concept
 from redherring.extract.periods import Period, period_key
 from redherring.parse.units import Unit
@@ -468,3 +468,33 @@ def test_for_size_concepts_the_larger_supported_figure_breaks_a_near_tie_with_a_
     prof_sub = [cn(Concept.PROFIT_AFTER_TAX, "900.00", table_id=t, page=800 + t) for t in (3, 4)]
     (p,) = build_consensus([*prof, *prof_sub], n_pages=1000)
     assert not _kept(p)
+
+
+def test_a_column_whose_anchors_contradict_decisive_consensus_is_set_aside() -> None:
+    """Neev: a cash-flow table lost its first header, so FY2024's figures sat under FY2023."""
+    fy24 = Period(end=date(2024, 3, 31), months=12, instant=False)
+    fy23 = Period(end=date(2023, 3, 31), months=12, instant=False)
+    pbt = Concept.PROFIT_BEFORE_TAX
+    cfo = Concept.CASH_FROM_OPERATIONS
+    values = [
+        # two statements that agree
+        cn(pbt, "218.65", period=fy24, table_id=1),
+        cn(pbt, "8.44", period=fy23, table_id=1),
+        cn(pbt, "218.65", period=fy24, table_id=2),
+        cn(pbt, "8.44", period=fy23, table_id=2),
+        # a cash-flow table dated one year late: its "FY2023" holds FY2024's figures
+        cn(pbt, "218.65", period=fy23, table_id=3),
+        cn(cfo, "321.29", period=fy23, table_id=3),
+        cn(cfo, "887.02", period=fy23, table_id=4),
+    ]
+    kept, n = quarantine_misdated_columns(values, build_consensus(values))
+    assert n == 1
+    assert [v.raw for v in kept if v.concept is cfo] == ["887.02"]
+
+
+def test_a_column_that_agrees_with_consensus_on_any_anchor_is_kept() -> None:
+    pbt = Concept.PROFIT_BEFORE_TAX
+    values = [cn(pbt, "10.00", table_id=t) for t in (1, 2, 3)]
+    values.append(cn(Concept.CASH_FROM_OPERATIONS, "5.00", table_id=1))
+    kept, n = quarantine_misdated_columns(values, build_consensus(values))
+    assert n == 0 and len(kept) == len(values)

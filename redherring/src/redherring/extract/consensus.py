@@ -214,3 +214,42 @@ def build_consensus(
             )
         )
     return out
+
+
+# Figures every statement column carries: if all of a column's anchors contradict a decisive
+# consensus for the period it is dated, the column is probably dated wrongly (a lost header cell
+# shifts every column by one), and nothing read from it can be trusted.
+ANCHOR_CONCEPTS = frozenset(
+    {
+        Concept.REVENUE_FROM_OPERATIONS,
+        Concept.TOTAL_INCOME,
+        Concept.PROFIT_BEFORE_TAX,
+        Concept.PROFIT_AFTER_TAX,
+    }
+)
+
+
+def quarantine_misdated_columns(
+    values: list[CitedNumber], consensus: list[Consensus]
+) -> tuple[list[CitedNumber], int]:
+    """Drop every value of a (table, period) column whose anchors all disagree with consensus.
+
+    Only decisive consensus counts (two or more supporters, at least double any rival). Returns
+    (kept values, number of columns set aside).
+    """
+    decisive = {
+        (c.concept, c.period_key): c.chosen
+        for c in consensus
+        if c.concept in ANCHOR_CONCEPTS and c.supporters >= 2 and c.strength >= 2 * c.rival_strength
+    }
+    verdicts: dict[tuple[int, str], list[bool]] = defaultdict(list)
+    for v in values:
+        col = _column(v)
+        if col is None or v.concept not in ANCHOR_CONCEPTS or v.period is None:
+            continue
+        ref = decisive.get((v.concept, fiscal_key(v.period)))
+        if ref is not None and v.rupees is not None:
+            verdicts[col].append(_agrees(v, ref))
+    bad = {col for col, agree in verdicts.items() if not any(agree)}
+    kept = [v for v in values if _column(v) not in bad]
+    return kept, len(bad)

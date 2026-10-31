@@ -115,6 +115,8 @@ uv run rh --data-dir data eval --labels-dir labels
 Add a filing by appending a `[[document]]` entry to `data/sources.toml` with its public URL.
 Python 3.12, `uv`, Pydantic v2, pdfplumber and pypdfium2 (permissive licences; PyMuPDF is avoided
 because it is AGPL).
+`tools/gate.sh` runs format, lint, type-check and tests and returns the real exit status;
+`tools/README.md` describes the labelling helpers.
 
 ## How it works
 

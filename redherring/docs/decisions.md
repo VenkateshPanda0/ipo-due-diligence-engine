@@ -338,6 +338,17 @@ development data: its numbers still describe the shipped code, so it is a clean 
 next change. The rule is now: a set becomes development data when, and only when, a defect it
 exposed is fixed. Label corrections do not count.
 
+## D-038 — Labelling tools live in the repo (2026-10-31)
+
+The helpers used to label held-out sets (a page viewer, a label builder, a per-field comparison,
+the gate script) lived in a session scratch directory that was wiped, which would have forced
+every later run to rebuild them. They are now `tools/` (see `tools/README.md`): the gate script
+returns the real exit status (an earlier push of a lint failure came from piping it through
+`tail`), `pg.py grep` prints every hit, and `label_build.py --audit-absent` prints every line that
+could contradict an "absent" label (three label errors in four runs came from calling a field
+absent after reading too little). `label_build.py` was checked by rebuilding set 7's Tonbo labels
+from a spec derived from the committed file: all 18 values reproduced.
+
 ## Open items
 
 - Terms-of-use review for SEBI / BSE / NSE (see D-010).
